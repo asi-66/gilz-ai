@@ -1,20 +1,73 @@
 
 import { useState, useEffect } from "react";
 
+// Common chart data structures
+interface ChartDataset {
+  label: string;
+  data: number[];
+}
+
+interface BaseChartData {
+  labels: string[];
+  datasets: ChartDataset[];
+}
+
+// Specific chart data interfaces
+interface LineChartData extends BaseChartData {
+  datasets: Array<ChartDataset & {
+    borderColor: string;
+    backgroundColor: string;
+    fill: boolean;
+    tension: number;
+  }>;
+}
+
+interface BarChartData extends BaseChartData {
+  datasets: Array<ChartDataset & {
+    backgroundColor: string;
+  }>;
+}
+
+interface PieChartData extends BaseChartData {
+  datasets: Array<Omit<ChartDataset, 'label'> & {
+    backgroundColor: string[];
+    borderWidth: number;
+    borderColor: string;
+  }>;
+}
+
+// Activity interface
+interface ActivityItem {
+  id: number;
+  type: string;
+  message: string;
+  time: string;
+}
+
+// Main dashboard data interface
 interface DashboardData {
   totalActiveJobs: number;
   totalCandidates: number;
   resumesProcessed: number;
   interviewsScheduled: number;
-  recentActivity: {
-    id: number;
-    type: string;
-    message: string;
-    time: string;
-  }[];
+  recentActivity: ActivityItem[];
 }
 
-export const useDashboardData = () => {
+// Combined chart data interface
+interface ChartData {
+  lineChartData: LineChartData;
+  pieChartData: PieChartData;
+  barChartData: BarChartData;
+}
+
+// Hook return type
+interface DashboardHookReturn {
+  isLoading: boolean;
+  dashboardData: DashboardData;
+  chartData: ChartData;
+}
+
+export const useDashboardData = (): DashboardHookReturn => {
   const [isLoading, setIsLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState<DashboardData>({
     totalActiveJobs: 0,
@@ -44,8 +97,8 @@ export const useDashboardData = () => {
     }, 1000);
   }, []);
 
-  // Sample data for the charts
-  const lineChartData = {
+  // Chart data
+  const lineChartData: LineChartData = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
     datasets: [
       {
@@ -59,7 +112,7 @@ export const useDashboardData = () => {
     ],
   };
 
-  const pieChartData = {
+  const pieChartData: PieChartData = {
     labels: ["Qualified", "Pending Review", "Not Qualified"],
     datasets: [
       {
@@ -71,7 +124,7 @@ export const useDashboardData = () => {
     ],
   };
 
-  const barChartData = {
+  const barChartData: BarChartData = {
     labels: ["Engineering", "Marketing", "Design", "Finance", "HR"],
     datasets: [
       {

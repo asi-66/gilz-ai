@@ -1,13 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Briefcase, FileText, CalendarCheck, BarChart } from "lucide-react";
-
-interface ActivityItem {
-  id: number;
-  type: string;
-  message: string;
-  time: string;
-}
+import { ActivityItem } from "@/types/chart.types";
 
 interface RecentActivityProps {
   activities: ActivityItem[];

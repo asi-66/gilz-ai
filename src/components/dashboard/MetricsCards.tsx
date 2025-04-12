@@ -1,12 +1,8 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Briefcase, FileText, Users, CalendarCheck, ArrowUp, ArrowDown } from "lucide-react";
+import { DashboardMetrics } from "@/types/chart.types";
 
-interface MetricsData {
-  totalActiveJobs: number;
-  totalCandidates: number;
-  resumesProcessed: number;
-  interviewsScheduled: number;
+interface MetricsData extends DashboardMetrics {
   isLoading: boolean;
 }
 

@@ -1,31 +1,32 @@
 
 import * as React from "react";
 import * as RechartsPrimitive from "recharts";
+import { LineChartData } from "@/types/chart.types";
 
 interface LineChartProps {
-  data: any;
+  data: LineChartData;
 }
 
 export const LineChart = ({ data }: LineChartProps) => {
   return (
     <RechartsPrimitive.ResponsiveContainer width="100%" height={300}>
-      <RechartsPrimitive.LineChart data={data}>
+      <RechartsPrimitive.LineChart>
         <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
         <RechartsPrimitive.XAxis dataKey="name" />
         <RechartsPrimitive.YAxis />
         <RechartsPrimitive.Tooltip />
         <RechartsPrimitive.Legend />
-        {data.datasets.map((dataset: any, index: number) => (
+        {data.datasets.map((dataset, index) => (
           <RechartsPrimitive.Line 
             key={index}
             type="monotone" 
             dataKey="pv" 
-            data={data.labels.map((label: string, i: number) => ({
+            data={data.labels.map((label, i) => ({
               name: label,
               pv: dataset.data[i],
             }))}
             name={dataset.label}
-            stroke={dataset.borderColor || "#10B981"}
+            stroke={dataset.borderColor}
             fill={dataset.backgroundColor}
             activeDot={{ r: 8 }}
           />

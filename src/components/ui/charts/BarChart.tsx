@@ -1,15 +1,16 @@
 
 import * as React from "react";
 import * as RechartsPrimitive from "recharts";
+import { BarChartData } from "@/types/chart.types";
 
 interface BarChartProps {
-  data: any;
+  data: BarChartData;
 }
 
 export const BarChart = ({ data }: BarChartProps) => {
   return (
     <RechartsPrimitive.ResponsiveContainer width="100%" height={300}>
-      <RechartsPrimitive.BarChart data={data.labels.map((label: string, i: number) => ({
+      <RechartsPrimitive.BarChart data={data.labels.map((label, i) => ({
         name: label,
         value: data.datasets[0].data[i],
       }))}>
@@ -21,7 +22,7 @@ export const BarChart = ({ data }: BarChartProps) => {
         <RechartsPrimitive.Bar 
           dataKey="value" 
           name={data.datasets[0].label}
-          fill={data.datasets[0].backgroundColor || "#7efb98"} 
+          fill={data.datasets[0].backgroundColor} 
         />
       </RechartsPrimitive.BarChart>
     </RechartsPrimitive.ResponsiveContainer>
