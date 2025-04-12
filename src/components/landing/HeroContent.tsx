@@ -9,20 +9,20 @@ export const HeroContent = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
-      className="space-y-4 text-left self-start" // Added self-start to align to the top
+      className="space-y-4 text-left self-start"
     >
-      {/* Logo in circular container with rise-up animation */}
+      {/* Logo with shadow animation but no circular container */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
         className="flex justify-start mb-4"
       >
-        <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-[#7efb98] flex items-center justify-center bg-white/5 backdrop-blur-sm">
+        <div className="flex items-center justify-center">
           <img 
             src="/lovable-uploads/2947f7fd-d3b9-4741-b729-e9afd63877aa.png" 
             alt="Gilz AI Logo" 
-            className="w-16 h-16 object-cover"
+            className="w-16 h-16 object-cover shadow-md"
           />
         </div>
       </motion.div>
@@ -71,4 +71,3 @@ export const HeroContent = () => {
     </motion.div>
   );
 };
-
