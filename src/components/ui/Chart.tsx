@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Line, Bar, Pie } from 'recharts';
+import { LineChart, BarChart, PieChart, Line, Bar, Pie, Tooltip, ResponsiveContainer } from 'recharts';
 import {
   ChartContainer,
   ChartTooltip,
@@ -20,7 +20,7 @@ export const Chart: React.FC<ChartProps> = ({ data, type, options }) => {
     switch (type) {
       case 'line':
         return (
-          <Line
+          <LineChart
             data={data.labels.map((label: string, index: number) => ({
               name: label,
               ...data.datasets.reduce((acc: any, dataset: any) => {
@@ -28,14 +28,22 @@ export const Chart: React.FC<ChartProps> = ({ data, type, options }) => {
                 return acc;
               }, {}),
             }))}
-            dataKey="name"
           >
-            {/* Additional line chart configurations can be added here */}
-          </Line>
+            <Tooltip />
+            {data.datasets.map((dataset: any, index: number) => (
+              <Line 
+                key={index}
+                type="monotone" 
+                dataKey={dataset.label} 
+                stroke={dataset.borderColor || '#10B981'} 
+                activeDot={{ r: 8 }} 
+              />
+            ))}
+          </LineChart>
         );
       case 'bar':
         return (
-          <Bar
+          <BarChart
             data={data.labels.map((label: string, index: number) => ({
               name: label,
               ...data.datasets.reduce((acc: any, dataset: any) => {
@@ -43,27 +51,35 @@ export const Chart: React.FC<ChartProps> = ({ data, type, options }) => {
                 return acc;
               }, {}),
             }))}
-            dataKey="name"
           >
-            {/* Additional bar chart configurations can be added here */}
-          </Bar>
+            <Tooltip />
+            {data.datasets.map((dataset: any, index: number) => (
+              <Bar 
+                key={index} 
+                dataKey={dataset.label} 
+                fill={dataset.backgroundColor || '#7efb98'} 
+              />
+            ))}
+          </BarChart>
         );
       case 'pie':
         return (
-          <Pie
-            data={data.labels.map((label: string, index: number) => ({
-              name: label,
-              value: data.datasets[0].data[index],
-              fill: data.datasets[0].backgroundColor[index],
-            }))}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={80}
-          >
-            {/* Additional pie chart configurations can be added here */}
-          </Pie>
+          <PieChart>
+            <Pie
+              data={data.labels.map((label: string, index: number) => ({
+                name: label,
+                value: data.datasets[0].data[index],
+                fill: data.datasets[0].backgroundColor[index] || '#10B981',
+              }))}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={80}
+              label
+            />
+            <Tooltip />
+          </PieChart>
         );
       default:
         return null;
@@ -80,26 +96,25 @@ export const Chart: React.FC<ChartProps> = ({ data, type, options }) => {
       label: 'Open Positions',
       color: '#7efb98'
     },
-    pie: { 
-      qualified: { 
-        label: 'Qualified',
-        color: '#10B981'
-      },
-      pending: { 
-        label: 'Pending Review',
-        color: '#F59E0B'
-      },
-      notQualified: { 
-        label: 'Not Qualified',
-        color: '#EF4444'
-      }
+    pieQualified: { 
+      label: 'Qualified',
+      color: '#10B981'
+    },
+    piePending: { 
+      label: 'Pending Review',
+      color: '#F59E0B'
+    },
+    pieNotQualified: { 
+      label: 'Not Qualified',
+      color: '#EF4444'
     }
   };
 
   return (
-    <ChartContainer config={chartConfig}>
-      <ChartTooltip content={<ChartTooltipContent />} />
-      {renderChart()}
-    </ChartContainer>
+    <div className="w-full h-full">
+      <ResponsiveContainer width="100%" height={300}>
+        {renderChart()}
+      </ResponsiveContainer>
+    </div>
   );
 };
