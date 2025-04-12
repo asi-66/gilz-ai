@@ -96,12 +96,33 @@ export default {
 					to: {
 						backgroundPosition: '350% 50%, 350% 50%'
 					}
+				},
+				'aurora-smooth': {
+					'0%': {
+						backgroundPosition: '0% 50%, 0% 50%'
+					},
+					'50%': {
+						backgroundPosition: '100% 50%, 100% 50%'
+					},
+					'100%': {
+						backgroundPosition: '0% 50%, 0% 50%'
+					}
+				},
+				'aurora-pulse': {
+					'0%, 100%': {
+						opacity: '0.8'
+					},
+					'50%': {
+						opacity: '0.6'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'aurora': 'aurora 30s linear infinite'
+				'aurora': 'aurora 30s linear infinite',
+				'aurora-smooth': 'aurora-smooth 20s ease-in-out infinite',
+				'aurora-pulse': 'aurora-pulse 10s ease-in-out infinite'
 			}
 		}
 	},
