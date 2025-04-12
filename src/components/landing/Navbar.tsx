@@ -49,7 +49,7 @@ export const Navbar = ({ showLoginForm, handleLoginClick, handleSignupClick }: N
             <ThemeToggle />
             <Button 
               variant="outline" 
-              className="border-[#7efb98] text-black dark:text-white dark:hover:bg-[#7efb98]/10 hover:bg-[#7efb98]/10 transition-all"
+              className="rounded-full border border-[#7efb98] text-black dark:text-white hover:bg-transparent dark:hover:bg-transparent transition-all hover:border-black dark:hover:border-white"
               onClick={() => {
                 if (showLoginForm) {
                   handleSignupClick();
@@ -84,7 +84,7 @@ export const Navbar = ({ showLoginForm, handleLoginClick, handleSignupClick }: N
             </Link>
             <Button 
               variant="outline" 
-              className="w-full border-[#7efb98] text-black dark:text-white dark:hover:bg-[#7efb98]/10 hover:bg-[#7efb98]/10 transition-all mt-4"
+              className="w-full rounded-full border border-[#7efb98] text-black dark:text-white hover:bg-transparent dark:hover:bg-transparent transition-all hover:border-black dark:hover:border-white mt-4"
               onClick={() => {
                 toggleMenu();
                 if (showLoginForm) {

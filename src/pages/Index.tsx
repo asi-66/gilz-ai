@@ -65,7 +65,7 @@ const Index = () => {
 
         {/* TNP Attribution */}
         <div className="absolute bottom-4 left-6 text-xs text-black/60 dark:text-white/60">
-          © 2024 TNP Consultants
+          © 2025 TNP Consultants
         </div>
       </div>
     </AuroraBackground>
