@@ -6,4 +6,7 @@ import './index.css'
 // Set dark mode as default
 document.documentElement.classList.add('dark');
 
-createRoot(document.getElementById("root")!).render(<App />);
+const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error('Root element not found');
+
+createRoot(rootElement).render(<App />);
