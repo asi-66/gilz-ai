@@ -5,6 +5,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartConfig
 } from '@/components/ui/chart';
 
 interface ChartProps {
@@ -69,11 +70,30 @@ export const Chart: React.FC<ChartProps> = ({ data, type, options }) => {
     }
   };
 
-  // Define a minimal config based on common chart types
-  const chartConfig = {
-    line: { tension: 'tension' },
-    bar: { open: 'Open Positions' },
-    pie: { qualified: 'Qualified', pending: 'Pending Review', notQualified: 'Not Qualified' }
+  // Define a config object that matches the expected ChartConfig type
+  const chartConfig: ChartConfig = {
+    line: { 
+      label: 'Line Chart',
+      color: '#10B981'
+    },
+    bar: { 
+      label: 'Open Positions',
+      color: '#7efb98'
+    },
+    pie: { 
+      qualified: { 
+        label: 'Qualified',
+        color: '#10B981'
+      },
+      pending: { 
+        label: 'Pending Review',
+        color: '#F59E0B'
+      },
+      notQualified: { 
+        label: 'Not Qualified',
+        color: '#EF4444'
+      }
+    }
   };
 
   return (
