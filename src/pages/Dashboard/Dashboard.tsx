@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Briefcase, FileText, Users, CalendarCheck, ArrowUp, ArrowDown, BarChart3, FileBarChart, PieChart } from "lucide-react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
-import { Chart } from "@/components/ui/chart";
+import { Chart } from "@/components/ui/Chart";
 
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -190,12 +189,7 @@ const Dashboard = () => {
                 <CardDescription>Monthly resume submissions</CardDescription>
               </CardHeader>
               <CardContent>
-                <Chart options={{
-                  responsive: true,
-                  scales: {
-                    y: { beginAtZero: true }
-                  }
-                }} data={lineChartData} type="line" />
+                <Chart data={lineChartData} type="line" />
               </CardContent>
             </Card>
 
@@ -206,14 +200,7 @@ const Dashboard = () => {
                   <CardDescription>Distribution by qualification</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Chart options={{
-                    responsive: true,
-                    plugins: {
-                      legend: {
-                        position: 'bottom',
-                      }
-                    }
-                  }} data={pieChartData} type="pie" />
+                  <Chart data={pieChartData} type="pie" />
                 </CardContent>
               </Card>
 
@@ -223,12 +210,7 @@ const Dashboard = () => {
                   <CardDescription>By department</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Chart options={{
-                    responsive: true,
-                    scales: {
-                      y: { beginAtZero: true }
-                    }
-                  }} data={barChartData} type="bar" />
+                  <Chart data={barChartData} type="bar" />
                 </CardContent>
               </Card>
             </div>
