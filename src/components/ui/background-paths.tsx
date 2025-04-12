@@ -59,7 +59,7 @@ export function BackgroundPaths({
     const words = title.split(" ");
 
     return (
-        <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-950">
+        <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-transparent">
             <div className="absolute inset-0">
                 <FloatingPaths position={1} />
                 <FloatingPaths position={-1} />
@@ -92,8 +92,8 @@ export function BackgroundPaths({
                                             damping: 25,
                                         }}
                                         className="inline-block text-transparent bg-clip-text 
-                                        bg-gradient-to-r from-neutral-900 to-neutral-700/80 
-                                        dark:from-white dark:to-white/80"
+                                        bg-gradient-to-r from-white to-white/80 
+                                        light:from-neutral-900 light:to-neutral-700/80"
                                     >
                                         {letter}
                                     </motion.span>
@@ -103,17 +103,17 @@ export function BackgroundPaths({
                     </h1>
 
                     <div
-                        className="inline-block group relative bg-gradient-to-b from-black/10 to-white/10 
-                        dark:from-white/10 dark:to-black/10 p-px rounded-2xl backdrop-blur-lg 
+                        className="inline-block group relative bg-gradient-to-b from-white/10 to-black/10 
+                        light:from-black/10 light:to-white/10 p-px rounded-2xl backdrop-blur-lg 
                         overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
                     >
                         <Button
                             variant="ghost"
                             className="rounded-[1.15rem] px-8 py-6 text-lg font-semibold backdrop-blur-md 
-                            bg-white/95 hover:bg-white/100 dark:bg-black/95 dark:hover:bg-black/100 
-                            text-black dark:text-white transition-all duration-300 
-                            group-hover:-translate-y-0.5 border border-black/10 dark:border-white/10
-                            hover:shadow-md dark:hover:shadow-neutral-800/50"
+                            bg-black/95 hover:bg-black/100 light:bg-white/95 light:hover:bg-white/100 
+                            text-white light:text-black transition-all duration-300 
+                            group-hover:-translate-y-0.5 border border-white/10 light:border-black/10
+                            hover:shadow-md light:hover:shadow-neutral-800/50"
                         >
                             <span className="opacity-90 group-hover:opacity-100 transition-opacity">
                                 Discover Excellence
