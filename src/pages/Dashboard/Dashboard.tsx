@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Briefcase, FileText, Users, CalendarCheck, ArrowUp, ArrowDown } from "lucide-react";
+import { Briefcase, FileText, Users, CalendarCheck, ArrowUp, ArrowDown, BarChart } from "lucide-react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { Chart } from "@/components/ui/Chart";
 
@@ -81,7 +81,7 @@ const Dashboard = () => {
       case "job":
         return <Briefcase className="h-5 w-5 text-[#F59E0B]" />;
       case "evaluation":
-        return <FileBarChart className="h-5 w-5 text-[#6B7280]" />;
+        return <BarChart className="h-5 w-5 text-[#6B7280]" />;
       case "interview":
         return <CalendarCheck className="h-5 w-5 text-[#3B82F6]" />;
       default:
