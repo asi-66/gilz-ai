@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu";
 import { Link } from "react-router-dom";
@@ -47,7 +48,7 @@ export const Navbar = ({ showLoginForm, handleLoginClick, handleSignupClick }: N
             <ThemeToggle />
             <Button 
               variant="outline" 
-              className="rounded-full border border-black/30 dark:border-white/30 text-black dark:text-white hover:bg-transparent dark:hover:bg-transparent transition-all hover:border-black dark:hover:border-white"
+              className="rounded-full border border-black/30 dark:border-white/30 text-black dark:text-white hover:bg-transparent dark:hover:bg-transparent transition-all hover:border-black dark:hover:border-white bg-transparent"
               onClick={() => {
                 if (showLoginForm) {
                   handleSignupClick();
@@ -80,7 +81,7 @@ export const Navbar = ({ showLoginForm, handleLoginClick, handleSignupClick }: N
             </Link>
             <Button 
               variant="outline" 
-              className="w-full rounded-full border border-black/30 dark:border-white/30 text-black dark:text-white hover:bg-transparent dark:hover:bg-transparent transition-all hover:border-black dark:hover:border-white mt-4"
+              className="w-full rounded-full border border-black/30 dark:border-white/30 text-black dark:text-white hover:bg-transparent dark:hover:bg-transparent transition-all hover:border-black dark:hover:border-white bg-transparent mt-4"
               onClick={() => {
                 toggleMenu();
                 if (showLoginForm) {

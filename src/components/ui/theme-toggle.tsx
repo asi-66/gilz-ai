@@ -31,7 +31,7 @@ export function ThemeToggle() {
       <Toggle 
         pressed={isDark} 
         onPressedChange={toggleTheme}
-        className="rounded-full p-2 border border-black/20 dark:border-white/20 bg-transparent hover:bg-transparent"
+        className="rounded-full p-2 border border-black/20 dark:border-white/20 hover:bg-transparent"
         aria-label="Toggle theme"
       >
         {isDark ? (
