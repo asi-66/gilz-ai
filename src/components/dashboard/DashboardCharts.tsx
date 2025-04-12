@@ -1,46 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Chart } from "@/components/ui/Chart";
-
-// Import the chart data interfaces
-interface ChartDataset {
-  label: string;
-  data: number[];
-}
-
-interface BaseChartData {
-  labels: string[];
-  datasets: ChartDataset[];
-}
-
-interface LineChartData extends BaseChartData {
-  datasets: Array<ChartDataset & {
-    borderColor: string;
-    backgroundColor: string;
-    fill: boolean;
-    tension: number;
-  }>;
-}
-
-interface BarChartData extends BaseChartData {
-  datasets: Array<ChartDataset & {
-    backgroundColor: string;
-  }>;
-}
-
-interface PieChartData extends BaseChartData {
-  datasets: Array<Omit<ChartDataset, 'label'> & {
-    backgroundColor: string[];
-    borderWidth: number;
-    borderColor: string;
-  }>;
-}
-
-interface ChartData {
-  lineChartData: LineChartData;
-  pieChartData: PieChartData;
-  barChartData: BarChartData;
-}
+import { ChartData } from "@/types/chart.types";
 
 const DashboardCharts = ({ data }: { data: ChartData }) => {
   const { lineChartData, pieChartData, barChartData } = data;
