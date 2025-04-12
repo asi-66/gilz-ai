@@ -21,7 +21,7 @@ export const BarChart = ({ data }: BarChartProps) => {
         <RechartsPrimitive.Legend />
         <RechartsPrimitive.Bar 
           dataKey="value" 
-          name={data.datasets[0].label}
+          name={data.datasets[0].label || 'Value'}  // Add fallback in case label is not provided
           fill={data.datasets[0].backgroundColor} 
         />
       </RechartsPrimitive.BarChart>

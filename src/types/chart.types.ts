@@ -1,7 +1,7 @@
 
 // Common chart data structures
 export interface ChartDataset {
-  label?: string;
+  label?: string;  // Make label optional here so all chart types can extend it
   data: number[];
 }
 
@@ -26,7 +26,7 @@ export interface BarChartData extends BaseChartData {
 }
 
 export interface PieChartData extends BaseChartData {
-  datasets: Array<Omit<ChartDataset, 'label'> & {
+  datasets: Array<ChartDataset & {  // Remove Omit and keep label as optional from ChartDataset
     backgroundColor: string[];
     borderWidth: number;
     borderColor: string;

@@ -25,7 +25,7 @@ export const LineChart = ({ data }: LineChartProps) => {
               name: label,
               pv: dataset.data[i],
             }))}
-            name={dataset.label}
+            name={dataset.label || `Dataset ${index + 1}`}  // Add fallback in case label is not provided
             stroke={dataset.borderColor}
             fill={dataset.backgroundColor}
             activeDot={{ r: 8 }}

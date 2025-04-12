@@ -1,64 +1,6 @@
 
 import { useState, useEffect } from "react";
-
-// Common chart data structures
-interface ChartDataset {
-  label: string;
-  data: number[];
-}
-
-interface BaseChartData {
-  labels: string[];
-  datasets: ChartDataset[];
-}
-
-// Specific chart data interfaces
-interface LineChartData extends BaseChartData {
-  datasets: Array<ChartDataset & {
-    borderColor: string;
-    backgroundColor: string;
-    fill: boolean;
-    tension: number;
-  }>;
-}
-
-interface BarChartData extends BaseChartData {
-  datasets: Array<ChartDataset & {
-    backgroundColor: string;
-  }>;
-}
-
-interface PieChartData extends BaseChartData {
-  datasets: Array<Omit<ChartDataset, 'label'> & {
-    backgroundColor: string[];
-    borderWidth: number;
-    borderColor: string;
-  }>;
-}
-
-// Activity interface
-interface ActivityItem {
-  id: number;
-  type: string;
-  message: string;
-  time: string;
-}
-
-// Main dashboard data interface
-interface DashboardData {
-  totalActiveJobs: number;
-  totalCandidates: number;
-  resumesProcessed: number;
-  interviewsScheduled: number;
-  recentActivity: ActivityItem[];
-}
-
-// Combined chart data interface
-interface ChartData {
-  lineChartData: LineChartData;
-  pieChartData: PieChartData;
-  barChartData: BarChartData;
-}
+import { DashboardData, ChartData } from "@/types/chart.types";
 
 // Hook return type
 interface DashboardHookReturn {
@@ -98,7 +40,7 @@ export const useDashboardData = (): DashboardHookReturn => {
   }, []);
 
   // Chart data
-  const lineChartData: LineChartData = {
+  const lineChartData = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
     datasets: [
       {
@@ -112,10 +54,11 @@ export const useDashboardData = (): DashboardHookReturn => {
     ],
   };
 
-  const pieChartData: PieChartData = {
+  const pieChartData = {
     labels: ["Qualified", "Pending Review", "Not Qualified"],
     datasets: [
       {
+        // No need for label in pie chart, it's optional now
         data: [45, 30, 25],
         backgroundColor: ["#10B981", "#F59E0B", "#EF4444"],
         borderWidth: 1,
@@ -124,7 +67,7 @@ export const useDashboardData = (): DashboardHookReturn => {
     ],
   };
 
-  const barChartData: BarChartData = {
+  const barChartData = {
     labels: ["Engineering", "Marketing", "Design", "Finance", "HR"],
     datasets: [
       {
