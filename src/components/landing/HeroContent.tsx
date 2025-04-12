@@ -15,7 +15,7 @@ export const HeroContent = () => {
         Gilz AI: Resume Screening
       </h1>
       
-      <p className="text-sm md:text-base text-black/80 dark:text-white/80 max-w-md">
+      <p className="text-sm md:text-base text-black/80 dark:text-white/80 max-w-md line-clamp-2">
         Advanced AI-powered resume screening tool to help you find the 
         perfect candidates faster and with better accuracy.
       </p>
@@ -26,7 +26,7 @@ export const HeroContent = () => {
           <CheckCircle className="w-4 h-4 text-[#7efb98] mt-1" />
           <div>
             <h3 className="text-base font-medium text-black dark:text-white">AI Resume Analysis</h3>
-            <p className="text-sm text-black/70 dark:text-white/70">Automatically extract key information and evaluate candidate resumes.</p>
+            <p className="text-xs text-black/70 dark:text-white/70 line-clamp-1">Automatically extract key information and evaluate candidate resumes.</p>
           </div>
         </div>
         
@@ -34,7 +34,7 @@ export const HeroContent = () => {
           <CheckCircle className="w-4 h-4 text-[#7efb98] mt-1" />
           <div>
             <h3 className="text-base font-medium text-black dark:text-white">Candidate Comparison</h3>
-            <p className="text-sm text-black/70 dark:text-white/70">Compare multiple candidates with side-by-side analysis and skill matching.</p>
+            <p className="text-xs text-black/70 dark:text-white/70 line-clamp-1">Compare multiple candidates with side-by-side analysis and skill matching.</p>
           </div>
         </div>
         
@@ -42,7 +42,7 @@ export const HeroContent = () => {
           <CheckCircle className="w-4 h-4 text-[#7efb98] mt-1" />
           <div>
             <h3 className="text-base font-medium text-black dark:text-white">AI-Powered Assistant</h3>
-            <p className="text-sm text-black/70 dark:text-white/70">Get insights and recommendations from our intelligent chat assistant.</p>
+            <p className="text-xs text-black/70 dark:text-white/70 line-clamp-1">Get insights and recommendations from our intelligent chat assistant.</p>
           </div>
         </div>
       </div>

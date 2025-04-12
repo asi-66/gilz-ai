@@ -3,10 +3,10 @@
 
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Switch } from "@/components/ui/switch";
+import { Toggle } from "@/components/ui/toggle";
 
 export function ThemeToggle() {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
     const isDarkMode = document.documentElement.classList.contains("dark");
@@ -27,10 +27,19 @@ export function ThemeToggle() {
   };
 
   return (
-    <div className="flex items-center space-x-2">
-      <Sun size={18} className="text-black/70 dark:text-white/70" />
-      <Switch checked={isDark} onCheckedChange={toggleTheme} />
-      <Moon size={18} className="text-black/70 dark:text-white/70" />
+    <div className="flex items-center">
+      <Toggle 
+        pressed={isDark} 
+        onPressedChange={toggleTheme}
+        className="rounded-full p-2 hover:bg-black/10 dark:hover:bg-white/10"
+        aria-label="Toggle theme"
+      >
+        {isDark ? (
+          <Moon size={18} className="text-white/90" />
+        ) : (
+          <Sun size={18} className="text-black/90" />
+        )}
+      </Toggle>
     </div>
   );
 }

@@ -33,7 +33,7 @@ export const Navbar = ({ showLoginForm, handleLoginClick, handleSignupClick }: N
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <NavigationMenu>
-              <NavigationMenuList>
+              <NavigationMenuList className="space-x-6">
                 <NavigationMenuItem>
                   <NavigationMenuLink className="text-black/80 dark:text-white/80 hover:text-black dark:hover:text-white hover:bg-transparent focus:bg-transparent transition-colors" href="#">
                     About
@@ -48,8 +48,8 @@ export const Navbar = ({ showLoginForm, handleLoginClick, handleSignupClick }: N
             </NavigationMenu>
             <ThemeToggle />
             <Button 
-              variant="default" 
-              className="bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 ml-4"
+              variant="outline" 
+              className="border-[#7efb98] text-black dark:text-white dark:hover:bg-[#7efb98]/10 hover:bg-[#7efb98]/10 transition-all"
               onClick={() => {
                 if (showLoginForm) {
                   handleSignupClick();
@@ -83,8 +83,8 @@ export const Navbar = ({ showLoginForm, handleLoginClick, handleSignupClick }: N
               Help/Support
             </Link>
             <Button 
-              variant="default" 
-              className="w-full bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 mt-4"
+              variant="outline" 
+              className="w-full border-[#7efb98] text-black dark:text-white dark:hover:bg-[#7efb98]/10 hover:bg-[#7efb98]/10 transition-all mt-4"
               onClick={() => {
                 toggleMenu();
                 if (showLoginForm) {
