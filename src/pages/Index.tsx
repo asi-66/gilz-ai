@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { ChevronRight, MenuIcon, X } from "lucide-react";
+import { BackgroundPaths } from "@/components/ui/background-paths";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -85,35 +86,9 @@ const Index = () => {
       )}
 
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="py-16 md:py-24 px-6 md:px-12">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="order-2 lg:order-1">
-              <h1 className="text-4xl md:text-5xl font-bold text-[#1F2937] leading-tight">
-                Gilz AI: Resume Screening for TNP Consultants HR Team
-              </h1>
-              <p className="text-lg md:text-xl text-[#4B5563] mt-6">
-                Streamline candidate evaluation with our AI-driven resume analysis system.
-              </p>
-              <div className="mt-10 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                <Button 
-                  size="lg" 
-                  className="bg-[#333333] hover:bg-[#1F2937] text-white w-full sm:w-auto"
-                  onClick={() => navigate("/login")}
-                >
-                  Log In
-                  <ChevronRight className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            <div className="order-1 lg:order-2 flex justify-center">
-              <img 
-                src="/placeholder.svg" 
-                alt="HR professional reviewing resumes with AI assistance" 
-                className="w-full max-w-md rounded-lg shadow-xl animate-fade-in" 
-              />
-            </div>
-          </div>
+        {/* Hero Section - Updated to use BackgroundPaths */}
+        <section className="py-0 md:py-0">
+          <BackgroundPaths title="Gilz AI: Resume Screening" />
         </section>
 
         {/* Features Section */}
