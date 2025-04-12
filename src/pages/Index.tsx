@@ -9,13 +9,36 @@ import { motion } from "framer-motion";
 import { AuroraBackground } from "@/components/ui/aurora-background";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const Index = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [showLoginForm, setShowLoginForm] = React.useState(false);
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [rememberMe, setRememberMe] = React.useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleLoginClick = () => {
+    setShowLoginForm(true);
+  };
+
+  const handleSignupClick = () => {
+    setShowLoginForm(false);
+  };
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    navigate("/dashboard");
+  };
+
+  const handleSignup = (e: React.FormEvent) => {
+    e.preventDefault();
+    navigate("/dashboard");
   };
 
   return (
@@ -51,9 +74,15 @@ const Index = () => {
               <Button 
                 variant="default" 
                 className="bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 ml-4"
-                onClick={() => navigate("/login")}
+                onClick={() => {
+                  if (showLoginForm) {
+                    handleSignupClick();
+                  } else {
+                    handleLoginClick();
+                  }
+                }}
               >
-                Log In
+                {showLoginForm ? "Sign Up" : "Log In"}
               </Button>
             </div>
 
@@ -82,10 +111,14 @@ const Index = () => {
                 className="w-full bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 mt-4"
                 onClick={() => {
                   toggleMenu();
-                  navigate("/login");
+                  if (showLoginForm) {
+                    handleSignupClick();
+                  } else {
+                    handleLoginClick();
+                  }
                 }}
               >
-                Log In
+                {showLoginForm ? "Sign Up" : "Log In"}
               </Button>
             </nav>
           </div>
@@ -105,8 +138,9 @@ const Index = () => {
                 Gilz AI: Resume Screening
               </h1>
               
-              <p className="text-base text-black/80 dark:text-white/80 max-w-xl">
-                Advanced AI-powered resume screening tool to help you find the perfect candidates faster and with better accuracy.
+              <p className="text-sm md:text-base text-black/80 dark:text-white/80 max-w-md">
+                Advanced AI-powered resume screening tool to help you find the 
+                perfect candidates faster and with better accuracy.
               </p>
               
               {/* Feature list */}
@@ -138,60 +172,135 @@ const Index = () => {
             </motion.div>
           </div>
           
-          {/* Right Column - Sign Up Form */}
+          {/* Right Column - Sign Up/Login Form */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
-            className="w-full md:w-1/2 max-w-md"
+            className="w-full md:w-1/2 max-w-sm"
           >
             <div className="bg-white/10 dark:bg-black/10 backdrop-blur-md border border-black/5 dark:border-white/5 rounded-xl p-6 shadow-sm">
-              <h2 className="text-xl font-medium text-black dark:text-white mb-4">Get Started</h2>
-              
-              <form className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" placeholder="Enter your name" />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="Enter your email" />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="company">Company</Label>
-                  <Input id="company" placeholder="Enter your company name" />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input id="password" type="password" placeholder="Create a password" />
-                </div>
-                
-                <Button 
-                  className="w-full bg-[#7efb98] text-black hover:bg-[#7efb98]/90"
-                  onClick={() => navigate("/dashboard")}
-                >
-                  Create Free Account
-                </Button>
-                
-                <p className="text-center text-xs text-black/60 dark:text-white/60">
-                  Already have an account? {" "}
-                  <Link to="/login" className="text-black dark:text-white underline">
-                    Log in
-                  </Link>
-                </p>
-              </form>
+              {showLoginForm ? (
+                // Login Form
+                <>
+                  <h2 className="text-xl font-medium text-black dark:text-white mb-4">Log In</h2>
+                  
+                  <form className="space-y-4" onSubmit={handleLogin}>
+                    <div className="space-y-2">
+                      <Label htmlFor="login-email">Email</Label>
+                      <Input 
+                        id="login-email" 
+                        type="email" 
+                        placeholder="Enter your email" 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="login-password">Password</Label>
+                        <Link to="/forgot-password" className="text-xs font-medium text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white">
+                          Forgot password?
+                        </Link>
+                      </div>
+                      <Input 
+                        id="login-password" 
+                        type="password" 
+                        placeholder="Enter your password" 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="remember" 
+                        checked={rememberMe} 
+                        onCheckedChange={(checked) => setRememberMe(checked as boolean)} 
+                      />
+                      <Label
+                        htmlFor="remember"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Remember me
+                      </Label>
+                    </div>
+                    
+                    <Button 
+                      className="w-full bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90"
+                      type="submit"
+                    >
+                      Sign In
+                    </Button>
+                    
+                    <p className="text-center text-xs text-black/60 dark:text-white/60">
+                      Don't have an account? {" "}
+                      <button
+                        type="button"
+                        className="text-black dark:text-white underline"
+                        onClick={handleSignupClick}
+                      >
+                        Sign up
+                      </button>
+                    </p>
+                  </form>
+                </>
+              ) : (
+                // Sign Up Form
+                <>
+                  <h2 className="text-xl font-medium text-black dark:text-white mb-4">Get Started</h2>
+                  
+                  <form className="space-y-4" onSubmit={handleSignup}>
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Full Name</Label>
+                      <Input id="name" placeholder="Enter your name" />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input id="email" type="email" placeholder="Enter your email" />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="company">Company</Label>
+                      <Input id="company" placeholder="Enter your company name" />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="password">Password</Label>
+                      <Input id="password" type="password" placeholder="Create a password" />
+                    </div>
+                    
+                    <Button 
+                      className="w-full bg-[#7efb98] text-black hover:bg-[#7efb98]/90"
+                      type="submit"
+                    >
+                      Create Free Account
+                    </Button>
+                    
+                    <p className="text-center text-xs text-black/60 dark:text-white/60">
+                      Already have an account? {" "}
+                      <button
+                        type="button"
+                        className="text-black dark:text-white underline"
+                        onClick={handleLoginClick}
+                      >
+                        Log in
+                      </button>
+                    </p>
+                  </form>
+                </>
+              )}
             </div>
           </motion.div>
         </div>
 
-        {/* TNP Consultants Band */}
-        <div className="w-full bg-black/5 dark:bg-white/5 py-2 text-center">
-          <p className="text-xs text-black/60 dark:text-white/60">
-            © 2024 TNP Consultants. All Rights Reserved.
-          </p>
+        {/* TNP Attribution */}
+        <div className="absolute bottom-4 left-6 text-xs text-black/60 dark:text-white/60">
+          © 2024 TNP Consultants
         </div>
       </div>
     </AuroraBackground>
