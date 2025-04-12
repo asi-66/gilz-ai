@@ -8,17 +8,17 @@ import { AuthFormContainer } from "@/components/landing/AuthFormContainer";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [showLoginForm, setShowLoginForm] = React.useState(false);
+  const [formType, setFormType] = React.useState<"login" | "signup" | "forgotPassword">("login");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [rememberMe, setRememberMe] = React.useState(false);
 
   const handleLoginClick = () => {
-    setShowLoginForm(true);
+    setFormType("login");
   };
 
   const handleSignupClick = () => {
-    setShowLoginForm(false);
+    setFormType("signup");
   };
 
   const handleLogin = (e: React.FormEvent) => {
@@ -35,7 +35,7 @@ const Index = () => {
     <AuroraBackground className="overflow-hidden">
       <div className="min-h-screen flex flex-col relative w-full">
         <Navbar 
-          showLoginForm={showLoginForm}
+          showLoginForm={formType === "login"}
           handleLoginClick={handleLoginClick}
           handleSignupClick={handleSignupClick}
         />
@@ -47,9 +47,9 @@ const Index = () => {
             <HeroContent />
           </div>
           
-          {/* Right Column - Sign Up/Login Form */}
+          {/* Right Column - Sign Up/Login/Forgot Password Form */}
           <AuthFormContainer 
-            showLoginForm={showLoginForm}
+            formType={formType}
             email={email}
             setEmail={setEmail}
             password={password}
@@ -58,8 +58,7 @@ const Index = () => {
             setRememberMe={setRememberMe}
             handleLogin={handleLogin}
             handleSignup={handleSignup}
-            handleLoginClick={handleLoginClick}
-            handleSignupClick={handleSignupClick}
+            setFormType={setFormType}
           />
         </div>
 

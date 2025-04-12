@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Link } from "react-router-dom";
 
 interface LoginFormProps {
   email: string;
@@ -15,6 +14,7 @@ interface LoginFormProps {
   setRememberMe: (remember: boolean) => void;
   onSubmit: (e: React.FormEvent) => void;
   onSignupClick: () => void;
+  onForgotPasswordClick: () => void;
 }
 
 export const LoginForm = ({
@@ -25,7 +25,8 @@ export const LoginForm = ({
   rememberMe,
   setRememberMe,
   onSubmit,
-  onSignupClick
+  onSignupClick,
+  onForgotPasswordClick
 }: LoginFormProps) => {
   return (
     <>
@@ -47,9 +48,13 @@ export const LoginForm = ({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="login-password">Password</Label>
-            <Link to="/forgot-password" className="text-xs font-medium text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white">
+            <button 
+              type="button" 
+              className="text-xs font-medium text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white"
+              onClick={onForgotPasswordClick}
+            >
               Forgot password?
-            </Link>
+            </button>
           </div>
           <Input 
             id="login-password" 
