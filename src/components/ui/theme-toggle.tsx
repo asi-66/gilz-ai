@@ -31,15 +31,16 @@ export function ThemeToggle() {
       <Toggle 
         pressed={isDark} 
         onPressedChange={toggleTheme}
-        className="rounded-full p-2 hover:bg-black/10 dark:hover:bg-white/10"
+        className="rounded-full p-2 border border-black/20 dark:border-white/20 bg-transparent hover:bg-transparent"
         aria-label="Toggle theme"
       >
         {isDark ? (
-          <Moon size={18} className="text-white/90" />
+          <Moon size={18} className="text-black/70 dark:text-white/70" />
         ) : (
-          <Sun size={18} className="text-black/90" />
+          <Sun size={18} className="text-black/70 dark:text-white/70" />
         )}
       </Toggle>
     </div>
   );
 }
+

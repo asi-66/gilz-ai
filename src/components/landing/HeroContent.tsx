@@ -9,7 +9,7 @@ export const HeroContent = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
-      className="space-y-4"
+      className="space-y-4 text-left" // Added text-left for justified content
     >
       {/* Logo in circular container with rise-up animation */}
       <motion.div 
@@ -27,11 +27,11 @@ export const HeroContent = () => {
         </div>
       </motion.div>
       
-      <h1 className="text-3xl md:text-4xl lg:text-5xl font-normal text-black dark:text-white">
+      <h1 className="text-3xl md:text-4xl lg:text-5xl font-normal text-black dark:text-white text-left">
         Gilz AI: Resume Screening
       </h1>
       
-      <p className="text-sm md:text-base text-black/80 dark:text-white/80 max-w-md">
+      <p className="text-sm md:text-base text-black/80 dark:text-white/80 max-w-md text-left">
         Advanced AI-powered resume screening tool to help you find the 
         perfect candidates faster and with better accuracy.
       </p>
@@ -71,3 +71,4 @@ export const HeroContent = () => {
     </motion.div>
   );
 };
+
