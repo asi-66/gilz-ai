@@ -1,6 +1,7 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Briefcase, FileText, Users, CalendarCheck, ArrowUp, ArrowDown, BarChart3, FileBarChart, PieChart } from "lucide-react";
+import { Briefcase, FileText, Users, CalendarCheck, ArrowUp, ArrowDown } from "lucide-react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { Chart } from "@/components/ui/Chart";
 

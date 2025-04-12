@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 
@@ -352,6 +353,92 @@ function getPayloadConfigFromPayload(
     ? config[configLabelKey]
     : config[key as keyof typeof config]
 }
+
+// Add a new Chart component that can be used directly
+export const Chart = ({ data, type }: { data: any, type: 'line' | 'bar' | 'pie' }) => {
+  const defaultConfig: ChartConfig = {
+    line: { color: "#10B981" },
+    bar: { color: "#7efb98" },
+    qualified: { color: "#10B981" },
+    pending: { color: "#F59E0B" },
+    notQualified: { color: "#EF4444" }
+  };
+
+  switch (type) {
+    case 'line':
+      return (
+        <RechartsPrimitive.ResponsiveContainer width="100%" height={300}>
+          <RechartsPrimitive.LineChart data={data}>
+            <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
+            <RechartsPrimitive.XAxis dataKey="name" />
+            <RechartsPrimitive.YAxis />
+            <RechartsPrimitive.Tooltip />
+            <RechartsPrimitive.Legend />
+            {data.datasets.map((dataset: any, index: number) => (
+              <RechartsPrimitive.Line 
+                key={index}
+                type="monotone" 
+                dataKey="pv" 
+                data={data.labels.map((label: string, i: number) => ({
+                  name: label,
+                  pv: dataset.data[i],
+                }))}
+                name={dataset.label}
+                stroke={dataset.borderColor || defaultConfig.line.color}
+                fill={dataset.backgroundColor}
+                activeDot={{ r: 8 }}
+              />
+            ))}
+          </RechartsPrimitive.LineChart>
+        </RechartsPrimitive.ResponsiveContainer>
+      );
+    case 'bar':
+      return (
+        <RechartsPrimitive.ResponsiveContainer width="100%" height={300}>
+          <RechartsPrimitive.BarChart data={data.labels.map((label: string, i: number) => ({
+            name: label,
+            value: data.datasets[0].data[i],
+          }))}>
+            <RechartsPrimitive.CartesianGrid strokeDasharray="3 3" />
+            <RechartsPrimitive.XAxis dataKey="name" />
+            <RechartsPrimitive.YAxis />
+            <RechartsPrimitive.Tooltip />
+            <RechartsPrimitive.Legend />
+            <RechartsPrimitive.Bar 
+              dataKey="value" 
+              name={data.datasets[0].label}
+              fill={data.datasets[0].backgroundColor || defaultConfig.bar.color} 
+            />
+          </RechartsPrimitive.BarChart>
+        </RechartsPrimitive.ResponsiveContainer>
+      );
+    case 'pie':
+      return (
+        <RechartsPrimitive.ResponsiveContainer width="100%" height={300}>
+          <RechartsPrimitive.PieChart>
+            <RechartsPrimitive.Pie
+              data={data.labels.map((label: string, i: number) => ({
+                name: label,
+                value: data.datasets[0].data[i],
+                fill: data.datasets[0].backgroundColor[i]
+              }))}
+              cx="50%"
+              cy="50%"
+              innerRadius={0}
+              outerRadius={80}
+              fill="#8884d8"
+              dataKey="value"
+              label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
+            />
+            <RechartsPrimitive.Tooltip />
+            <RechartsPrimitive.Legend />
+          </RechartsPrimitive.PieChart>
+        </RechartsPrimitive.ResponsiveContainer>
+      );
+    default:
+      return null;
+  }
+};
 
 export {
   ChartContainer,
