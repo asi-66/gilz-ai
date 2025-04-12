@@ -43,7 +43,7 @@ const Index = () => {
         {/* Hero Section with Two Columns */}
         <div className="flex-1 flex flex-col md:flex-row items-center justify-center px-6 md:px-16 lg:px-24 gap-8 lg:gap-16 py-8 h-[calc(100vh-76px)]">
           {/* Left Column - Content */}
-          <div className="w-full md:w-1/2 flex flex-col space-y-6 mb-8 md:mb-0">
+          <div className="w-full md:w-1/2 flex flex-col justify-center space-y-6 mb-8 md:mb-0">
             <HeroContent />
           </div>
           

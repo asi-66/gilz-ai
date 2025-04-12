@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu";
 import { Link } from "react-router-dom";
@@ -30,7 +29,6 @@ export const Navbar = ({ showLoginForm, handleLoginClick, handleSignupClick }: N
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <NavigationMenu>
               <NavigationMenuList className="space-x-6">
@@ -62,7 +60,6 @@ export const Navbar = ({ showLoginForm, handleLoginClick, handleSignupClick }: N
             </Button>
           </div>
 
-          {/* Mobile menu button */}
           <div className="md:hidden flex items-center gap-4">
             <ThemeToggle />
             <Button variant="ghost" size="icon" onClick={toggleMenu} className="text-black dark:text-white">
@@ -72,7 +69,6 @@ export const Navbar = ({ showLoginForm, handleLoginClick, handleSignupClick }: N
         </div>
       </header>
 
-      {/* Mobile Navigation Menu */}
       {isMenuOpen && (
         <div className="fixed inset-0 backdrop-blur-md z-50 pt-24 px-6 md:hidden">
           <nav className="flex flex-col space-y-6">
@@ -102,4 +98,3 @@ export const Navbar = ({ showLoginForm, handleLoginClick, handleSignupClick }: N
     </>
   );
 };
-
