@@ -9,7 +9,7 @@ export const HeroContent = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
-      className="space-y-4 text-left" // Added text-left for justified content
+      className="space-y-4 text-left self-start" // Added self-start to align to the top
     >
       {/* Logo in circular container with rise-up animation */}
       <motion.div 
