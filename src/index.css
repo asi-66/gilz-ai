@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Parkinsans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hubot+Sans:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -122,4 +122,14 @@ html, body, #root {
 #root {
   display: flex;
   flex-direction: column;
+}
+
+/* Enhanced aurora animation */
+@keyframes aurora {
+  from {
+    backgroundPosition: '50% 50%, 50% 50%'
+  }
+  to {
+    backgroundPosition: '350% 50%, 350% 50%'
+  }
 }
