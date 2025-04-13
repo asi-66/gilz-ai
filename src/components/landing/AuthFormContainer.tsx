@@ -16,6 +16,7 @@ interface AuthFormContainerProps {
   handleLogin: (e: React.FormEvent) => void;
   handleSignup: (e: React.FormEvent) => void;
   setFormType: (formType: "login" | "signup" | "forgotPassword") => void;
+  loading?: boolean;
 }
 
 export const AuthFormContainer = ({
@@ -28,7 +29,8 @@ export const AuthFormContainer = ({
   setRememberMe,
   handleLogin,
   handleSignup,
-  setFormType
+  setFormType,
+  loading = false
 }: AuthFormContainerProps) => {
   const handleLoginClick = () => setFormType("login");
   const handleSignupClick = () => setFormType("signup");
@@ -54,6 +56,7 @@ export const AuthFormContainer = ({
             onSubmit={handleLogin}
             onSignupClick={handleSignupClick}
             onForgotPasswordClick={handleForgotPasswordClick}
+            loading={loading}
           />
         )}
         
@@ -61,6 +64,7 @@ export const AuthFormContainer = ({
           <SignupForm
             onSubmit={handleSignup}
             onLoginClick={handleLoginClick}
+            loading={loading}
           />
         )}
         

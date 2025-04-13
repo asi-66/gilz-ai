@@ -5,13 +5,27 @@ import { Navbar } from "@/components/landing/Navbar";
 import { HeroContent } from "@/components/landing/HeroContent";
 import { AuthFormContainer } from "@/components/landing/AuthFormContainer";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 const Index = () => {
   const [formType, setFormType] = React.useState<"login" | "signup" | "forgotPassword">("login");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [rememberMe, setRememberMe] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
+  const { session } = useAuth();
+
+  // Redirect to dashboard if already authenticated
+  React.useEffect(() => {
+    if (session) {
+      navigate("/dashboard");
+    }
+  }, [session, navigate]);
 
   const handleLoginClick = () => {
     setFormType("login");
@@ -21,16 +35,76 @@ const Index = () => {
     setFormType("signup");
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Authentication will be implemented later
-    console.log("Login with:", { email, password, rememberMe });
+    setLoading(true);
+    
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      
+      // Successful login - navigate will happen automatically due to session change
+      toast({
+        title: "Success",
+        description: "You have been logged in successfully.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to log in. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Authentication will be implemented later
-    console.log("Signup form submitted");
+    setLoading(true);
+    
+    // Get form data from the event
+    const formData = new FormData(e.target as HTMLFormElement);
+    const fullName = formData.get('name') as string;
+    const signupEmail = formData.get('email') as string;
+    const company = formData.get('company') as string;
+    const signupPassword = formData.get('password') as string;
+    
+    try {
+      // Sign up with Supabase
+      const { error } = await supabase.auth.signUp({
+        email: signupEmail,
+        password: signupPassword,
+        options: {
+          data: {
+            full_name: fullName,
+            company: company,
+          },
+        },
+      });
+      
+      if (error) throw error;
+      
+      // Successful signup
+      toast({
+        title: "Account created",
+        description: "Your account has been created successfully. You will be redirected to the dashboard.",
+      });
+      
+      // Note: Redirection will happen automatically when session changes due to useEffect above
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create account. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,6 +137,7 @@ const Index = () => {
             handleLogin={handleLogin}
             handleSignup={handleSignup}
             setFormType={setFormType}
+            loading={loading}
           />
         </div>
 

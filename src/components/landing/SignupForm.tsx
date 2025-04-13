@@ -3,13 +3,15 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 interface SignupFormProps {
   onSubmit: (e: React.FormEvent) => void;
   onLoginClick: () => void;
+  loading?: boolean;
 }
 
-export const SignupForm = ({ onSubmit, onLoginClick }: SignupFormProps) => {
+export const SignupForm = ({ onSubmit, onLoginClick, loading = false }: SignupFormProps) => {
   return (
     <>
       <h2 className="text-xl font-medium text-black dark:text-white mb-4">Get Started</h2>
@@ -17,29 +19,37 @@ export const SignupForm = ({ onSubmit, onLoginClick }: SignupFormProps) => {
       <form className="space-y-4" onSubmit={onSubmit}>
         <div className="space-y-2">
           <Label htmlFor="name">Full Name</Label>
-          <Input id="name" placeholder="Enter your name" />
+          <Input id="name" name="name" placeholder="Enter your name" required />
         </div>
         
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="Enter your email" />
+          <Input id="email" name="email" type="email" placeholder="Enter your email" required />
         </div>
         
         <div className="space-y-2">
           <Label htmlFor="company">Company</Label>
-          <Input id="company" placeholder="Enter your company name" />
+          <Input id="company" name="company" placeholder="Enter your company name" />
         </div>
         
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" placeholder="Create a password" />
+          <Input id="password" name="password" type="password" placeholder="Create a password" required minLength={6} />
         </div>
         
         <Button 
           className="w-full bg-[#7efb98] text-black hover:bg-[#7efb98]/90"
           type="submit"
+          disabled={loading}
         >
-          Create Free Account
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Creating Account...
+            </>
+          ) : (
+            "Create Free Account"
+          )}
         </Button>
         
         <p className="text-center text-xs text-black/60 dark:text-white/60">

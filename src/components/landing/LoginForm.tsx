@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Loader2 } from "lucide-react";
 
 interface LoginFormProps {
   email: string;
@@ -15,6 +16,7 @@ interface LoginFormProps {
   onSubmit: (e: React.FormEvent) => void;
   onSignupClick: () => void;
   onForgotPasswordClick: () => void;
+  loading?: boolean;
 }
 
 export const LoginForm = ({
@@ -26,42 +28,43 @@ export const LoginForm = ({
   setRememberMe,
   onSubmit,
   onSignupClick,
-  onForgotPasswordClick
+  onForgotPasswordClick,
+  loading = false
 }: LoginFormProps) => {
   return (
     <>
-      <h2 className="text-xl font-medium text-black dark:text-white mb-4">Log In</h2>
+      <h2 className="text-xl font-medium text-black dark:text-white mb-4">Welcome back</h2>
       
       <form className="space-y-4" onSubmit={onSubmit}>
         <div className="space-y-2">
-          <Label htmlFor="login-email">Email</Label>
+          <Label htmlFor="email">Email</Label>
           <Input 
-            id="login-email" 
+            id="email" 
             type="email" 
-            placeholder="Enter your email" 
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+            placeholder="Enter your email"
+            required 
           />
         </div>
         
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="login-password">Password</Label>
+          <div className="flex justify-between items-center">
+            <Label htmlFor="password">Password</Label>
             <button 
-              type="button" 
-              className="text-xs font-medium text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white"
+              type="button"
+              className="text-xs text-black/60 dark:text-white/60 hover:text-black hover:dark:text-white"
               onClick={onForgotPasswordClick}
             >
               Forgot password?
             </button>
           </div>
           <Input 
-            id="login-password" 
+            id="password" 
             type="password" 
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
             placeholder="Enter your password" 
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
@@ -72,19 +75,27 @@ export const LoginForm = ({
             checked={rememberMe} 
             onCheckedChange={(checked) => setRememberMe(checked as boolean)} 
           />
-          <Label
+          <label
             htmlFor="remember"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="text-sm text-black/70 dark:text-white/70 cursor-pointer"
           >
             Remember me
-          </Label>
+          </label>
         </div>
         
         <Button 
-          className="w-full bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90"
+          className="w-full bg-[#7efb98] text-black hover:bg-[#7efb98]/90"
           type="submit"
+          disabled={loading}
         >
-          Sign In
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Signing in...
+            </>
+          ) : (
+            "Sign in"
+          )}
         </Button>
         
         <p className="text-center text-xs text-black/60 dark:text-white/60">
