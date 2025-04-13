@@ -9,8 +9,10 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 
 // Predefined credentials for this internal tool
-const ADMIN_USERNAME = "Giller@tnp.com";
-const ADMIN_PASSWORD = "Gilz123";
+const ADMIN_CREDENTIALS = [
+  { username: "Giller@tnp", password: "Gilz123" },
+  { username: "Nivu@tnp", password: "Gilz123" }
+];
 
 const Index = () => {
   const [formType, setFormType] = React.useState<"login" | "signup" | "forgotPassword">("login");
@@ -44,7 +46,11 @@ const Index = () => {
     
     try {
       // Validate against predefined credentials
-      if (email === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+      const isValidCredentials = ADMIN_CREDENTIALS.some(
+        cred => email === cred.username && password === cred.password
+      );
+      
+      if (isValidCredentials) {
         // Set authentication in localStorage for persistence
         localStorage.setItem("isAuthenticated", "true");
         setIsAuthenticated(true);
@@ -87,7 +93,7 @@ const Index = () => {
           </div>
           
           {/* Right Column - Login Form Only */}
-          <div className="w-full md:w-1/2 max-w-sm">
+          <div className="w-full md:w-1/2 flex justify-center">
             <AuthFormContainer 
               formType={formType}
               email={email}

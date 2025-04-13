@@ -42,23 +42,26 @@ export const AuthFormContainer = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3, duration: 0.8 }}
-      className="w-full md:w-1/2 max-w-sm"
+      className="w-full max-w-md"
     >
-      <div className="bg-white/10 dark:bg-black/10 backdrop-blur-md border border-black/5 dark:border-white/5 rounded-xl p-6 shadow-sm">
+      <div className="bg-white/10 dark:bg-black/10 backdrop-blur-md border border-black/5 dark:border-white/5 rounded-xl p-8 shadow-sm">
         {formType === "login" && (
-          <LoginForm
-            email={email}
-            setEmail={setEmail}
-            password={password}
-            setPassword={setPassword}
-            rememberMe={rememberMe}
-            setRememberMe={setRememberMe}
-            onSubmit={handleLogin}
-            onSignupClick={handleSignupClick}
-            onForgotPasswordClick={handleForgotPasswordClick}
-            loading={loading}
-            isInternalTool={true}
-          />
+          <>
+            <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800 dark:text-white">Sign In</h2>
+            <LoginForm
+              email={email}
+              setEmail={setEmail}
+              password={password}
+              setPassword={setPassword}
+              rememberMe={rememberMe}
+              setRememberMe={setRememberMe}
+              onSubmit={handleLogin}
+              onSignupClick={handleSignupClick}
+              onForgotPasswordClick={handleForgotPasswordClick}
+              loading={loading}
+              isInternalTool={true}
+            />
+          </>
         )}
         
         {formType === "signup" && (
