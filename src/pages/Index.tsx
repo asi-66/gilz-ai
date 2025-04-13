@@ -98,18 +98,24 @@ const Index = () => {
       // Update email state for login if needed
       setEmail(signupEmail);
       
-      // Successful signup
-      toast({
-        title: "Account created",
-        description: "Your account has been created successfully. You will be redirected to the dashboard.",
-      });
-      
-      // If the user was already signed in during signup (common behavior in Supabase)
-      if (data.session) {
-        console.log("User session created during signup, redirecting to dashboard");
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 500);
+      // Check if email confirmation is required
+      if (!data.session) {
+        // Email confirmation required
+        toast({
+          title: "Account created",
+          description: "Please check your email to confirm your account before logging in.",
+        });
+        // Switch to login form so they can login after confirming
+        setFormType("login");
+      } else {
+        // No email confirmation required, user is logged in
+        toast({
+          title: "Account created",
+          description: "Your account has been created successfully. You will be redirected to the dashboard.",
+        });
+        
+        // Force navigation to dashboard
+        navigate("/dashboard");
       }
     } catch (error: any) {
       console.error("Signup error:", error);

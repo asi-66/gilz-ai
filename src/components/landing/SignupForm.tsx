@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,13 @@ export const SignupForm = ({
     password: ""
   });
 
+  // Sync the form email state when the parent email prop changes
+  useEffect(() => {
+    if (email !== undefined && email !== formData.email) {
+      setFormData(prev => ({ ...prev, email }));
+    }
+  }, [email]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -51,6 +58,7 @@ export const SignupForm = ({
             required 
             value={formData.name}
             onChange={handleChange}
+            disabled={loading}
           />
         </div>
         
@@ -64,6 +72,7 @@ export const SignupForm = ({
             required 
             value={formData.email}
             onChange={handleChange}
+            disabled={loading}
           />
         </div>
         
@@ -75,6 +84,7 @@ export const SignupForm = ({
             placeholder="Enter your company name" 
             value={formData.company}
             onChange={handleChange}
+            disabled={loading}
           />
         </div>
         
@@ -89,6 +99,7 @@ export const SignupForm = ({
             minLength={6} 
             value={formData.password}
             onChange={handleChange}
+            disabled={loading}
           />
         </div>
         
@@ -113,6 +124,7 @@ export const SignupForm = ({
             type="button"
             className="text-black dark:text-white underline"
             onClick={onLoginClick}
+            disabled={loading}
           >
             Log in
           </button>
