@@ -3,7 +3,13 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
-export const DashboardHeader = () => {
+export const DashboardHeader = ({ 
+  mobileMenuOpen, 
+  setMobileMenuOpen 
+}: { 
+  mobileMenuOpen?: boolean, 
+  setMobileMenuOpen?: (open: boolean) => void 
+}) => {
   const navigate = useNavigate();
   
   const handleLogout = () => {
@@ -18,3 +24,5 @@ export const DashboardHeader = () => {
     </header>
   );
 };
+
+export default DashboardHeader;
