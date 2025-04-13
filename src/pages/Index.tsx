@@ -75,6 +75,8 @@ const Index = () => {
     const company = formData.get('company') as string;
     const signupPassword = formData.get('password') as string;
     
+    console.log("Signup details:", { fullName, signupEmail, company });
+    
     try {
       console.log("Starting signup process");
       // Sign up with Supabase
@@ -93,20 +95,21 @@ const Index = () => {
       
       console.log("Signup successful:", data);
       
+      // Update email state for login if needed
+      setEmail(signupEmail);
+      
       // Successful signup
       toast({
         title: "Account created",
         description: "Your account has been created successfully. You will be redirected to the dashboard.",
       });
       
-      // Update email state for login if needed
-      setEmail(signupEmail);
-      
-      // Note: Redirection will happen automatically when session changes due to useEffect above
       // If the user was already signed in during signup (common behavior in Supabase)
       if (data.session) {
         console.log("User session created during signup, redirecting to dashboard");
-        navigate("/dashboard");
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 500);
       }
     } catch (error: any) {
       console.error("Signup error:", error);

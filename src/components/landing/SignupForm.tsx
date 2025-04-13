@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,23 @@ export const SignupForm = ({
   email,
   setEmail
 }: SignupFormProps) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: email || "",
+    company: "",
+    password: ""
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Update parent email state if needed
+    if (name === 'email' && setEmail) {
+      setEmail(value);
+    }
+  };
+
   return (
     <>
       <h2 className="text-xl font-medium text-black dark:text-white mb-4">Get Started</h2>
@@ -27,7 +44,14 @@ export const SignupForm = ({
       <form className="space-y-4" onSubmit={onSubmit}>
         <div className="space-y-2">
           <Label htmlFor="name">Full Name</Label>
-          <Input id="name" name="name" placeholder="Enter your name" required />
+          <Input 
+            id="name" 
+            name="name" 
+            placeholder="Enter your name" 
+            required 
+            value={formData.name}
+            onChange={handleChange}
+          />
         </div>
         
         <div className="space-y-2">
@@ -38,19 +62,34 @@ export const SignupForm = ({
             type="email" 
             placeholder="Enter your email" 
             required 
-            value={email}
-            onChange={(e) => setEmail && setEmail(e.target.value)}
+            value={formData.email}
+            onChange={handleChange}
           />
         </div>
         
         <div className="space-y-2">
           <Label htmlFor="company">Company</Label>
-          <Input id="company" name="company" placeholder="Enter your company name" />
+          <Input 
+            id="company" 
+            name="company" 
+            placeholder="Enter your company name" 
+            value={formData.company}
+            onChange={handleChange}
+          />
         </div>
         
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" name="password" type="password" placeholder="Create a password" required minLength={6} />
+          <Input 
+            id="password" 
+            name="password" 
+            type="password" 
+            placeholder="Create a password" 
+            required 
+            minLength={6} 
+            value={formData.password}
+            onChange={handleChange}
+          />
         </div>
         
         <Button 
