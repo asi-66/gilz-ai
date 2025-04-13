@@ -1,33 +1,31 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react";
-
 export const HeroContent = () => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-      className="space-y-4 text-left self-start"
-    >
+  return <motion.div initial={{
+    opacity: 0,
+    y: 20
+  }} animate={{
+    opacity: 1,
+    y: 0
+  }} transition={{
+    duration: 0.8
+  }} className="space-y-4 text-left self-start">
       {/* Logo with shadow animation */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-        className="flex justify-start mb-4"
-      >
-        <img 
-          src="/lovable-uploads/2947f7fd-d3b9-4741-b729-e9afd63877aa.png" 
-          alt="Gilz AI Logo" 
-          className="w-16 h-16 object-cover shadow-lg"
-        />
+      <motion.div initial={{
+      opacity: 0,
+      y: 20
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      delay: 0.2,
+      duration: 0.5
+    }} className="flex justify-start mb-4">
+        <img src="/lovable-uploads/2947f7fd-d3b9-4741-b729-e9afd63877aa.png" alt="Gilz AI Logo" className="w-16 h-16 object-cover shadow-lg" />
       </motion.div>
       
-      <h1 className="text-3xl md:text-4xl lg:text-5xl font-normal text-black dark:text-white text-left">
-        Gilz AI: Resume Screening
-      </h1>
+      <h1 className="text-3xl md:text-4xl lg:text-5xl font-normal text-black dark:text-white text-left">Gilz AI: Resume Screening Annan</h1>
       
       <p className="text-sm md:text-base text-black/80 dark:text-white/80 max-w-md text-left">
         Advanced AI-powered resume screening tool to help you find the 
@@ -66,6 +64,5 @@ export const HeroContent = () => {
           </div>
         </div>
       </div>
-    </motion.div>
-  );
+    </motion.div>;
 };
