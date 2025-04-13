@@ -11,6 +11,7 @@ import {
   SidebarMenu,
 } from "@/components/ui/sidebar";
 import SidebarNavItem from "./SidebarNavItem";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 interface SidebarNavProps {
   isActiveRoute: (path: string) => boolean;
@@ -38,7 +39,7 @@ const SidebarNav = memo(({
 }: SidebarNavProps) => {
   return (
     <Sidebar className="hidden md:flex glass-card h-auto my-4 ml-4 mr-0">
-      <SidebarHeader className="p-4">
+      <SidebarHeader className="flex items-center justify-between p-4">
         <Link to="/dashboard" className="flex items-center">
           <img 
             src="/lovable-uploads/2947f7fd-d3b9-4741-b729-e9afd63877aa.png" 
@@ -47,6 +48,7 @@ const SidebarNav = memo(({
           />
           <span className="text-xl font-bold text-gray-800 dark:text-white">Gilz AI</span>
         </Link>
+        <ThemeToggle />
       </SidebarHeader>
       
       <SidebarContent>
@@ -64,7 +66,7 @@ const SidebarNav = memo(({
         
         <div className="px-3 py-2">
           <Button 
-            className="w-full flex items-center justify-start gap-2 bg-[#7efb98] text-[#1F2937] hover:bg-[#7efb98]/90"
+            className="w-full flex items-center justify-start gap-2 bg-white/20 hover:bg-white/30 dark:bg-black/20 dark:hover:bg-black/30 border-white/10 dark:border-white/5 text-black dark:text-white"
             onClick={onCreateJobClick}
           >
             <Plus size={18} />

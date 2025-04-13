@@ -27,19 +27,17 @@ export function ThemeToggle() {
   };
 
   return (
-    <div className="flex items-center">
-      <Toggle 
-        pressed={isDark} 
-        onPressedChange={toggleTheme}
-        className="rounded-full p-2 border border-black/20 dark:border-white/20 hover:bg-transparent"
-        aria-label="Toggle theme"
-      >
-        {isDark ? (
-          <Moon size={18} className="text-black/70 dark:text-white/70" />
-        ) : (
-          <Sun size={18} className="text-black/70 dark:text-white/70" />
-        )}
-      </Toggle>
-    </div>
+    <Toggle 
+      pressed={isDark} 
+      onPressedChange={toggleTheme}
+      className="rounded-full p-2 hover:bg-white/10 dark:hover:bg-black/20"
+      aria-label="Toggle theme"
+    >
+      {isDark ? (
+        <Moon size={18} className="text-white/70" />
+      ) : (
+        <Sun size={18} className="text-black/70" />
+      )}
+    </Toggle>
   );
 }

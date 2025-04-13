@@ -23,10 +23,11 @@ const SidebarNavItem = memo(({
         asChild 
         isActive={isActive}
         tooltip={label}
+        className={isActive ? "bg-white/20 dark:bg-black/20 font-medium" : "hover:bg-white/10 dark:hover:bg-white/5"}
       >
-        <Link to={href}>
-          <Icon size={20} />
-          <span>{label}</span>
+        <Link to={href} className="flex items-center gap-3">
+          <Icon size={20} className={isActive ? "text-black dark:text-white" : "text-black/70 dark:text-white/70"} />
+          <span className={isActive ? "text-black dark:text-white" : "text-black/70 dark:text-white/70"}>{label}</span>
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>

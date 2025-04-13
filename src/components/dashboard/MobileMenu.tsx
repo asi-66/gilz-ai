@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { LogOut, LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 interface NavItem {
   label: string;
@@ -30,6 +31,11 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
     <Collapsible open={open} onOpenChange={onOpenChange} className="md:hidden">
       <CollapsibleContent className="glass-card rounded-b-2xl border-t-0">
         <div className="py-2 px-4 flex flex-col h-[calc(100vh-64px)]">
+          <div className="flex items-center justify-between px-3 py-2 mb-2">
+            <div className="text-sm font-medium text-gray-800 dark:text-white">Theme</div>
+            <ThemeToggle />
+          </div>
+          
           <div className="flex-1">
             {items.map((item) => (
               <Link
@@ -37,22 +43,22 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
                 to={item.href}
                 className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium ${
                   isActiveRoute(item.href)
-                    ? "bg-[#7efb98]/20 text-[#1F2937] dark:text-white"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-white/5"
+                    ? "bg-white/10 dark:bg-black/20 text-gray-800 dark:text-white"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-white/5 dark:hover:bg-white/5"
                 }`}
                 onClick={() => onOpenChange(false)}
               >
-                <item.icon size={18} />
+                <item.icon size={18} className={isActiveRoute(item.href) ? "text-black dark:text-white" : "text-black/70 dark:text-white/70"} />
                 {item.label}
               </Link>
             ))}
           </div>
           
-          <div className="mt-2 pt-2 border-t border-white/20 dark:border-white/10">
+          <div className="mt-2 pt-2 border-t border-white/10 dark:border-white/5">
             <Button 
               variant="outline" 
               size="sm"
-              className="w-full flex items-center justify-start gap-2 bg-transparent border-white/20 dark:border-white/10 text-gray-700 dark:text-gray-300" 
+              className="w-full flex items-center justify-start gap-2 bg-transparent border-white/10 dark:border-white/5 text-gray-700 dark:text-gray-300" 
               onClick={onLogout}
             >
               <LogOut size={16} />

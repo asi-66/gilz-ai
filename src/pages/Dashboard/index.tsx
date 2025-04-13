@@ -56,16 +56,16 @@ const DashboardHome = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex justify-between items-center backdrop-blur-md bg-white/10 dark:bg-black/20 p-4 rounded-lg border border-gray-200/20 dark:border-gray-700/20 shadow-sm">
+        <div className="flex justify-between items-center backdrop-blur-md bg-white/5 dark:bg-black/5 p-4 rounded-lg border border-white/10 dark:border-white/5">
           <div>
             <h1 className="text-2xl font-medium text-gray-800 dark:text-white">Overview</h1>
-            <p className="text-muted-foreground">
+            <p className="text-gray-600 dark:text-gray-400">
               Welcome to Gilz AI Resume Screening Dashboard
             </p>
           </div>
           <Button 
             onClick={() => setCreateJobModalOpen(true)}
-            className="bg-[#7efb98] text-[#1F2937] hover:bg-[#7efb98]/90 font-medium shadow-sm"
+            className="bg-white/20 hover:bg-white/30 dark:bg-black/20 dark:hover:bg-black/30 text-gray-800 dark:text-white border border-white/10 dark:border-white/5"
           >
             <Plus className="mr-2 h-4 w-4" />
             Create Job Flow
