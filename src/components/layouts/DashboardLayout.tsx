@@ -70,7 +70,7 @@ const DashboardLayout = memo(({ children }: DashboardLayoutProps) => {
           />
 
           {/* Main content area */}
-          <div className="flex-1 flex flex-col min-h-screen rounded-2xl overflow-hidden backdrop-blur-md bg-white/10 dark:bg-black/10 border border-white/20 dark:border-white/10 ml-4">
+          <div className="flex-1 flex flex-col min-h-screen rounded-2xl overflow-hidden glass-card ml-4 mr-4">
             {/* Header */}
             <DashboardHeader 
               mobileMenuOpen={mobileMenuOpen}

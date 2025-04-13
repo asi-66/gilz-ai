@@ -28,7 +28,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
 }) => {
   return (
     <Collapsible open={open} onOpenChange={onOpenChange} className="md:hidden">
-      <CollapsibleContent className="backdrop-blur-md bg-white/10 dark:bg-black/10 border-b border-white/20 dark:border-white/10">
+      <CollapsibleContent className="glass-card rounded-b-2xl border-t-0">
         <div className="py-2 px-4 flex flex-col h-[calc(100vh-64px)]">
           <div className="flex-1">
             {items.map((item) => (

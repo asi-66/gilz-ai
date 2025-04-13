@@ -9,11 +9,8 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton
 } from "@/components/ui/sidebar";
 import SidebarNavItem from "./SidebarNavItem";
-import { useNavigate } from "react-router-dom";
 
 interface SidebarNavProps {
   isActiveRoute: (path: string) => boolean;
@@ -40,7 +37,7 @@ const SidebarNav = memo(({
   onLogoutClick 
 }: SidebarNavProps) => {
   return (
-    <Sidebar className="hidden md:flex rounded-2xl backdrop-blur-md bg-white/10 dark:bg-black/10 border border-white/20 dark:border-white/10 h-auto">
+    <Sidebar className="hidden md:flex glass-card h-auto my-4 ml-4 mr-0">
       <SidebarHeader className="p-4">
         <Link to="/dashboard" className="flex items-center">
           <img 
@@ -85,6 +82,10 @@ const SidebarNav = memo(({
           <LogOut size={18} />
           <span>Logout</span>
         </Button>
+        
+        <div className="text-xs text-black/60 dark:text-white/60 py-2 text-center mt-2">
+          © 2025 TNP Consultants
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
