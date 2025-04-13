@@ -1,5 +1,5 @@
 
-import { useState, ReactNode } from "react";
+import { useState, useCallback, ReactNode, memo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Home, Briefcase, Settings, HelpCircle } from "lucide-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -13,35 +13,49 @@ interface DashboardLayoutProps {
   children: ReactNode;
 }
 
-const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+interface NavigationItem {
+  label: string;
+  href: string;
+  icon: typeof Home;
+}
+
+const navigationItems: NavigationItem[] = [
+  { label: "Overview", href: "/dashboard", icon: Home },
+  { label: "Job Flows", href: "/dashboard/job-flow", icon: Briefcase },
+  { label: "Settings", href: "/dashboard/settings", icon: Settings },
+  { label: "Help & Support", href: "/dashboard/help", icon: HelpCircle },
+];
+
+const DashboardLayout = memo(({ children }: DashboardLayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [createJobModalOpen, setCreateJobModalOpen] = useState(false);
 
-  const isActiveRoute = (path: string) => {
+  const isActiveRoute = useCallback((path: string) => {
     return location.pathname === path;
-  };
+  }, [location.pathname]);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     // Simulate logout
     toast({
       title: "Logged out",
       description: "You have been successfully logged out.",
     });
     navigate("/");
-  };
+  }, [navigate]);
 
-  const handleCreateJobSuccess = (jobId: string) => {
+  const handleCreateJobSuccess = useCallback((jobId: string) => {
     navigate(`/dashboard/job-flow/${jobId}`);
-  };
+  }, [navigate]);
 
-  const navigationItems = [
-    { label: "Overview", href: "/dashboard", icon: Home },
-    { label: "Job Flows", href: "/dashboard/job-flow", icon: Briefcase },
-    { label: "Settings", href: "/dashboard/settings", icon: Settings },
-    { label: "Help & Support", href: "/dashboard/help", icon: HelpCircle },
-  ];
+  const handleSetMobileMenuOpen = useCallback((value: boolean) => {
+    setMobileMenuOpen(value);
+  }, []);
+
+  const handleSetCreateJobModalOpen = useCallback((value: boolean) => {
+    setCreateJobModalOpen(value);
+  }, []);
 
   return (
     <SidebarProvider defaultOpen={true}>
@@ -49,7 +63,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         {/* Sidebar component */}
         <SidebarNav 
           isActiveRoute={isActiveRoute}
-          onCreateJobClick={() => setCreateJobModalOpen(true)}
+          onCreateJobClick={() => handleSetCreateJobModalOpen(true)}
           onLogoutClick={handleLogout}
         />
 
@@ -58,13 +72,13 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           {/* Header */}
           <DashboardHeader 
             mobileMenuOpen={mobileMenuOpen}
-            setMobileMenuOpen={setMobileMenuOpen}
+            setMobileMenuOpen={handleSetMobileMenuOpen}
           />
 
           {/* Mobile Navigation Menu */}
           <MobileMenu
             open={mobileMenuOpen}
-            onOpenChange={setMobileMenuOpen}
+            onOpenChange={handleSetMobileMenuOpen}
             items={navigationItems}
             isActiveRoute={isActiveRoute}
             onLogout={handleLogout}
@@ -80,11 +94,13 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       {/* Create Job Modal */}
       <CreateJobModal 
         isOpen={createJobModalOpen}
-        onClose={() => setCreateJobModalOpen(false)}
+        onClose={() => handleSetCreateJobModalOpen(false)}
         onSuccess={handleCreateJobSuccess}
       />
     </SidebarProvider>
   );
-};
+});
+
+DashboardLayout.displayName = "DashboardLayout";
 
 export default DashboardLayout;

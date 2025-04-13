@@ -1,25 +1,32 @@
+
+import { useState, useCallback, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu";
 import { Link, useNavigate } from "react-router-dom";
 import { MenuIcon, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import React from "react";
 import { useAuth } from "@/hooks/use-auth";
 
-export const Navbar = ({ 
+interface NavbarProps {
+  showLoginForm: boolean;
+  handleLoginClick: () => void;
+  handleSignupClick: () => void;
+}
+
+export const Navbar = memo(({ 
   showLoginForm, 
   handleLoginClick, 
   handleSignupClick 
-}) => {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+}: NavbarProps) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { session } = useAuth();
   const navigate = useNavigate();
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const toggleMenu = useCallback(() => {
+    setIsMenuOpen(prevState => !prevState);
+  }, []);
 
-  const handleAuthAction = () => {
+  const handleAuthAction = useCallback(() => {
     if (session) {
       navigate("/dashboard");
     } else {
@@ -29,7 +36,12 @@ export const Navbar = ({
         handleLoginClick();
       }
     }
-  };
+  }, [session, navigate, showLoginForm, handleSignupClick, handleLoginClick]);
+
+  const handleMobileItemClick = useCallback(() => {
+    toggleMenu();
+    handleAuthAction();
+  }, [toggleMenu, handleAuthAction]);
 
   return (
     <>
@@ -88,10 +100,7 @@ export const Navbar = ({
             <Button 
               variant="outline" 
               className="w-full rounded-full border border-black/30 dark:border-white/30 text-black dark:text-white hover:bg-transparent dark:hover:bg-transparent transition-all hover:border-black dark:hover:border-white bg-transparent mt-4"
-              onClick={() => {
-                toggleMenu();
-                handleAuthAction();
-              }}
+              onClick={handleMobileItemClick}
             >
               {session ? "Dashboard" : (showLoginForm ? "Sign Up" : "Log In")}
             </Button>
@@ -100,4 +109,6 @@ export const Navbar = ({
       )}
     </>
   );
-};
+});
+
+Navbar.displayName = "Navbar";

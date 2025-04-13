@@ -1,5 +1,5 @@
 
-import React from "react";
+import { memo } from "react";
 import { Link } from "react-router-dom";
 import { Home, Briefcase, Settings, HelpCircle, Plus, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,18 +20,24 @@ interface SidebarNavProps {
   onLogoutClick: () => void;
 }
 
-const navigationItems = [
+interface NavigationItem {
+  label: string;
+  href: string;
+  icon: typeof Home;
+}
+
+const navigationItems: NavigationItem[] = [
   { label: "Overview", href: "/dashboard", icon: Home },
   { label: "Job Flows", href: "/dashboard/job-flow", icon: Briefcase },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
   { label: "Help & Support", href: "/dashboard/help", icon: HelpCircle },
 ];
 
-const SidebarNav: React.FC<SidebarNavProps> = ({ 
+const SidebarNav = memo(({ 
   isActiveRoute, 
   onCreateJobClick, 
   onLogoutClick 
-}) => {
+}: SidebarNavProps) => {
   return (
     <Sidebar className="hidden md:flex backdrop-blur-md bg-white/5 dark:bg-black/20 border-r border-gray-200/20 dark:border-gray-700/20">
       <SidebarHeader className="p-4">
@@ -81,6 +87,8 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
       </SidebarFooter>
     </Sidebar>
   );
-};
+});
+
+SidebarNav.displayName = "SidebarNav";
 
 export default SidebarNav;

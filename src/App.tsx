@@ -1,23 +1,39 @@
 
+import { Suspense, lazy } from "react"
 import { Toaster } from "@/components/ui/toaster"
 import { Toaster as Sonner } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { useAuth } from "@/hooks/use-auth"
-import Index from "./pages/Index"
-import NotFound from "./pages/NotFound"
 
-// Dashboard pages
-import Dashboard from "./pages/Dashboard"
-import JobFlow from "./pages/Dashboard/JobFlow"
-import JobFlowDetail from "./pages/Dashboard/JobFlowDetail"
-import Settings from "./pages/Dashboard/Settings"
-import Help from "./pages/Dashboard/Help"
+// Fallback loading component
+import { Loader } from "@/components/common/Loader"
 
-const queryClient = new QueryClient()
+// Lazy loaded components
+const Index = lazy(() => import("./pages/Index"))
+const NotFound = lazy(() => import("./pages/NotFound"))
+const Dashboard = lazy(() => import("./pages/Dashboard"))
+const JobFlow = lazy(() => import("./pages/Dashboard/JobFlow"))
+const JobFlowDetail = lazy(() => import("./pages/Dashboard/JobFlowDetail"))
+const Settings = lazy(() => import("./pages/Dashboard/Settings"))
+const Help = lazy(() => import("./pages/Dashboard/Help"))
 
-const ProtectedRoute = ({ children }) => {
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+})
+
+interface ProtectedRouteProps {
+  children: React.ReactNode
+}
+
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { session } = useAuth()
   
   if (!session) {
@@ -35,14 +51,23 @@ const App = () => {
           <Toaster />
           <Sonner />
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route 
+              path="/" 
+              element={
+                <Suspense fallback={<Loader />}>
+                  <Index />
+                </Suspense>
+              } 
+            />
             
             {/* Protected Dashboard Routes */}
             <Route 
               path="/dashboard" 
               element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <Suspense fallback={<Loader />}>
+                    <Dashboard />
+                  </Suspense>
                 </ProtectedRoute>
               } 
             />
@@ -50,7 +75,9 @@ const App = () => {
               path="/dashboard/job-flow" 
               element={
                 <ProtectedRoute>
-                  <JobFlow />
+                  <Suspense fallback={<Loader />}>
+                    <JobFlow />
+                  </Suspense>
                 </ProtectedRoute>
               } 
             />
@@ -58,7 +85,9 @@ const App = () => {
               path="/dashboard/job-flow/:id" 
               element={
                 <ProtectedRoute>
-                  <JobFlowDetail />
+                  <Suspense fallback={<Loader />}>
+                    <JobFlowDetail />
+                  </Suspense>
                 </ProtectedRoute>
               } 
             />
@@ -66,7 +95,9 @@ const App = () => {
               path="/dashboard/settings" 
               element={
                 <ProtectedRoute>
-                  <Settings />
+                  <Suspense fallback={<Loader />}>
+                    <Settings />
+                  </Suspense>
                 </ProtectedRoute>
               } 
             />
@@ -74,13 +105,22 @@ const App = () => {
               path="/dashboard/help" 
               element={
                 <ProtectedRoute>
-                  <Help />
+                  <Suspense fallback={<Loader />}>
+                    <Help />
+                  </Suspense>
                 </ProtectedRoute>
               } 
             />
             
             {/* Catch-all route */}
-            <Route path="*" element={<NotFound />} />
+            <Route 
+              path="*" 
+              element={
+                <Suspense fallback={<Loader />}>
+                  <NotFound />
+                </Suspense>
+              } 
+            />
           </Routes>
         </TooltipProvider>
       </BrowserRouter>
