@@ -5,7 +5,7 @@ import { Home, Briefcase, Settings, HelpCircle } from "lucide-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { toast } from "@/hooks/use-toast";
 import { CreateJobModal } from "@/components/dashboard/modals";
-import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import MobileMenu from "@/components/dashboard/MobileMenu";
 import SidebarNav from "@/components/dashboard/SidebarNav";
 
@@ -37,7 +37,7 @@ const DashboardLayout = memo(({ children }: DashboardLayoutProps) => {
   }, [location.pathname]);
 
   const handleLogout = useCallback(() => {
-    // Simulate logout
+    localStorage.removeItem("isAuthenticated");
     toast({
       title: "Logged out",
       description: "You have been successfully logged out.",
@@ -59,7 +59,7 @@ const DashboardLayout = memo(({ children }: DashboardLayoutProps) => {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen flex w-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
+      <div className="min-h-screen flex w-full bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900">
         {/* Sidebar component */}
         <SidebarNav 
           isActiveRoute={isActiveRoute}

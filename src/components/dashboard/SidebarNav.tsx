@@ -13,6 +13,7 @@ import {
   SidebarMenuButton
 } from "@/components/ui/sidebar";
 import SidebarNavItem from "./SidebarNavItem";
+import { useNavigate } from "react-router-dom";
 
 interface SidebarNavProps {
   isActiveRoute: (path: string) => boolean;
@@ -38,8 +39,15 @@ const SidebarNav = memo(({
   onCreateJobClick, 
   onLogoutClick 
 }: SidebarNavProps) => {
+  const navigate = useNavigate();
+  
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    navigate("/");
+  };
+
   return (
-    <Sidebar className="hidden md:flex backdrop-blur-md bg-white/5 dark:bg-black/20 border-r border-gray-200/20 dark:border-gray-700/20">
+    <Sidebar className="hidden md:flex backdrop-blur-md bg-blue-600/10 dark:bg-blue-900/20 border-r border-blue-200/20 dark:border-blue-700/20">
       <SidebarHeader className="p-4">
         <Link to="/dashboard" className="flex items-center">
           <img 
@@ -78,8 +86,8 @@ const SidebarNav = memo(({
       <SidebarFooter className="p-4">
         <Button 
           variant="outline" 
-          className="w-full flex items-center justify-start gap-2 bg-transparent border-gray-200/30 dark:border-gray-700/30 text-gray-700 dark:text-gray-300" 
-          onClick={onLogoutClick}
+          className="w-full flex items-center justify-start gap-2 bg-transparent border-blue-200/30 dark:border-blue-700/30 text-gray-700 dark:text-gray-300" 
+          onClick={handleLogout}
         >
           <LogOut size={18} />
           <span>Logout</span>

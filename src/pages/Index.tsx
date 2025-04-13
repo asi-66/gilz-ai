@@ -78,7 +78,7 @@ const Index = () => {
 
   return (
     <AuroraBackground className={`${isMobile ? 'overflow-auto' : 'overflow-hidden'}`}>
-      <div className={`flex flex-col relative w-full ${isMobile ? 'min-h-full' : 'min-h-screen'}`}>
+      <div className={`flex flex-col relative w-full ${isMobile ? 'min-h-screen' : 'min-h-screen'}`}>
         <Navbar 
           showLoginForm={false}
           handleLoginClick={() => {}} // No-op 
@@ -86,7 +86,7 @@ const Index = () => {
         />
 
         {/* Hero Section with Two Columns */}
-        <div className={`flex-1 flex flex-col md:flex-row items-center justify-center px-6 md:px-16 lg:px-24 gap-8 lg:gap-16 py-8 ${isMobile ? '' : 'h-[calc(100vh-76px)]'}`}>
+        <div className={`flex-1 flex flex-col md:flex-row items-center justify-center px-6 md:px-16 lg:px-24 gap-8 lg:gap-16 py-8 ${isMobile ? 'pb-16' : 'h-[calc(100vh-76px)]'}`}>
           {/* Left Column - Content */}
           <div className="w-full md:w-1/2 flex flex-col justify-center space-y-6 mb-8 md:mb-0">
             <HeroContent />
@@ -111,7 +111,7 @@ const Index = () => {
         </div>
 
         {/* Attribution */}
-        <div className="absolute bottom-4 left-6 text-xs text-black/60 dark:text-white/60">
+        <div className="absolute bottom-4 left-0 right-0 md:left-6 md:right-auto text-xs text-black/60 dark:text-white/60 text-center md:text-left">
           © 2025 TNP Consultants
         </div>
       </div>

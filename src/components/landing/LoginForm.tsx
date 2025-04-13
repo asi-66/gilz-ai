@@ -41,6 +41,7 @@ export const LoginForm = ({
           onChange={(e) => setEmail(e.target.value)} 
           placeholder="Enter your email"
           required 
+          className="backdrop-blur-sm bg-white/5 dark:bg-black/5 border-black/10 dark:border-white/10"
         />
       </div>
       
@@ -53,6 +54,7 @@ export const LoginForm = ({
           onChange={(e) => setPassword(e.target.value)} 
           placeholder="Enter your password" 
           required
+          className="backdrop-blur-sm bg-white/5 dark:bg-black/5 border-black/10 dark:border-white/10"
         />
       </div>
       
