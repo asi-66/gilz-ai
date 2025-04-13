@@ -54,11 +54,12 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
             ))}
           </div>
           
-          <div className="mt-2 pt-2 border-t border-white/10 dark:border-white/5">
+          <div className="mt-2 pt-2 border-t border-white/10 dark:border-white/5 flex justify-between items-center">
+            <ThemeToggle />
             <Button 
               variant="outline" 
               size="sm"
-              className="w-full flex items-center justify-start gap-2 bg-transparent border-white/10 dark:border-white/5 text-gray-700 dark:text-gray-300" 
+              className="flex items-center justify-start gap-2 bg-transparent border-white/10 dark:border-white/5 text-gray-700 dark:text-gray-300" 
               onClick={onLogout}
             >
               <LogOut size={16} />
