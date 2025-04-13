@@ -39,18 +39,41 @@ const Index = () => {
     try {
       // Validate against predefined credentials
       if (email === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-        // Successful login with predefined credentials
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+        // For internal tool, we can bypass Supabase auth for predefined credentials
+        // We'll attempt to sign in directly, but also handle cases where the user might not exist yet
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: ADMIN_USERNAME,
+          password: ADMIN_PASSWORD,
         });
         
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes("Invalid login credentials")) {
+            // If login fails, try to sign up the admin user
+            const { error: signUpError } = await supabase.auth.signUp({
+              email: ADMIN_USERNAME,
+              password: ADMIN_PASSWORD,
+            });
+            
+            if (signUpError) throw signUpError;
+            
+            // Try to sign in again after signup
+            const { error: retryError } = await supabase.auth.signInWithPassword({
+              email: ADMIN_USERNAME,
+              password: ADMIN_PASSWORD,
+            });
+            
+            if (retryError) throw retryError;
+          } else {
+            throw error;
+          }
+        }
         
         toast({
           title: "Success",
           description: "You have been logged in successfully.",
         });
+        
+        navigate("/dashboard");
       } else {
         // Invalid credentials
         throw new Error("Invalid credentials. Access denied.");
@@ -83,19 +106,21 @@ const Index = () => {
           </div>
           
           {/* Right Column - Login Form Only */}
-          <AuthFormContainer 
-            formType={formType}
-            email={email}
-            setEmail={setEmail}
-            password={password}
-            setPassword={setPassword}
-            rememberMe={rememberMe}
-            setRememberMe={setRememberMe}
-            handleLogin={handleLogin}
-            handleSignup={() => {}} // Empty function as signup is disabled
-            setFormType={setFormType}
-            loading={loading}
-          />
+          <div className="w-full md:w-1/2 max-w-sm">
+            <AuthFormContainer 
+              formType={formType}
+              email={email}
+              setEmail={setEmail}
+              password={password}
+              setPassword={setPassword}
+              rememberMe={rememberMe}
+              setRememberMe={setRememberMe}
+              handleLogin={handleLogin}
+              handleSignup={() => {}} // Empty function as signup is disabled
+              setFormType={setFormType}
+              loading={loading}
+            />
+          </div>
         </div>
 
         {/* Attribution */}
