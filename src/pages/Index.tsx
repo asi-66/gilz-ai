@@ -5,10 +5,13 @@ import { Navbar } from "@/components/landing/Navbar";
 import { HeroContent } from "@/components/landing/HeroContent";
 import { AuthFormContainer } from "@/components/landing/AuthFormContainer";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+
+// Predefined credentials for this internal tool
+const ADMIN_USERNAME = "admin@tnp.com";
+const ADMIN_PASSWORD = "admin123";
 
 const Index = () => {
   const [formType, setFormType] = React.useState<"login" | "signup" | "forgotPassword">("login");
@@ -33,7 +36,8 @@ const Index = () => {
   };
 
   const handleSignupClick = () => {
-    setFormType("signup");
+    // No signup in this internal tool, but redirect to login
+    setFormType("login");
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -41,87 +45,28 @@ const Index = () => {
     setLoading(true);
     
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      
-      if (error) throw error;
-      
-      // Successful login - navigate will happen automatically due to session change
-      toast({
-        title: "Success",
-        description: "You have been logged in successfully.",
-      });
+      // Validate against predefined credentials
+      if (email === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        // Successful login with predefined credentials
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        
+        if (error) throw error;
+        
+        toast({
+          title: "Success",
+          description: "You have been logged in successfully.",
+        });
+      } else {
+        // Invalid credentials
+        throw new Error("Invalid credentials. Access denied.");
+      }
     } catch (error: any) {
       toast({
         title: "Error",
         description: error.message || "Failed to log in. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    
-    // Get form data from the event
-    const formData = new FormData(e.target as HTMLFormElement);
-    const fullName = formData.get('name') as string;
-    const signupEmail = formData.get('email') as string;
-    const company = formData.get('company') as string;
-    const signupPassword = formData.get('password') as string;
-    
-    console.log("Signup details:", { fullName, signupEmail, company });
-    
-    try {
-      console.log("Starting signup process");
-      // Sign up with Supabase
-      const { data, error } = await supabase.auth.signUp({
-        email: signupEmail,
-        password: signupPassword,
-        options: {
-          data: {
-            full_name: fullName,
-            company: company,
-          },
-        },
-      });
-      
-      if (error) throw error;
-      
-      console.log("Signup successful:", data);
-      
-      // Update email state for login if needed
-      setEmail(signupEmail);
-      
-      // Check if email confirmation is required
-      if (!data.session) {
-        // Email confirmation required
-        toast({
-          title: "Account created",
-          description: "Please check your email to confirm your account before logging in.",
-        });
-        // Switch to login form so they can login after confirming
-        setFormType("login");
-      } else {
-        // No email confirmation required, user is logged in
-        toast({
-          title: "Account created",
-          description: "Your account has been created successfully. You will be redirected to the dashboard.",
-        });
-        
-        // Force navigation to dashboard
-        navigate("/dashboard");
-      }
-    } catch (error: any) {
-      console.error("Signup error:", error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to create account. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -135,7 +80,7 @@ const Index = () => {
         <Navbar 
           showLoginForm={formType === "login"}
           handleLoginClick={handleLoginClick}
-          handleSignupClick={handleSignupClick}
+          handleSignupClick={handleLoginClick} // Both buttons go to login
         />
 
         {/* Hero Section with Two Columns */}
@@ -147,7 +92,7 @@ const Index = () => {
             </div>
           </div>
           
-          {/* Right Column - Sign Up/Login/Forgot Password Form */}
+          {/* Right Column - Login Form Only */}
           <AuthFormContainer 
             formType={formType}
             email={email}
@@ -157,7 +102,7 @@ const Index = () => {
             rememberMe={rememberMe}
             setRememberMe={setRememberMe}
             handleLogin={handleLogin}
-            handleSignup={handleSignup}
+            handleSignup={() => {}} // Empty function as signup is disabled
             setFormType={setFormType}
             loading={loading}
           />

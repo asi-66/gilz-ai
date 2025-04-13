@@ -17,6 +17,7 @@ interface LoginFormProps {
   onSignupClick: () => void;
   onForgotPasswordClick: () => void;
   loading?: boolean;
+  isInternalTool?: boolean;
 }
 
 export const LoginForm = ({
@@ -29,11 +30,22 @@ export const LoginForm = ({
   onSubmit,
   onSignupClick,
   onForgotPasswordClick,
-  loading = false
+  loading = false,
+  isInternalTool = false
 }: LoginFormProps) => {
   return (
     <>
-      <h2 className="text-xl font-medium text-black dark:text-white mb-4">Welcome back</h2>
+      <h2 className="text-xl font-medium text-black dark:text-white mb-4">
+        {isInternalTool ? "Internal Tool Access" : "Welcome back"}
+      </h2>
+      
+      {isInternalTool && (
+        <div className="mb-4 p-2 bg-yellow-500/20 border border-yellow-500/30 rounded-md">
+          <p className="text-xs text-yellow-700 dark:text-yellow-300">
+            This is a restricted internal tool. Please use your provided credentials.
+          </p>
+        </div>
+      )}
       
       <form className="space-y-4" onSubmit={onSubmit}>
         <div className="space-y-2">
@@ -51,13 +63,15 @@ export const LoginForm = ({
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <Label htmlFor="password">Password</Label>
-            <button 
-              type="button"
-              className="text-xs text-black/60 dark:text-white/60 hover:text-black hover:dark:text-white"
-              onClick={onForgotPasswordClick}
-            >
-              Forgot password?
-            </button>
+            {!isInternalTool && (
+              <button 
+                type="button"
+                className="text-xs text-black/60 dark:text-white/60 hover:text-black hover:dark:text-white"
+                onClick={onForgotPasswordClick}
+              >
+                Forgot password?
+              </button>
+            )}
           </div>
           <Input 
             id="password" 
@@ -98,16 +112,18 @@ export const LoginForm = ({
           )}
         </Button>
         
-        <p className="text-center text-xs text-black/60 dark:text-white/60">
-          Don't have an account? {" "}
-          <button
-            type="button"
-            className="text-black dark:text-white underline"
-            onClick={onSignupClick}
-          >
-            Sign up
-          </button>
-        </p>
+        {!isInternalTool && (
+          <p className="text-center text-xs text-black/60 dark:text-white/60">
+            Don't have an account? {" "}
+            <button
+              type="button"
+              className="text-black dark:text-white underline"
+              onClick={onSignupClick}
+            >
+              Sign up
+            </button>
+          </p>
+        )}
       </form>
     </>
   );

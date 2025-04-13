@@ -33,7 +33,7 @@ export const AuthFormContainer = ({
   loading = false
 }: AuthFormContainerProps) => {
   const handleLoginClick = () => setFormType("login");
-  const handleSignupClick = () => setFormType("signup");
+  const handleSignupClick = () => setFormType("login"); // Redirect to login instead of signup
   const handleForgotPasswordClick = () => setFormType("forgotPassword");
 
   return (
@@ -57,16 +57,15 @@ export const AuthFormContainer = ({
             onSignupClick={handleSignupClick}
             onForgotPasswordClick={handleForgotPasswordClick}
             loading={loading}
+            isInternalTool={true}
           />
         )}
         
         {formType === "signup" && (
           <SignupForm
-            onSubmit={handleSignup}
+            onSubmit={() => {}} // Empty function as signup is disabled
             onLoginClick={handleLoginClick}
             loading={loading}
-            email={email}
-            setEmail={setEmail}
           />
         )}
         
