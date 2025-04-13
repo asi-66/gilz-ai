@@ -17,6 +17,7 @@ interface LoginFormProps {
   onSignupClick: () => void;
   onForgotPasswordClick: () => void;
   loading?: boolean;
+  isInternalTool?: boolean;
 }
 
 export const LoginForm = ({

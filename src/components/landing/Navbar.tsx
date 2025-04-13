@@ -55,7 +55,7 @@ export const Navbar = memo(({
 
           <div className="md:hidden flex items-center gap-4">
             <ThemeToggle />
-            <button variant="ghost" size="icon" onClick={toggleMenu} className="text-black dark:text-white">
+            <button onClick={toggleMenu} className="text-black dark:text-white">
               {isMenuOpen ? <X size={24} /> : <MenuIcon size={24} />}
             </button>
           </div>
