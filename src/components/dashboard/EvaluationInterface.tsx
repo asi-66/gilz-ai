@@ -38,54 +38,8 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId }) => {
   const [sortField, setSortField] = useState<"score" | "name" | "experience">("score");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
-  // Sample candidates data - in a real app, this would come from the API
-  const candidates: Candidate[] = [
-    {
-      id: "1",
-      name: "John Smith",
-      score: 85,
-      matchPercentage: 85,
-      skills: ["React", "TypeScript", "UI/UX", "Figma"],
-      experience: "5 years",
-      resumeUrl: "#",
-    },
-    {
-      id: "2",
-      name: "Emily Johnson",
-      score: 92,
-      matchPercentage: 92,
-      skills: ["UI/UX", "Figma", "Adobe XD", "User Research"],
-      experience: "7 years",
-      resumeUrl: "#",
-    },
-    {
-      id: "3",
-      name: "Michael Brown",
-      score: 78,
-      matchPercentage: 78,
-      skills: ["UI Design", "Sketch", "Illustrator", "Wireframing"],
-      experience: "3 years",
-      resumeUrl: "#",
-    },
-    {
-      id: "4",
-      name: "Sarah Davis",
-      score: 88,
-      matchPercentage: 88,
-      skills: ["UI/UX", "User Research", "Prototyping", "Figma"],
-      experience: "6 years",
-      resumeUrl: "#",
-    },
-    {
-      id: "5",
-      name: "David Wilson",
-      score: 73,
-      matchPercentage: 73,
-      skills: ["Visual Design", "Adobe XD", "CSS", "HTML"],
-      experience: "2 years",
-      resumeUrl: "#",
-    },
-  ];
+  // Empty candidates array for production version
+  const candidates: Candidate[] = [];
 
   const toggleSort = (field: "score" | "name" | "experience") => {
     if (sortField === field) {
@@ -138,66 +92,78 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId }) => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Candidate</TableHead>
-                  <TableHead>
-                    <div className="flex items-center cursor-pointer" onClick={() => toggleSort("score")}>
-                      Match Score
-                      <ArrowUpDown className="ml-2 h-3 w-3" />
-                    </div>
-                  </TableHead>
-                  <TableHead>Key Skills</TableHead>
-                  <TableHead>
-                    <div className="flex items-center cursor-pointer" onClick={() => toggleSort("experience")}>
-                      Experience
-                      <ArrowUpDown className="ml-2 h-3 w-3" />
-                    </div>
-                  </TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedCandidates.map((candidate) => (
-                  <TableRow key={candidate.id} className="cursor-pointer hover:bg-background/50" onClick={() => handleCandidateClick(candidate)}>
-                    <TableCell>
-                      <div className="font-medium">{candidate.name}</div>
-                    </TableCell>
-                    <TableCell>
-                      <div className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-medium ${getScoreColor(candidate.score)}`}>
-                        {candidate.score}%
+          {candidates.length > 0 ? (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Candidate</TableHead>
+                    <TableHead>
+                      <div className="flex items-center cursor-pointer" onClick={() => toggleSort("score")}>
+                        Match Score
+                        <ArrowUpDown className="ml-2 h-3 w-3" />
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {candidate.skills.slice(0, 3).map((skill, i) => (
-                          <Badge key={i} variant="outline" className="bg-background/50">
-                            {skill}
-                          </Badge>
-                        ))}
-                        {candidate.skills.length > 3 && (
-                          <Badge variant="outline" className="bg-background/50">
-                            +{candidate.skills.length - 3}
-                          </Badge>
-                        )}
+                    </TableHead>
+                    <TableHead>Key Skills</TableHead>
+                    <TableHead>
+                      <div className="flex items-center cursor-pointer" onClick={() => toggleSort("experience")}>
+                        Experience
+                        <ArrowUpDown className="ml-2 h-3 w-3" />
                       </div>
-                    </TableCell>
-                    <TableCell>{candidate.experience}</TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
-                        <FileText className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
-                        <Download className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
+                    </TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {sortedCandidates.map((candidate) => (
+                    <TableRow key={candidate.id} className="cursor-pointer hover:bg-background/50" onClick={() => handleCandidateClick(candidate)}>
+                      <TableCell>
+                        <div className="font-medium">{candidate.name}</div>
+                      </TableCell>
+                      <TableCell>
+                        <div className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-medium ${getScoreColor(candidate.score)}`}>
+                          {candidate.score}%
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {candidate.skills.slice(0, 3).map((skill, i) => (
+                            <Badge key={i} variant="outline" className="bg-background/50">
+                              {skill}
+                            </Badge>
+                          ))}
+                          {candidate.skills.length > 3 && (
+                            <Badge variant="outline" className="bg-background/50">
+                              +{candidate.skills.length - 3}
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>{candidate.experience}</TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
+                          <FileText className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+              <p className="text-gray-600 dark:text-gray-400 mb-4">No candidates evaluated yet</p>
+              <p className="text-sm text-gray-500 dark:text-gray-500 mb-6">Upload resumes to start evaluating candidates</p>
+              <Button 
+                className="bg-[#7efb98] text-[#1F2937] hover:bg-[#7efb98]/90"
+              >
+                Upload Resumes
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
 

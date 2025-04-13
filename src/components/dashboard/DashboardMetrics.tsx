@@ -28,29 +28,29 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, description, icon
 };
 
 const DashboardMetrics: React.FC = () => {
-  // In a real app, these would come from an API or context
+  // Empty metrics for production version
   const metrics = [
     {
       title: "Active Jobs",
-      value: 12,
+      value: 0,
       description: "Total active job flows",
       icon: <Briefcase className="h-4 w-4" />,
     },
     {
       title: "Total Candidates",
-      value: 248,
+      value: 0,
       description: "Candidates across all jobs",
       icon: <Users className="h-4 w-4" />,
     },
     {
       title: "Resumes Processed",
-      value: 187,
+      value: 0,
       description: "Resumes analyzed this month",
       icon: <FileText className="h-4 w-4" />,
     },
     {
       title: "Completed Evaluations",
-      value: 42,
+      value: 0,
       description: "Evaluations finalized",
       icon: <CheckCircle className="h-4 w-4" />,
     },

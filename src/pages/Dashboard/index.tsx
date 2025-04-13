@@ -13,41 +13,8 @@ const DashboardHome = () => {
   const [createJobModalOpen, setCreateJobModalOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Sample job flows data - in a real app, this would come from an API
-  const jobFlows = [
-    {
-      id: "1",
-      title: "Frontend Developer",
-      status: "active" as const,
-      location: "Remote",
-      createdAt: "April 10, 2025",
-      candidateCount: 12,
-    },
-    {
-      id: "2",
-      title: "UI/UX Designer",
-      status: "active" as const,
-      location: "Remote",
-      createdAt: "April 8, 2025",
-      candidateCount: 8,
-    },
-    {
-      id: "3",
-      title: "Product Manager",
-      status: "completed" as const,
-      location: "In-office",
-      createdAt: "April 5, 2025",
-      candidateCount: 6,
-    },
-    {
-      id: "4",
-      title: "Backend Developer",
-      status: "pending" as const,
-      location: "Remote",
-      createdAt: "April 3, 2025",
-      candidateCount: 0,
-    },
-  ];
+  // Empty job flows array for production version
+  const jobFlows = [];
 
   const handleCreateJobSuccess = (jobId: string) => {
     navigate(`/dashboard/job-flow/${jobId}`);

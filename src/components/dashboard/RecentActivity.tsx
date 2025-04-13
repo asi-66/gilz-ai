@@ -18,48 +18,8 @@ interface ActivityItem {
   };
 }
 
-const activities: ActivityItem[] = [
-  {
-    id: "1",
-    type: "creation",
-    title: "New Job Flow Created",
-    description: "Senior Frontend Developer",
-    time: "10 min ago",
-    user: {
-      name: "John Doe",
-    },
-  },
-  {
-    id: "2",
-    type: "upload",
-    title: "Resumes Uploaded",
-    description: "5 resumes for UI/UX Designer",
-    time: "1 hour ago",
-    user: {
-      name: "Sarah Johnson",
-    },
-  },
-  {
-    id: "3",
-    type: "evaluation",
-    title: "Evaluation Completed",
-    description: "Product Manager candidates ranked",
-    time: "3 hours ago",
-    user: {
-      name: "Michael Brown",
-    },
-  },
-  {
-    id: "4",
-    type: "chat",
-    title: "AI Chat Session",
-    description: "Discussed candidate requirements",
-    time: "Yesterday",
-    user: {
-      name: "Emily Davis",
-    },
-  },
-];
+// Empty activities array for production version
+const activities: ActivityItem[] = [];
 
 const getActivityIcon = (type: ActivityType) => {
   switch (type) {
@@ -106,9 +66,16 @@ const RecentActivity: React.FC = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-1">
-          {activities.map((activity) => (
-            <ActivityItem key={activity.id} activity={activity} />
-          ))}
+          {activities.length > 0 ? (
+            activities.map((activity) => (
+              <ActivityItem key={activity.id} activity={activity} />
+            ))
+          ) : (
+            <div className="text-center py-6 text-muted-foreground">
+              <p>No recent activities</p>
+              <p className="text-xs mt-1">Activities will appear here as you use the platform</p>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

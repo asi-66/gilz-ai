@@ -66,55 +66,8 @@ const Jobs = () => {
   useEffect(() => {
     // Simulate loading job data
     setTimeout(() => {
-      const mockJobs = [
-        {
-          id: "1",
-          title: "Software Engineer",
-          department: "Engineering",
-          location: "Remote",
-          status: "Active",
-          postedDate: "2023-04-01",
-          applicants: 12
-        },
-        {
-          id: "2",
-          title: "UX Designer",
-          department: "Design",
-          location: "New York, NY",
-          status: "Active",
-          postedDate: "2023-03-28",
-          applicants: 8
-        },
-        {
-          id: "3",
-          title: "Product Manager",
-          department: "Product",
-          location: "San Francisco, CA",
-          status: "Draft",
-          postedDate: "2023-04-05",
-          applicants: 0
-        },
-        {
-          id: "4",
-          title: "Marketing Specialist",
-          department: "Marketing",
-          location: "Chicago, IL",
-          status: "Active",
-          postedDate: "2023-03-15",
-          applicants: 24
-        },
-        {
-          id: "5",
-          title: "Data Analyst",
-          department: "Data Science",
-          location: "Remote",
-          status: "Closed",
-          postedDate: "2023-02-10",
-          applicants: 32
-        }
-      ];
-      
-      setJobs(mockJobs);
+      // Initialize with empty jobs array for production
+      setJobs([]);
       setIsLoading(false);
     }, 1000);
   }, []);
@@ -214,9 +167,9 @@ const Jobs = () => {
 
   // Filter jobs based on search query
   const filteredJobs = jobs.filter(job => 
-    job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    job.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    job.location.toLowerCase().includes(searchQuery.toLowerCase())
+    job.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    job.department?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    job.location?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Handle delete job
@@ -326,7 +279,7 @@ const Jobs = () => {
               ) : (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-8 text-[#6B7280]">
-                    {searchQuery ? "No jobs found matching your search." : "No jobs available."}
+                    {searchQuery ? "No jobs found matching your search." : "No jobs available. Create your first job to get started."}
                   </TableCell>
                 </TableRow>
               )}

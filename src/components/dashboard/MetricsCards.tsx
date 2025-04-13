@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Briefcase, FileText, Users, CalendarCheck, ArrowUp, ArrowDown } from "lucide-react";
 import { DashboardMetrics } from "@/types/chart.types";
@@ -21,7 +22,7 @@ const MetricsCards = ({ data }: { data: MetricsData }) => {
               </h3>
               <div className="flex items-center mt-1 text-[#10B981]">
                 <ArrowUp className="h-4 w-4 mr-1" />
-                <span className="text-xs">2 new this week</span>
+                <span className="text-xs">-</span>
               </div>
             </div>
             <div className="rounded-full p-3 bg-[#7efb98]/20">
@@ -41,7 +42,7 @@ const MetricsCards = ({ data }: { data: MetricsData }) => {
               </h3>
               <div className="flex items-center mt-1 text-[#10B981]">
                 <ArrowUp className="h-4 w-4 mr-1" />
-                <span className="text-xs">12 new this week</span>
+                <span className="text-xs">-</span>
               </div>
             </div>
             <div className="rounded-full p-3 bg-[#7efb98]/20">
@@ -61,7 +62,7 @@ const MetricsCards = ({ data }: { data: MetricsData }) => {
               </h3>
               <div className="flex items-center mt-1 text-[#10B981]">
                 <ArrowUp className="h-4 w-4 mr-1" />
-                <span className="text-xs">23 this week</span>
+                <span className="text-xs">-</span>
               </div>
             </div>
             <div className="rounded-full p-3 bg-[#7efb98]/20">
@@ -79,9 +80,9 @@ const MetricsCards = ({ data }: { data: MetricsData }) => {
               <h3 className="text-2xl font-bold text-[#1F2937] mt-1">
                 {isLoading ? "..." : interviewsScheduled}
               </h3>
-              <div className="flex items-center mt-1 text-[#EF4444]">
-                <ArrowDown className="h-4 w-4 mr-1" />
-                <span className="text-xs">3 less than last week</span>
+              <div className="flex items-center mt-1 text-[#10B981]">
+                <ArrowUp className="h-4 w-4 mr-1" />
+                <span className="text-xs">-</span>
               </div>
             </div>
             <div className="rounded-full p-3 bg-[#7efb98]/20">
