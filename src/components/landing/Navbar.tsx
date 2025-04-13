@@ -1,21 +1,34 @@
 import { Button } from "@/components/ui/button";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MenuIcon, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import React from "react";
+import { useAuth } from "@/hooks/use-auth";
 
-interface NavbarProps {
-  showLoginForm: boolean;
-  handleLoginClick: () => void;
-  handleSignupClick: () => void;
-}
-
-export const Navbar = ({ showLoginForm, handleLoginClick, handleSignupClick }: NavbarProps) => {
+export const Navbar = ({ 
+  showLoginForm, 
+  handleLoginClick, 
+  handleSignupClick 
+}) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const { session } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleAuthAction = () => {
+    if (session) {
+      navigate("/dashboard");
+    } else {
+      if (showLoginForm) {
+        handleSignupClick();
+      } else {
+        handleLoginClick();
+      }
+    }
   };
 
   return (
@@ -48,15 +61,9 @@ export const Navbar = ({ showLoginForm, handleLoginClick, handleSignupClick }: N
             <Button 
               variant="outline" 
               className="rounded-full border border-black/30 dark:border-white/30 text-black dark:text-white hover:bg-transparent dark:hover:bg-transparent transition-all hover:border-black dark:hover:border-white bg-transparent"
-              onClick={() => {
-                if (showLoginForm) {
-                  handleSignupClick();
-                } else {
-                  handleLoginClick();
-                }
-              }}
+              onClick={handleAuthAction}
             >
-              {showLoginForm ? "Sign Up" : "Log In"}
+              {session ? "Dashboard" : (showLoginForm ? "Sign Up" : "Log In")}
             </Button>
           </div>
 
@@ -83,14 +90,10 @@ export const Navbar = ({ showLoginForm, handleLoginClick, handleSignupClick }: N
               className="w-full rounded-full border border-black/30 dark:border-white/30 text-black dark:text-white hover:bg-transparent dark:hover:bg-transparent transition-all hover:border-black dark:hover:border-white bg-transparent mt-4"
               onClick={() => {
                 toggleMenu();
-                if (showLoginForm) {
-                  handleSignupClick();
-                } else {
-                  handleLoginClick();
-                }
+                handleAuthAction();
               }}
             >
-              {showLoginForm ? "Sign Up" : "Log In"}
+              {session ? "Dashboard" : (showLoginForm ? "Sign Up" : "Log In")}
             </Button>
           </nav>
         </div>
