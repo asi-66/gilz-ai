@@ -11,7 +11,6 @@ import {
   SidebarMenu,
 } from "@/components/ui/sidebar";
 import SidebarNavItem from "./SidebarNavItem";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 interface SidebarNavProps {
   isActiveRoute: (path: string) => boolean;
@@ -75,18 +74,6 @@ const SidebarNav = memo(({
       </SidebarContent>
       
       <SidebarFooter className="p-4 flex flex-col gap-2">
-        <div className="flex justify-between items-center">
-          <ThemeToggle />
-          <Button 
-            variant="outline" 
-            className="flex items-center justify-start gap-2 bg-transparent border-white/20 dark:border-white/10 text-gray-700 dark:text-gray-300" 
-            onClick={onLogoutClick}
-          >
-            <LogOut size={18} />
-            <span>Logout</span>
-          </Button>
-        </div>
-        
         <div className="text-xs text-black/60 dark:text-white/60 py-2 text-center">
           © 2025 TNP Consultants
         </div>

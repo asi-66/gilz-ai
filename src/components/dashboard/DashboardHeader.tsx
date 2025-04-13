@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 export const DashboardHeader = ({ 
   mobileMenuOpen, 
@@ -29,13 +30,16 @@ export const DashboardHeader = ({
         </button>
         <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">Dashboard</h1>
       </div>
-      <Button 
-        onClick={handleLogout} 
-        variant="outline" 
-        className="border-white/20 dark:border-white/10 bg-white/5 dark:bg-black/5 backdrop-blur-sm"
-      >
-        Logout
-      </Button>
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
+        <Button 
+          onClick={handleLogout} 
+          variant="outline" 
+          className="border-white/20 dark:border-white/10 bg-white/5 dark:bg-black/5 backdrop-blur-sm"
+        >
+          Logout
+        </Button>
+      </div>
     </header>
   );
 };

@@ -31,11 +31,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
     <Collapsible open={open} onOpenChange={onOpenChange} className="md:hidden">
       <CollapsibleContent className="glass-card rounded-b-2xl border-t-0">
         <div className="py-2 px-4 flex flex-col h-[calc(100vh-64px)]">
-          <div className="flex items-center justify-between px-3 py-2 mb-2">
-            <div className="text-sm font-medium text-gray-800 dark:text-white">Theme</div>
-            <ThemeToggle />
-          </div>
-          
           <div className="flex-1">
             {items.map((item) => (
               <Link
@@ -55,7 +50,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
           </div>
           
           <div className="mt-2 pt-2 border-t border-white/10 dark:border-white/5 flex justify-between items-center">
-            <ThemeToggle />
             <Button 
               variant="outline" 
               size="sm"
