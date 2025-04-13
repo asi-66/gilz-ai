@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { AuroraBackground } from "@/components/ui/aurora-background";
 import { Navbar } from "@/components/landing/Navbar";
@@ -8,6 +7,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
 
 // Predefined credentials for this internal tool
 const ADMIN_USERNAME = "admin@tnp.com";
