@@ -12,33 +12,15 @@ import {
 } from "@/components/ui/dialog";
 import { Loader2 } from "lucide-react";
 import { api } from "@/services/api";
-import Step1NameFlow from "./JobFormSteps/Step1NameFlow";
-import Step2JobDetails from "./JobFormSteps/Step2JobDetails";
-import Step3ResumeUpload from "./JobFormSteps/Step3ResumeUpload";
-
-interface Step1FormData {
-  flowName: string;
-}
-
-interface Step2FormData {
-  jobDescription: string;
-  workMode: string;
-}
-
-interface Step3FormData {
-  resumes: File[];
-}
-
-type FormData = Step1FormData & Step2FormData & Step3FormData;
+import Step1NameFlow from "../JobFormSteps/Step1NameFlow";
+import Step2JobDetails from "../JobFormSteps/Step2JobDetails";
+import Step3ResumeUpload from "../JobFormSteps/Step3ResumeUpload";
+import { useCreateJobForm } from "../hooks/useCreateJobForm";
 
 interface CreateJobModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (jobId: string) => void;
-}
-
-interface JobResponse {
-  id: string;
 }
 
 const CreateJobModal: React.FC<CreateJobModalProps> = ({
@@ -47,23 +29,16 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({
   onSuccess,
 }) => {
   const [step, setStep] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
-    flowName: "",
-    jobDescription: "",
-    workMode: "Remote",
-    resumes: [],
-  });
-
-  const resetForm = () => {
-    setFormData({
-      flowName: "",
-      jobDescription: "",
-      workMode: "Remote",
-      resumes: [],
-    });
-    setStep(1);
-  };
+  
+  const { 
+    formData, 
+    isLoading, 
+    handleChange, 
+    handleSelectChange, 
+    handleFileChange, 
+    resetForm,
+    handleSubmit 
+  } = useCreateJobForm(onSuccess, onClose);
 
   const handleClose = () => {
     resetForm();
@@ -97,99 +72,6 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({
   const handlePreviousStep = () => {
     if (step > 1) {
       setStep(step - 1);
-    }
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length > 5) {
-      toast({
-        title: "Error",
-        description: "You can only upload up to 5 resumes",
-        variant: "destructive",
-      });
-      return;
-    }
-    setFormData((prev) => ({ ...prev, resumes: files }));
-  };
-
-  const handleSubmit = async () => {
-    if (formData.resumes.length === 0) {
-      toast({
-        title: "Error",
-        description: "Please upload at least one resume",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const jobData = {
-        title: formData.flowName,
-        description: formData.jobDescription,
-        location: formData.workMode,
-        department: "Not Specified",
-        requiredSkills: [],
-        preferredSkills: [],
-        minimumExperience: "Not Specified",
-        educationRequirements: "Not Specified",
-      };
-
-      const jobResponse = await api.createJob(jobData) as JobResponse;
-      const jobId = jobResponse.id;
-
-      const resumePromises = formData.resumes.map(async (file) => {
-        return new Promise<void>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = async (e) => {
-            try {
-              const resumeText = e.target?.result as string;
-              await api.uploadResume({
-                resumeText,
-                jobId,
-              });
-              resolve();
-            } catch (error) {
-              reject(error);
-            }
-          };
-          reader.onerror = (error) => reject(error);
-          reader.readAsText(file);
-        });
-      });
-
-      await Promise.all(resumePromises);
-
-      toast({
-        title: "Success",
-        description: "Job flow created successfully",
-      });
-
-      resetForm();
-      onSuccess(jobId);
-      onClose();
-    } catch (error) {
-      console.error("Error creating job flow:", error);
-      toast({
-        title: "Error",
-        description: "Failed to create job flow. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
     }
   };
 

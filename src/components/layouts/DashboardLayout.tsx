@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Home, Briefcase, Settings, HelpCircle } from "lucide-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { toast } from "@/hooks/use-toast";
-import CreateJobModal from "@/components/dashboard/CreateJobModal";
+import { CreateJobModal } from "@/components/dashboard/modals";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import MobileMenu from "@/components/dashboard/MobileMenu";
 import SidebarNav from "@/components/dashboard/SidebarNav";

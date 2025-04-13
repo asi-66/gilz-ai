@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import JobFlowList from "@/components/dashboard/JobFlowList";
-import CreateJobModal from "@/components/dashboard/CreateJobModal";
+import { CreateJobModal } from "@/components/dashboard/modals";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
