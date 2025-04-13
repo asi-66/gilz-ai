@@ -8,6 +8,7 @@ import { CreateJobModal } from "@/components/dashboard/modals";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import MobileMenu from "@/components/dashboard/MobileMenu";
 import SidebarNav from "@/components/dashboard/SidebarNav";
+import { AuroraBackground } from "@/components/ui/aurora-background";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -59,37 +60,39 @@ const DashboardLayout = memo(({ children }: DashboardLayoutProps) => {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen flex w-full bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900">
-        {/* Sidebar component */}
-        <SidebarNav 
-          isActiveRoute={isActiveRoute}
-          onCreateJobClick={() => handleSetCreateJobModalOpen(true)}
-          onLogoutClick={handleLogout}
-        />
-
-        {/* Main content area */}
-        <div className="flex-1 flex flex-col min-h-screen">
-          {/* Header */}
-          <DashboardHeader 
-            mobileMenuOpen={mobileMenuOpen}
-            setMobileMenuOpen={handleSetMobileMenuOpen}
-          />
-
-          {/* Mobile Navigation Menu */}
-          <MobileMenu
-            open={mobileMenuOpen}
-            onOpenChange={handleSetMobileMenuOpen}
-            items={navigationItems}
+      <AuroraBackground>
+        <div className="min-h-screen w-full py-4 px-4 flex">
+          {/* Sidebar component */}
+          <SidebarNav 
             isActiveRoute={isActiveRoute}
-            onLogout={handleLogout}
+            onCreateJobClick={() => handleSetCreateJobModalOpen(true)}
+            onLogoutClick={handleLogout}
           />
 
-          {/* Page content */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 backdrop-blur-sm">
-            {children}
-          </main>
+          {/* Main content area */}
+          <div className="flex-1 flex flex-col min-h-screen rounded-2xl overflow-hidden backdrop-blur-md bg-white/10 dark:bg-black/10 border border-white/20 dark:border-white/10 ml-4">
+            {/* Header */}
+            <DashboardHeader 
+              mobileMenuOpen={mobileMenuOpen}
+              setMobileMenuOpen={handleSetMobileMenuOpen}
+            />
+
+            {/* Mobile Navigation Menu */}
+            <MobileMenu
+              open={mobileMenuOpen}
+              onOpenChange={handleSetMobileMenuOpen}
+              items={navigationItems}
+              isActiveRoute={isActiveRoute}
+              onLogout={handleLogout}
+            />
+
+            {/* Page content */}
+            <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
+              {children}
+            </main>
+          </div>
         </div>
-      </div>
+      </AuroraBackground>
       
       {/* Create Job Modal */}
       <CreateJobModal 

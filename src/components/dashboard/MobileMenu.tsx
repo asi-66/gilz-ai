@@ -28,7 +28,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
 }) => {
   return (
     <Collapsible open={open} onOpenChange={onOpenChange} className="md:hidden">
-      <CollapsibleContent className="backdrop-blur-md bg-blue-100/10 dark:bg-blue-900/20 border-b border-blue-200/20 dark:border-blue-700/20">
+      <CollapsibleContent className="backdrop-blur-md bg-white/10 dark:bg-black/10 border-b border-white/20 dark:border-white/10">
         <div className="py-2 px-4 flex flex-col h-[calc(100vh-64px)]">
           <div className="flex-1">
             {items.map((item) => (
@@ -38,7 +38,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
                 className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium ${
                   isActiveRoute(item.href)
                     ? "bg-[#7efb98]/20 text-[#1F2937] dark:text-white"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-blue-100/10 dark:hover:bg-blue-800/20"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-white/5"
                 }`}
                 onClick={() => onOpenChange(false)}
               >
@@ -48,11 +48,11 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
             ))}
           </div>
           
-          <div className="mt-2 pt-2 border-t border-blue-200/20 dark:border-blue-700/20">
+          <div className="mt-2 pt-2 border-t border-white/20 dark:border-white/10">
             <Button 
               variant="outline" 
               size="sm"
-              className="w-full flex items-center justify-start gap-2 bg-transparent border-blue-200/30 dark:border-blue-700/30 text-gray-700 dark:text-gray-300" 
+              className="w-full flex items-center justify-start gap-2 bg-transparent border-white/20 dark:border-white/10 text-gray-700 dark:text-gray-300" 
               onClick={onLogout}
             >
               <LogOut size={16} />

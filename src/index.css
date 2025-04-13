@@ -114,6 +114,12 @@
   }
 }
 
+@layer components {
+  .glass-card {
+    @apply backdrop-blur-md bg-white/10 dark:bg-black/10 border border-white/20 dark:border-white/10 rounded-2xl;
+  }
+}
+
 html, body, #root {
   height: 100%;
   overflow-x: hidden;

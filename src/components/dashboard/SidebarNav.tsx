@@ -39,15 +39,8 @@ const SidebarNav = memo(({
   onCreateJobClick, 
   onLogoutClick 
 }: SidebarNavProps) => {
-  const navigate = useNavigate();
-  
-  const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated");
-    navigate("/");
-  };
-
   return (
-    <Sidebar className="hidden md:flex backdrop-blur-md bg-blue-600/10 dark:bg-blue-900/20 border-r border-blue-200/20 dark:border-blue-700/20">
+    <Sidebar className="hidden md:flex rounded-2xl backdrop-blur-md bg-white/10 dark:bg-black/10 border border-white/20 dark:border-white/10 h-auto">
       <SidebarHeader className="p-4">
         <Link to="/dashboard" className="flex items-center">
           <img 
@@ -86,8 +79,8 @@ const SidebarNav = memo(({
       <SidebarFooter className="p-4">
         <Button 
           variant="outline" 
-          className="w-full flex items-center justify-start gap-2 bg-transparent border-blue-200/30 dark:border-blue-700/30 text-gray-700 dark:text-gray-300" 
-          onClick={handleLogout}
+          className="w-full flex items-center justify-start gap-2 bg-transparent border-white/20 dark:border-white/10 text-gray-700 dark:text-gray-300" 
+          onClick={onLogoutClick}
         >
           <LogOut size={18} />
           <span>Logout</span>
