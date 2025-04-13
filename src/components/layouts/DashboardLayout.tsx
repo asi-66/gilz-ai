@@ -1,4 +1,3 @@
-
 import { useState, ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { 
@@ -38,6 +37,8 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
+import { Briefcase, HelpCircle, Home, Plus, Settings } from "lucide-react";
+import CreateJobModal from "@/components/dashboard/CreateJobModal";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -57,6 +58,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [createJobModalOpen, setCreateJobModalOpen] = useState(false);
 
   const isActiveRoute = (path: string) => {
     return location.pathname === path;
@@ -71,17 +73,31 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     navigate("/");
   };
 
+  const handleCreateJobSuccess = (jobId: string) => {
+    navigate(`/dashboard/job-flow/${jobId}`);
+  };
+
+  const navigationItems = [
+    { label: "Dashboard", href: "/dashboard", icon: Home },
+    { label: "Job Flows", href: "/dashboard/job-flow", icon: Briefcase },
+    { label: "Settings", href: "/dashboard/settings", icon: Settings },
+    { label: "Help & Support", href: "/dashboard/help", icon: HelpCircle },
+  ];
+
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen flex bg-[#F9FAFB]">
-        {/* Sidebar for desktop */}
+        {/* Sidebar component */}
         <Sidebar className="hidden md:flex">
           <SidebarHeader className="p-4">
             <Link to="/dashboard" className="flex items-center">
-              <span className="text-xl font-bold text-[#333333] mr-2">Gilz AI</span>
-              <span className="bg-[#7efb98] h-2 w-2 rounded-full"></span>
+              <img src="/lovable-uploads/2947f7fd-d3b9-4741-b729-e9afd63877aa.png" 
+                alt="Gilz AI Logo" 
+                className="w-8 h-8 mr-2" />
+              <span className="text-xl font-bold text-[#333333]">Gilz AI</span>
             </Link>
           </SidebarHeader>
+          
           <SidebarContent>
             <SidebarMenu>
               {navigationItems.map((item) => (
@@ -99,7 +115,18 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
+            
+            <div className="px-3 py-2">
+              <Button 
+                className="w-full flex items-center justify-start gap-2 bg-[#7efb98] text-[#1F2937] hover:bg-[#7efb98]/90"
+                onClick={() => setCreateJobModalOpen(true)}
+              >
+                <Plus size={18} />
+                <span>Create New Job Flow</span>
+              </Button>
+            </div>
           </SidebarContent>
+          
           <SidebarFooter className="p-4">
             <Button 
               variant="outline" 
@@ -210,6 +237,13 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </main>
         </div>
       </div>
+      
+      {/* Create Job Modal */}
+      <CreateJobModal 
+        isOpen={createJobModalOpen}
+        onClose={() => setCreateJobModalOpen(false)}
+        onSuccess={handleCreateJobSuccess}
+      />
     </SidebarProvider>
   );
 };

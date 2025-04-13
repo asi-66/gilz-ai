@@ -7,6 +7,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
+// Dashboard pages
+import Dashboard from "./pages/Dashboard";
+import JobFlow from "./pages/Dashboard/JobFlow";
+import JobFlowDetail from "./pages/Dashboard/JobFlowDetail";
+import Settings from "./pages/Dashboard/Settings";
+import Help from "./pages/Dashboard/Help";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -17,6 +24,14 @@ const App = () => (
         <Sonner />
         <Routes>
           <Route path="/" element={<Index />} />
+          
+          {/* Dashboard Routes */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/job-flow" element={<JobFlow />} />
+          <Route path="/dashboard/job-flow/:id" element={<JobFlowDetail />} />
+          <Route path="/dashboard/settings" element={<Settings />} />
+          <Route path="/dashboard/help" element={<Help />} />
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
