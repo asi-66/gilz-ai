@@ -33,7 +33,12 @@ export const LoginForm = ({
   return (
     <form className="space-y-4" onSubmit={onSubmit}>
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label 
+          htmlFor="email" 
+          className="text-gray-700 dark:text-gray-300 font-medium"
+        >
+          Email
+        </Label>
         <Input 
           id="email" 
           type="email" 
@@ -41,12 +46,17 @@ export const LoginForm = ({
           onChange={(e) => setEmail(e.target.value)} 
           placeholder="Enter your email"
           required 
-          className="backdrop-blur-sm bg-white/5 dark:bg-black/5 border-black/10 dark:border-white/10"
+          className="backdrop-blur-sm bg-white/20 dark:bg-black/20 border-black/20 dark:border-white/20 text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
         />
       </div>
       
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <Label 
+          htmlFor="password" 
+          className="text-gray-700 dark:text-gray-300 font-medium"
+        >
+          Password
+        </Label>
         <Input 
           id="password" 
           type="password" 
@@ -54,7 +64,7 @@ export const LoginForm = ({
           onChange={(e) => setPassword(e.target.value)} 
           placeholder="Enter your password" 
           required
-          className="backdrop-blur-sm bg-white/5 dark:bg-black/5 border-black/10 dark:border-white/10"
+          className="backdrop-blur-sm bg-white/20 dark:bg-black/20 border-black/20 dark:border-white/20 text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
         />
       </div>
       
@@ -66,14 +76,14 @@ export const LoginForm = ({
         />
         <label
           htmlFor="remember"
-          className="text-sm text-black/70 dark:text-white/70 cursor-pointer"
+          className="text-sm text-gray-600 dark:text-gray-300 cursor-pointer"
         >
           Remember me
         </label>
       </div>
       
       <Button 
-        className="w-full bg-[#7efb98] text-black hover:bg-[#7efb98]/90"
+        className="w-full bg-[#7efb98] text-gray-900 hover:bg-[#7efb98]/90 font-semibold"
         type="submit"
         disabled={loading}
       >
