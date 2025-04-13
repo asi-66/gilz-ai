@@ -65,6 +65,8 @@ export const AuthFormContainer = ({
             onSubmit={handleSignup}
             onLoginClick={handleLoginClick}
             loading={loading}
+            email={email}
+            setEmail={setEmail}
           />
         )}
         

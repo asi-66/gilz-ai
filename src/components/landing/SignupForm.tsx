@@ -9,9 +9,17 @@ interface SignupFormProps {
   onSubmit: (e: React.FormEvent) => void;
   onLoginClick: () => void;
   loading?: boolean;
+  email?: string;
+  setEmail?: (email: string) => void;
 }
 
-export const SignupForm = ({ onSubmit, onLoginClick, loading = false }: SignupFormProps) => {
+export const SignupForm = ({ 
+  onSubmit, 
+  onLoginClick, 
+  loading = false,
+  email,
+  setEmail
+}: SignupFormProps) => {
   return (
     <>
       <h2 className="text-xl font-medium text-black dark:text-white mb-4">Get Started</h2>
@@ -24,7 +32,15 @@ export const SignupForm = ({ onSubmit, onLoginClick, loading = false }: SignupFo
         
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" name="email" type="email" placeholder="Enter your email" required />
+          <Input 
+            id="email" 
+            name="email" 
+            type="email" 
+            placeholder="Enter your email" 
+            required 
+            value={email}
+            onChange={(e) => setEmail && setEmail(e.target.value)}
+          />
         </div>
         
         <div className="space-y-2">

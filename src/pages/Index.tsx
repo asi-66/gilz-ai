@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { AuroraBackground } from "@/components/ui/aurora-background";
 import { Navbar } from "@/components/landing/Navbar";
 import { HeroContent } from "@/components/landing/HeroContent";
@@ -21,8 +21,9 @@ const Index = () => {
   const { session } = useAuth();
 
   // Redirect to dashboard if already authenticated
-  React.useEffect(() => {
+  useEffect(() => {
     if (session) {
+      console.log("User is authenticated, redirecting to dashboard");
       navigate("/dashboard");
     }
   }, [session, navigate]);
@@ -75,8 +76,9 @@ const Index = () => {
     const signupPassword = formData.get('password') as string;
     
     try {
+      console.log("Starting signup process");
       // Sign up with Supabase
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: signupEmail,
         password: signupPassword,
         options: {
@@ -89,14 +91,25 @@ const Index = () => {
       
       if (error) throw error;
       
+      console.log("Signup successful:", data);
+      
       // Successful signup
       toast({
         title: "Account created",
         description: "Your account has been created successfully. You will be redirected to the dashboard.",
       });
       
+      // Update email state for login if needed
+      setEmail(signupEmail);
+      
       // Note: Redirection will happen automatically when session changes due to useEffect above
+      // If the user was already signed in during signup (common behavior in Supabase)
+      if (data.session) {
+        console.log("User session created during signup, redirecting to dashboard");
+        navigate("/dashboard");
+      }
     } catch (error: any) {
+      console.error("Signup error:", error);
       toast({
         title: "Error",
         description: error.message || "Failed to create account. Please try again.",
