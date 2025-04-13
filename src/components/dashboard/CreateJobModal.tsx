@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -42,6 +41,10 @@ interface CreateJobModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (jobId: string) => void;
+}
+
+interface JobResponse {
+  id: string;
 }
 
 const CreateJobModal: React.FC<CreateJobModalProps> = ({
@@ -140,7 +143,6 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({
     setIsLoading(true);
 
     try {
-      // Step 1: Create the job
       const jobData = {
         title: formData.flowName,
         description: formData.jobDescription,
@@ -152,10 +154,9 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({
         educationRequirements: "Not Specified",
       };
 
-      const jobResponse = await api.createJob(jobData);
+      const jobResponse = await api.createJob(jobData) as JobResponse;
       const jobId = jobResponse.id;
 
-      // Step 2: Upload resumes
       const resumePromises = formData.resumes.map(async (file) => {
         return new Promise<void>((resolve, reject) => {
           const reader = new FileReader();

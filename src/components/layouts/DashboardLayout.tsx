@@ -1,18 +1,21 @@
+
 import { useState, ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard, 
-  Briefcase, 
   FileText, 
   Users, 
   MessageSquare, 
-  Settings, 
-  HelpCircle, 
   LogOut, 
   Menu, 
   X, 
   User, 
-  Bell
+  Bell,
+  Briefcase,
+  HelpCircle,
+  Home,
+  Plus,
+  Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -37,7 +40,6 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { Briefcase, HelpCircle, Home, Plus, Settings } from "lucide-react";
 import CreateJobModal from "@/components/dashboard/CreateJobModal";
 
 interface DashboardLayoutProps {

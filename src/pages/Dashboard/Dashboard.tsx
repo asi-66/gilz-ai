@@ -33,10 +33,7 @@ const Dashboard = () => {
           <DashboardCharts data={chartData} />
 
           {/* Recent Activity */}
-          <RecentActivity 
-            activities={dashboardData.recentActivity} 
-            isLoading={isLoading} 
-          />
+          <RecentActivity />
         </div>
       </div>
     </DashboardLayout>
