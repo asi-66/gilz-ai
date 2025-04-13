@@ -70,18 +70,16 @@ const Index = () => {
     <AuroraBackground className={`${isMobile ? 'overflow-auto' : 'overflow-hidden'}`}>
       <div className={`flex flex-col relative w-full ${isMobile ? 'min-h-full' : 'min-h-screen'}`}>
         <Navbar 
-          showLoginForm={true}
-          handleLoginClick={() => {}} // No-op as we only have login
-          handleSignupClick={() => {}} // No-op as we removed signup
+          showLoginForm={false}
+          handleLoginClick={() => {}} // No-op 
+          handleSignupClick={() => {}} // No-op
         />
 
         {/* Hero Section with Two Columns */}
         <div className={`flex-1 flex flex-col md:flex-row items-center justify-center px-6 md:px-16 lg:px-24 gap-8 lg:gap-16 py-8 ${isMobile ? '' : 'h-[calc(100vh-76px)]'}`}>
           {/* Left Column - Content */}
           <div className="w-full md:w-1/2 flex flex-col justify-center space-y-6 mb-8 md:mb-0">
-            <div className="bg-white/10 dark:bg-black/10 backdrop-blur-md border border-black/5 dark:border-white/5 rounded-xl p-6 shadow-sm">
-              <HeroContent />
-            </div>
+            <HeroContent />
           </div>
           
           {/* Right Column - Login Form Only */}

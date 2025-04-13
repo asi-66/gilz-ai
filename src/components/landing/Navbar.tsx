@@ -1,8 +1,7 @@
 
 import { useState, useCallback, memo } from "react";
-import { Button } from "@/components/ui/button";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { MenuIcon, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useAuth } from "@/hooks/use-auth";
@@ -20,22 +19,10 @@ export const Navbar = memo(({
 }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { session } = useAuth();
-  const navigate = useNavigate();
 
   const toggleMenu = useCallback(() => {
     setIsMenuOpen(prevState => !prevState);
   }, []);
-
-  const handleAuthAction = useCallback(() => {
-    if (session) {
-      navigate("/dashboard");
-    }
-  }, [session, navigate]);
-
-  const handleMobileItemClick = useCallback(() => {
-    toggleMenu();
-    handleAuthAction();
-  }, [toggleMenu, handleAuthAction]);
 
   return (
     <>
@@ -64,20 +51,13 @@ export const Navbar = memo(({
               </NavigationMenuList>
             </NavigationMenu>
             <ThemeToggle />
-            <Button 
-              variant="outline" 
-              className="rounded-full border border-black/30 dark:border-white/30 text-black dark:text-white hover:bg-transparent dark:hover:bg-transparent transition-all hover:border-black dark:hover:border-white bg-transparent"
-              onClick={handleAuthAction}
-            >
-              {session ? "Dashboard" : "Log In"}
-            </Button>
           </div>
 
           <div className="md:hidden flex items-center gap-4">
             <ThemeToggle />
-            <Button variant="ghost" size="icon" onClick={toggleMenu} className="text-black dark:text-white">
+            <button variant="ghost" size="icon" onClick={toggleMenu} className="text-black dark:text-white">
               {isMenuOpen ? <X size={24} /> : <MenuIcon size={24} />}
-            </Button>
+            </button>
           </div>
         </div>
       </header>
@@ -91,13 +71,6 @@ export const Navbar = memo(({
             <Link to="#" className="text-xl font-medium text-black dark:text-white hover:text-black/80 dark:hover:text-white/80" onClick={toggleMenu}>
               Help/Support
             </Link>
-            <Button 
-              variant="outline" 
-              className="w-full rounded-full border border-black/30 dark:border-white/30 text-black dark:text-white hover:bg-transparent dark:hover:bg-transparent transition-all hover:border-black dark:hover:border-white bg-transparent mt-4"
-              onClick={handleMobileItemClick}
-            >
-              {session ? "Dashboard" : "Log In"}
-            </Button>
           </nav>
         </div>
       )}
