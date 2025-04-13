@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { AuroraBackground } from "@/components/ui/aurora-background";
 import { Navbar } from "@/components/landing/Navbar";
 import { HeroContent } from "@/components/landing/HeroContent";
@@ -7,8 +7,6 @@ import { AuthFormContainer } from "@/components/landing/AuthFormContainer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/use-auth";
-import { supabase } from "@/integrations/supabase/client";
 
 // Predefined credentials for this internal tool
 const ADMIN_USERNAME = "Giller@tnp.com";
@@ -22,15 +20,23 @@ const Index = () => {
   const [loading, setLoading] = React.useState(false);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
-  const { session } = useAuth();
-
-  // Redirect to dashboard if already authenticated
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  // Check for saved auth in localStorage
   useEffect(() => {
-    if (session) {
-      console.log("User is authenticated, redirecting to dashboard");
+    const savedAuth = localStorage.getItem("isAuthenticated");
+    if (savedAuth === "true") {
+      setIsAuthenticated(true);
       navigate("/dashboard");
     }
-  }, [session, navigate]);
+  }, [navigate]);
+  
+  // Redirect to dashboard if authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,34 +45,9 @@ const Index = () => {
     try {
       // Validate against predefined credentials
       if (email === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-        // For internal tool, we can bypass Supabase auth for predefined credentials
-        // We'll attempt to sign in directly, but also handle cases where the user might not exist yet
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: ADMIN_USERNAME,
-          password: ADMIN_PASSWORD,
-        });
-        
-        if (error) {
-          if (error.message.includes("Invalid login credentials")) {
-            // If login fails, try to sign up the admin user
-            const { error: signUpError } = await supabase.auth.signUp({
-              email: ADMIN_USERNAME,
-              password: ADMIN_PASSWORD,
-            });
-            
-            if (signUpError) throw signUpError;
-            
-            // Try to sign in again after signup
-            const { error: retryError } = await supabase.auth.signInWithPassword({
-              email: ADMIN_USERNAME,
-              password: ADMIN_PASSWORD,
-            });
-            
-            if (retryError) throw retryError;
-          } else {
-            throw error;
-          }
-        }
+        // Set authentication in localStorage for persistence
+        localStorage.setItem("isAuthenticated", "true");
+        setIsAuthenticated(true);
         
         toast({
           title: "Success",

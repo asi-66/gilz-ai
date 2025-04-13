@@ -1,11 +1,9 @@
-
 import { Suspense, lazy } from "react"
 import { Toaster } from "@/components/ui/toaster"
 import { Toaster as Sonner } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import { useAuth } from "@/hooks/use-auth"
 
 // Fallback loading component
 import { Loader } from "@/components/common/Loader"
@@ -34,9 +32,9 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { session } = useAuth()
+  const isAuthenticated = localStorage.getItem("isAuthenticated") === "true"
   
-  if (!session) {
+  if (!isAuthenticated) {
     return <Navigate to="/" replace />
   }
   
