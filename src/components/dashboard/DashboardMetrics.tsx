@@ -12,10 +12,10 @@ interface MetricCardProps {
 
 const MetricCard: React.FC<MetricCardProps> = ({ title, value, description, icon }) => {
   return (
-    <Card className="border shadow-sm hover:shadow-md transition-shadow duration-200">
+    <Card className="border-none shadow-sm hover:shadow-md transition-shadow duration-200 backdrop-blur-md bg-white/10 dark:bg-black/20">
       <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-        <CardTitle className="text-sm font-medium text-gray-800 dark:text-gray-200">{title}</CardTitle>
-        <div className="w-8 h-8 bg-[#7efb98]/20 rounded-full flex items-center justify-center text-[#1F2937]">
+        <CardTitle className="text-sm font-medium text-gray-800 dark:text-gray-100">{title}</CardTitle>
+        <div className="w-8 h-8 bg-[#7efb98]/30 rounded-full flex items-center justify-center text-[#1F2937] dark:text-white">
           {icon}
         </div>
       </CardHeader>

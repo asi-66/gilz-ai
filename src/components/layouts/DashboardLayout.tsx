@@ -37,7 +37,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   };
 
   const navigationItems = [
-    { label: "Dashboard", href: "/dashboard", icon: Home },
+    { label: "Overview", href: "/dashboard", icon: Home },
     { label: "Job Flows", href: "/dashboard/job-flow", icon: Briefcase },
     { label: "Settings", href: "/dashboard/settings", icon: Settings },
     { label: "Help & Support", href: "/dashboard/help", icon: HelpCircle },
@@ -45,7 +45,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen flex bg-[#F9FAFB]">
+      <div className="min-h-screen flex w-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
         {/* Sidebar component */}
         <SidebarNav 
           isActiveRoute={isActiveRoute}
@@ -71,7 +71,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           />
 
           {/* Page content */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8">
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 backdrop-blur-sm">
             {children}
           </main>
         </div>

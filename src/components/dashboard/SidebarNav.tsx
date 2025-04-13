@@ -21,7 +21,7 @@ interface SidebarNavProps {
 }
 
 const navigationItems = [
-  { label: "Dashboard", href: "/dashboard", icon: Home },
+  { label: "Overview", href: "/dashboard", icon: Home },
   { label: "Job Flows", href: "/dashboard/job-flow", icon: Briefcase },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
   { label: "Help & Support", href: "/dashboard/help", icon: HelpCircle },
@@ -33,7 +33,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
   onLogoutClick 
 }) => {
   return (
-    <Sidebar className="hidden md:flex">
+    <Sidebar className="hidden md:flex backdrop-blur-md bg-white/5 dark:bg-black/20 border-r border-gray-200/20 dark:border-gray-700/20">
       <SidebarHeader className="p-4">
         <Link to="/dashboard" className="flex items-center">
           <img 
@@ -41,7 +41,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             alt="Gilz AI Logo" 
             className="w-8 h-8 mr-2" 
           />
-          <span className="text-xl font-bold text-[#333333]">Gilz AI</span>
+          <span className="text-xl font-bold text-gray-800 dark:text-white">Gilz AI</span>
         </Link>
       </SidebarHeader>
       
@@ -72,7 +72,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
       <SidebarFooter className="p-4">
         <Button 
           variant="outline" 
-          className="w-full flex items-center justify-start gap-2" 
+          className="w-full flex items-center justify-start gap-2 bg-transparent border-gray-200/30 dark:border-gray-700/30 text-gray-700 dark:text-gray-300" 
           onClick={onLogoutClick}
         >
           <LogOut size={18} />
