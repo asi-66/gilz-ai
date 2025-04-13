@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -9,18 +10,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { api } from "@/services/api";
 import { Loader2 } from "lucide-react";
+import { api } from "@/services/api";
+import Step1NameFlow from "./JobFormSteps/Step1NameFlow";
+import Step2JobDetails from "./JobFormSteps/Step2JobDetails";
+import Step3ResumeUpload from "./JobFormSteps/Step3ResumeUpload";
 
 interface Step1FormData {
   flowName: string;
@@ -217,97 +211,26 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({
 
         <div className="space-y-4 py-4">
           {step === 1 && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="flowName">Flow Name</Label>
-                <Input
-                  id="flowName"
-                  name="flowName"
-                  placeholder="e.g., UI/UX Designer Screening"
-                  value={formData.flowName}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
+            <Step1NameFlow 
+              flowName={formData.flowName}
+              onChange={handleChange}
+            />
           )}
 
           {step === 2 && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="jobDescription">Job Description</Label>
-                <Textarea
-                  id="jobDescription"
-                  name="jobDescription"
-                  placeholder="Enter the job description here..."
-                  value={formData.jobDescription}
-                  onChange={handleChange}
-                  rows={6}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="workMode">Work Mode</Label>
-                <Select
-                  value={formData.workMode}
-                  onValueChange={(value) =>
-                    handleSelectChange("workMode", value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select work mode" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Remote">Remote</SelectItem>
-                    <SelectItem value="In-office">In-office</SelectItem>
-                    <SelectItem value="Hybrid">Hybrid</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            <Step2JobDetails 
+              jobDescription={formData.jobDescription}
+              workMode={formData.workMode}
+              onInputChange={handleChange}
+              onSelectChange={handleSelectChange}
+            />
           )}
 
           {step === 3 && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="resumes">Upload Resumes (Max 5)</Label>
-                <div className="flex items-center justify-center w-full">
-                  <label
-                    htmlFor="resumes"
-                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-background/30 hover:bg-background/50 border-border/50"
-                  >
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <p className="mb-2 text-sm text-foreground/70">
-                        <span className="font-semibold">Click to upload</span> or
-                        drag and drop
-                      </p>
-                      <p className="text-xs text-foreground/50">
-                        PDF, DOCX, or TXT (MAX. 5 files)
-                      </p>
-                    </div>
-                    <Input
-                      id="resumes"
-                      type="file"
-                      className="hidden"
-                      multiple
-                      accept=".pdf,.docx,.doc,.txt"
-                      onChange={handleFileChange}
-                    />
-                  </label>
-                </div>
-                {formData.resumes.length > 0 && (
-                  <div className="mt-2">
-                    <p className="text-sm font-medium">
-                      {formData.resumes.length} file(s) selected:
-                    </p>
-                    <ul className="text-xs text-foreground/70 mt-1">
-                      {formData.resumes.map((file, index) => (
-                        <li key={index}>{file.name}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </div>
+            <Step3ResumeUpload 
+              resumes={formData.resumes}
+              onFileChange={handleFileChange}
+            />
           )}
         </div>
 

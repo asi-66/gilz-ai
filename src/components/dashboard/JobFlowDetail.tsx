@@ -1,18 +1,15 @@
 
 import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, MessageSquare, Save, Users } from "lucide-react";
+import { Loader2, MessageSquare, Users } from "lucide-react";
 import { api } from "@/services/api";
 import ChatInterface from "./ChatInterface";
 import EvaluationInterface from "./EvaluationInterface";
+import JobFlowSettingsTab from "./JobFlowSettingsTab";
 
 interface JobFlowDetailProps {
   jobId: string;
@@ -212,7 +209,7 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
           </TabsList>
           
           <TabsContent value="settings" className="mt-4">
-            <SettingsTabContent 
+            <JobFlowSettingsTab 
               formData={formData}
               isEditing={isEditing}
               isLoading={isLoading}
@@ -237,7 +234,7 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
           )}
         </Tabs>
       ) : (
-        <SettingsTabContent 
+        <JobFlowSettingsTab 
           formData={formData}
           isEditing={isEditing}
           isLoading={isLoading}
@@ -249,115 +246,6 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
         />
       )}
     </div>
-  );
-};
-
-// Settings Tab Content Component
-interface SettingsTabContentProps {
-  formData: {
-    title: string;
-    description: string;
-    location: string;
-  };
-  isEditing: boolean;
-  isLoading: boolean;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  handleSelectChange: (name: string, value: string) => void;
-  handleEdit: () => void;
-  handleCancel: () => void;
-  handleSave: () => void;
-}
-
-const SettingsTabContent: React.FC<SettingsTabContentProps> = ({
-  formData,
-  isEditing,
-  isLoading,
-  handleChange,
-  handleSelectChange,
-  handleEdit,
-  handleCancel,
-  handleSave,
-}) => {
-  return (
-    <Card className="bg-white/10 dark:bg-black/10 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-sm">
-      <CardHeader>
-        <CardTitle>Flow Settings</CardTitle>
-        <CardDescription>
-          Update your job flow information
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Flow Name</Label>
-            <Input
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              disabled={!isEditing}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="description">Job Description</Label>
-            <Textarea
-              id="description"
-              name="description"
-              rows={6}
-              value={formData.description}
-              onChange={handleChange}
-              disabled={!isEditing}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="location">Work Mode</Label>
-            <Select
-              disabled={!isEditing}
-              value={formData.location}
-              onValueChange={(value) => handleSelectChange("location", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select work mode" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Remote">Remote</SelectItem>
-                <SelectItem value="In-office">In-office</SelectItem>
-                <SelectItem value="Hybrid">Hybrid</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="flex justify-end space-x-2 pt-4">
-            {isEditing ? (
-              <>
-                <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
-                  Cancel
-                </Button>
-                <Button onClick={handleSave} disabled={isLoading}>
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="mr-2 h-4 w-4" />
-                      Save Changes
-                    </>
-                  )}
-                </Button>
-              </>
-            ) : (
-              <Button onClick={handleEdit}>
-                Edit
-              </Button>
-            )}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
   );
 };
 
