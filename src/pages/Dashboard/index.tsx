@@ -56,16 +56,16 @@ const DashboardHome = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-lg border shadow-sm">
           <div>
-            <h1 className="text-2xl font-medium">Dashboard</h1>
+            <h1 className="text-2xl font-medium text-gray-800 dark:text-white">Dashboard</h1>
             <p className="text-muted-foreground">
               Welcome to Gilz AI Resume Screening Dashboard
             </p>
           </div>
           <Button 
             onClick={() => setCreateJobModalOpen(true)}
-            className="bg-[#7efb98] text-[#1F2937] hover:bg-[#7efb98]/90"
+            className="bg-[#7efb98] text-[#1F2937] hover:bg-[#7efb98]/90 font-medium shadow-sm"
           >
             <Plus className="mr-2 h-4 w-4" />
             Create Job Flow

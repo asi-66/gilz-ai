@@ -32,59 +32,76 @@ const JobFlowList: React.FC<JobFlowListProps> = ({ jobFlows }) => {
     navigate(`/dashboard/job-flow/${id}`);
   };
 
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case "active":
+        return "success";
+      case "completed":
+        return "default";
+      case "pending":
+        return "secondary";
+      default:
+        return "outline";
+    }
+  };
+
   return (
-    <Card className="bg-white/10 dark:bg-black/10 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-sm">
-      <CardHeader>
-        <CardTitle>Job Flows</CardTitle>
-        <CardDescription>
+    <Card className="border shadow-sm overflow-hidden">
+      <CardHeader className="bg-white dark:bg-gray-800 pb-3">
+        <CardTitle className="text-lg font-semibold text-gray-800 dark:text-gray-100">Job Flows</CardTitle>
+        <CardDescription className="text-sm text-gray-600 dark:text-gray-300">
           Your active and recent job flows
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border">
-                <th className="text-left py-3 px-4 font-medium">Job Title</th>
-                <th className="text-left py-3 px-4 font-medium">Status</th>
-                <th className="text-left py-3 px-4 font-medium">Location</th>
-                <th className="text-left py-3 px-4 font-medium">Created</th>
-                <th className="text-left py-3 px-4 font-medium">Candidates</th>
-                <th className="text-right py-3 px-4 font-medium">Actions</th>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">Job Title</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">Status</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">Location</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">Created</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">Candidates</th>
+                <th className="text-right py-3 px-4 font-medium text-gray-700 dark:text-gray-300">Actions</th>
               </tr>
             </thead>
             <tbody>
               {jobFlows.map((flow) => (
-                <tr key={flow.id} className="border-b border-border/50 hover:bg-background/50">
-                  <td className="py-3 px-4">{flow.title}</td>
+                <tr key={flow.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                  <td className="py-3 px-4 font-medium text-gray-800 dark:text-gray-200">{flow.title}</td>
                   <td className="py-3 px-4">
-                    <Badge variant={
-                      flow.status === "active" ? "default" : 
-                      flow.status === "completed" ? "success" : "secondary"
-                    }>
+                    <Badge variant={getStatusBadgeVariant(flow.status)}>
                       {flow.status.charAt(0).toUpperCase() + flow.status.slice(1)}
                     </Badge>
                   </td>
-                  <td className="py-3 px-4">{flow.location}</td>
-                  <td className="py-3 px-4">{flow.createdAt}</td>
-                  <td className="py-3 px-4">{flow.candidateCount}</td>
+                  <td className="py-3 px-4 text-gray-700 dark:text-gray-300">{flow.location}</td>
+                  <td className="py-3 px-4 text-gray-700 dark:text-gray-300">{flow.createdAt}</td>
+                  <td className="py-3 px-4 text-gray-700 dark:text-gray-300">
+                    {flow.candidateCount > 0 ? (
+                      <span className="font-medium">{flow.candidateCount}</span>
+                    ) : (
+                      <span className="text-muted-foreground">None</span>
+                    )}
+                  </td>
                   <td className="py-3 px-4 text-right">
                     <div className="flex items-center justify-end space-x-2">
                       <Button 
                         variant="ghost" 
                         size="sm"
                         onClick={() => handleViewJobFlow(flow.id)}
+                        className="hover:bg-[#7efb98]/10 text-gray-700 dark:text-gray-300"
                       >
                         <Eye className="h-4 w-4 mr-1" />
                         View
                       </Button>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
+                          <Button variant="ghost" size="icon" className="hover:bg-muted">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" className="w-40 bg-white dark:bg-gray-800 border">
                           <DropdownMenuItem>Edit</DropdownMenuItem>
                           <DropdownMenuItem>Duplicate</DropdownMenuItem>
                           <DropdownMenuItem className="text-destructive">
