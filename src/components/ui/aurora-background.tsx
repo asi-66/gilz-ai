@@ -1,7 +1,7 @@
 
 "use client";
 import { cn } from "@/lib/utils";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 
 interface AuroraBackgroundProps extends React.HTMLProps<HTMLDivElement> {
   children: ReactNode;
@@ -14,6 +14,12 @@ export const AuroraBackground = ({
   showRadialGradient = true,
   ...props
 }: AuroraBackgroundProps) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div
       className={cn(
@@ -35,6 +41,9 @@ export const AuroraBackground = ({
             filter blur-[30px] invert dark:invert-0
             pointer-events-none
             absolute -inset-[10px] opacity-25 dark:opacity-50
+            animate-aurora-smooth
+            transition-opacity duration-1000
+            ${mounted ? 'opacity-25 dark:opacity-50' : 'opacity-0'}
             `,
             showRadialGradient &&
               `[mask-image:radial-gradient(ellipse_at_100%_0%,black_20%,var(--transparent)_70%)]`
