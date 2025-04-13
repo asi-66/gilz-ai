@@ -29,14 +29,8 @@ export const Navbar = memo(({
   const handleAuthAction = useCallback(() => {
     if (session) {
       navigate("/dashboard");
-    } else {
-      if (showLoginForm) {
-        handleSignupClick();
-      } else {
-        handleLoginClick();
-      }
     }
-  }, [session, navigate, showLoginForm, handleSignupClick, handleLoginClick]);
+  }, [session, navigate]);
 
   const handleMobileItemClick = useCallback(() => {
     toggleMenu();
@@ -75,7 +69,7 @@ export const Navbar = memo(({
               className="rounded-full border border-black/30 dark:border-white/30 text-black dark:text-white hover:bg-transparent dark:hover:bg-transparent transition-all hover:border-black dark:hover:border-white bg-transparent"
               onClick={handleAuthAction}
             >
-              {session ? "Dashboard" : (showLoginForm ? "Sign Up" : "Log In")}
+              {session ? "Dashboard" : "Log In"}
             </Button>
           </div>
 
@@ -102,7 +96,7 @@ export const Navbar = memo(({
               className="w-full rounded-full border border-black/30 dark:border-white/30 text-black dark:text-white hover:bg-transparent dark:hover:bg-transparent transition-all hover:border-black dark:hover:border-white bg-transparent mt-4"
               onClick={handleMobileItemClick}
             >
-              {session ? "Dashboard" : (showLoginForm ? "Sign Up" : "Log In")}
+              {session ? "Dashboard" : "Log In"}
             </Button>
           </nav>
         </div>

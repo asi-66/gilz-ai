@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { AuroraBackground } from "@/components/ui/aurora-background";
 import { Navbar } from "@/components/landing/Navbar";
@@ -10,8 +11,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 
 // Predefined credentials for this internal tool
-const ADMIN_USERNAME = "admin@tnp.com";
-const ADMIN_PASSWORD = "admin123";
+const ADMIN_USERNAME = "Giller@tnp.com";
+const ADMIN_PASSWORD = "Gilz123";
 
 const Index = () => {
   const [formType, setFormType] = React.useState<"login" | "signup" | "forgotPassword">("login");
@@ -30,15 +31,6 @@ const Index = () => {
       navigate("/dashboard");
     }
   }, [session, navigate]);
-
-  const handleLoginClick = () => {
-    setFormType("login");
-  };
-
-  const handleSignupClick = () => {
-    // No signup in this internal tool, but redirect to login
-    setFormType("login");
-  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,9 +70,9 @@ const Index = () => {
     <AuroraBackground className={`${isMobile ? 'overflow-auto' : 'overflow-hidden'}`}>
       <div className={`flex flex-col relative w-full ${isMobile ? 'min-h-full' : 'min-h-screen'}`}>
         <Navbar 
-          showLoginForm={formType === "login"}
-          handleLoginClick={handleLoginClick}
-          handleSignupClick={handleLoginClick} // Both buttons go to login
+          showLoginForm={true}
+          handleLoginClick={() => {}} // No-op as we only have login
+          handleSignupClick={() => {}} // No-op as we removed signup
         />
 
         {/* Hero Section with Two Columns */}
