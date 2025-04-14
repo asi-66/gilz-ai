@@ -82,14 +82,14 @@ const Settings = () => {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-medium">Settings</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl font-medium text-gray-900 dark:text-white">Settings</h1>
+          <p className="text-gray-600 dark:text-gray-300">
             Manage your account settings and preferences
           </p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
+          <TabsList className="text-gray-800 dark:text-gray-200">
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
             <TabsTrigger value="account">Account</TabsTrigger>
@@ -98,8 +98,8 @@ const Settings = () => {
           <TabsContent value="profile" className="mt-4">
             <Card className="bg-white/10 dark:bg-black/10 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-sm">
               <CardHeader>
-                <CardTitle>Profile Information</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-gray-900 dark:text-white">Profile Information</CardTitle>
+                <CardDescription className="text-gray-600 dark:text-gray-300">
                   Update your personal information
                 </CardDescription>
               </CardHeader>
@@ -107,9 +107,9 @@ const Settings = () => {
                 <div className="flex flex-col md:flex-row items-start gap-8">
                   <div className="flex flex-col items-center space-y-2">
                     <Avatar className="w-24 h-24">
-                      <AvatarFallback className="text-xl">HR</AvatarFallback>
+                      <AvatarFallback className="text-xl bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">HR</AvatarFallback>
                     </Avatar>
-                    <Button variant="outline" size="sm" className="mt-2">
+                    <Button variant="outline" size="sm" className="mt-2 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-700">
                       <Upload className="mr-2 h-4 w-4" />
                       Change Photo
                     </Button>
@@ -118,43 +118,47 @@ const Settings = () => {
                   <div className="flex-1 space-y-4 w-full">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="name">Full Name</Label>
+                        <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">Full Name</Label>
                         <Input
                           id="name"
                           name="name"
                           value={profileData.name}
                           onChange={handleProfileChange}
+                          className="bg-white/50 dark:bg-black/30 text-gray-800 dark:text-white"
                         />
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">Email</Label>
                         <Input
                           id="email"
                           name="email"
                           type="email"
                           value={profileData.email}
                           onChange={handleProfileChange}
+                          className="bg-white/50 dark:bg-black/30 text-gray-800 dark:text-white"
                         />
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="company">Company</Label>
+                        <Label htmlFor="company" className="text-gray-700 dark:text-gray-300">Company</Label>
                         <Input
                           id="company"
                           name="company"
                           value={profileData.company}
                           onChange={handleProfileChange}
+                          className="bg-white/50 dark:bg-black/30 text-gray-800 dark:text-white"
                         />
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="phone">Phone</Label>
+                        <Label htmlFor="phone" className="text-gray-700 dark:text-gray-300">Phone</Label>
                         <Input
                           id="phone"
                           name="phone"
                           value={profileData.phone}
                           onChange={handleProfileChange}
+                          className="bg-white/50 dark:bg-black/30 text-gray-800 dark:text-white"
                         />
                       </div>
                     </div>
@@ -183,8 +187,8 @@ const Settings = () => {
           <TabsContent value="notifications" className="mt-4">
             <Card className="bg-white/10 dark:bg-black/10 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-sm">
               <CardHeader>
-                <CardTitle>Notification Preferences</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-gray-900 dark:text-white">Notification Preferences</CardTitle>
+                <CardDescription className="text-gray-600 dark:text-gray-300">
                   Choose how you want to be notified
                 </CardDescription>
               </CardHeader>
@@ -193,8 +197,8 @@ const Settings = () => {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="font-medium">Email Notifications</h4>
-                        <p className="text-sm text-muted-foreground">
+                        <h4 className="font-medium text-gray-800 dark:text-gray-200">Email Notifications</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
                           Receive email notifications for important updates
                         </p>
                       </div>
@@ -208,8 +212,8 @@ const Settings = () => {
                     
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="font-medium">Job Flow Alerts</h4>
-                        <p className="text-sm text-muted-foreground">
+                        <h4 className="font-medium text-gray-800 dark:text-gray-200">Job Flow Alerts</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
                           Get notified when job flows are created or updated
                         </p>
                       </div>
@@ -223,8 +227,8 @@ const Settings = () => {
                     
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="font-medium">Candidate Updates</h4>
-                        <p className="text-sm text-muted-foreground">
+                        <h4 className="font-medium text-gray-800 dark:text-gray-200">Candidate Updates</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
                           Receive notifications about candidate evaluations
                         </p>
                       </div>
@@ -238,8 +242,8 @@ const Settings = () => {
                     
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="font-medium">Marketing Emails</h4>
-                        <p className="text-sm text-muted-foreground">
+                        <h4 className="font-medium text-gray-800 dark:text-gray-200">Marketing Emails</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
                           Receive updates about new features and promotional offers
                         </p>
                       </div>
@@ -275,8 +279,8 @@ const Settings = () => {
           <TabsContent value="account" className="mt-4">
             <Card className="bg-white/10 dark:bg-black/10 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-sm">
               <CardHeader>
-                <CardTitle>Account Settings</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-gray-900 dark:text-white">Account Settings</CardTitle>
+                <CardDescription className="text-gray-600 dark:text-gray-300">
                   Manage your account security and password
                 </CardDescription>
               </CardHeader>
@@ -284,30 +288,33 @@ const Settings = () => {
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="currentPassword">Current Password</Label>
+                      <Label htmlFor="currentPassword" className="text-gray-700 dark:text-gray-300">Current Password</Label>
                       <Input
                         id="currentPassword"
                         type="password"
                         placeholder="Enter your current password"
+                        className="bg-white/50 dark:bg-black/30 text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                       />
                     </div>
                     <div className="md:col-span-2 md:w-1/2">
                       <div className="space-y-2">
-                        <Label htmlFor="newPassword">New Password</Label>
+                        <Label htmlFor="newPassword" className="text-gray-700 dark:text-gray-300">New Password</Label>
                         <Input
                           id="newPassword"
                           type="password"
                           placeholder="Enter new password"
+                          className="bg-white/50 dark:bg-black/30 text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                         />
                       </div>
                     </div>
                     <div className="md:col-span-2 md:w-1/2">
                       <div className="space-y-2">
-                        <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                        <Label htmlFor="confirmPassword" className="text-gray-700 dark:text-gray-300">Confirm New Password</Label>
                         <Input
                           id="confirmPassword"
                           type="password"
                           placeholder="Confirm new password"
+                          className="bg-white/50 dark:bg-black/30 text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                         />
                       </div>
                     </div>
