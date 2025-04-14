@@ -37,7 +37,7 @@ const SidebarNav = memo(({
   onLogoutClick 
 }: SidebarNavProps) => {
   return (
-    <Sidebar className="hidden md:flex glass-card h-auto my-4 ml-4 mr-0">
+    <Sidebar className="hidden md:flex glass-card h-auto my-4 ml-4 mr-0 rounded-2xl overflow-hidden">
       <SidebarHeader className="flex items-center justify-between p-4">
         <Link to="/dashboard" className="flex items-center">
           <img 
@@ -74,6 +74,14 @@ const SidebarNav = memo(({
       </SidebarContent>
       
       <SidebarFooter className="p-4 flex flex-col gap-2">
+        <Button
+          variant="outline"
+          className="w-full flex items-center justify-start gap-2 border-white/10 dark:border-white/5 bg-white/5 dark:bg-black/5 text-black dark:text-white"
+          onClick={onLogoutClick}
+        >
+          <LogOut size={18} />
+          <span>Logout</span>
+        </Button>
         <div className="text-xs text-black/60 dark:text-white/60 py-2 text-center">
           © 2025 TNP Consultants
         </div>

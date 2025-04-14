@@ -35,7 +35,7 @@ export const DashboardHeader = ({
         <Button 
           onClick={handleLogout} 
           variant="outline" 
-          className="border-white/20 dark:border-white/10 bg-white/5 dark:bg-black/5 backdrop-blur-sm"
+          className="border-white/20 dark:border-white/10 bg-white/5 dark:bg-black/5 backdrop-blur-sm text-gray-800 dark:text-white"
         >
           Logout
         </Button>
