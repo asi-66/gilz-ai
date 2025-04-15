@@ -1,8 +1,8 @@
 
 import { toast } from "@/hooks/use-toast";
 
-// Base API URL - Updated to match the correct endpoint format
-const API_BASE_URL = 'https://primary-production-005c.up.railway.app/workflow/fkOR9Lq3foJ1vWxy/webhook';
+// Base API URL - This will be updated by the user
+const API_BASE_URL = '';
 
 // Interface for API error
 interface ApiError {
@@ -79,41 +79,9 @@ const fetchApi = async <T>(
   }
 };
 
-// API functions for different endpoints
+// Empty API object ready for new endpoints
 export const api = {
-  // Job Management - Using empty string for main webhook endpoint
-  createJob: (jobData: any) => {
-    console.log('Creating job with data:', jobData);
-    return fetchApi('', 'POST', {
-      type: 'job-create',
-      data: jobData
-    });
-  },
-  
-  // Resume Upload
-  uploadResume: (data: { resumeText: string, jobId: string }) => {
-    console.log('Uploading resume for job:', data.jobId);
-    return fetchApi('', 'POST', {
-      type: 'resume-upload',
-      data
-    });
-  },
-  
-  // Resume Scoring
-  scoreResume: (data: { resumeId: string, jobId: string }) => {
-    return fetchApi('', 'POST', {
-      type: 'resume-score',
-      data
-    });
-  },
-  
-  // HR Chat
-  sendChatMessage: (data: { message: string, sessionId: string }) => {
-    return fetchApi('', 'POST', {
-      type: 'hr-chat',
-      data
-    });
-  }
+  // API endpoints will be added here by the user
 };
 
 export default api;
