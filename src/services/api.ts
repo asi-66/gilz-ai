@@ -1,3 +1,6 @@
+// Modified API service to fix integration issues with n8n workflow
+
+import { toast } from "@/hooks/use-toast";
 
 // Base API URL - Connection to n8n webhook
 const API_BASE_URL = 'https://primary-production-005c.up.railway.app/webhook/9a45b076-3a38-4fb7-9a9c-488bbca220ab';
@@ -6,6 +9,8 @@ const API_BASE_URL = 'https://primary-production-005c.up.railway.app/webhook/9a4
 interface ApiError {
   status: number;
   message: string;
+  code?: string;
+  details?: string;
 }
 
 // Interfaces for API requests
@@ -34,32 +39,32 @@ interface ChatMessageRequest {
 
 // Interfaces for API responses
 interface JobResponse {
-  id: string;
-  title: string;
-  status: string;
-  createdAt: string;
+  success: boolean;
+  message: string;
+  jobId: string;
+  timestamp: string;
 }
 
 interface ResumeUploadResponse {
-  id: string;
-  jobId: string;
-  status: string;
+  success: boolean;
+  message: string;
+  resumeId: string;
+  timestamp: string;
 }
 
 interface ResumeScoreResponse {
-  id: string;
-  scores: {
-    overall: number;
-    skills: number;
-    experience: number;
-    education: number;
-  };
-  recommendations: string[];
+  success: boolean;
+  message: string;
+  scoreId: string;
+  weightedScore: number;
+  rankingTier: string;
+  timestamp: string;
 }
 
 interface ChatMessageResponse {
-  id: string;
+  success: boolean;
   message: string;
+  sessionId: string;
   timestamp: string;
 }
 
@@ -72,7 +77,9 @@ const handleApiError = (error: any): ApiError => {
     // that falls out of the range of 2xx
     return {
       status: error.response.status,
-      message: error.response.data?.message || 'An error occurred with the API response'
+      message: error.response.data?.message || 'An error occurred with the API response',
+      code: error.response.data?.error?.code,
+      details: error.response.data?.error?.details
     };
   } else if (error.request) {
     // The request was made but no response was received
@@ -89,9 +96,9 @@ const handleApiError = (error: any): ApiError => {
   }
 };
 
-// Generic fetch function with error handling
+// Generic fetch function with improved error handling
 const fetchApi = async <T>(
-  endpoint: string = '', 
+  endpoint: string = '',
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'POST',
   body?: any
 ): Promise<T> => {
@@ -109,18 +116,32 @@ const fetchApi = async <T>(
 
     console.log(`Fetching ${method} ${url}`, body ? 'with payload:' : 'without payload');
     if (body) console.log(JSON.stringify(body, null, 2));
-    
+
     const response = await fetch(url, options);
     
     // Log response status
     console.log(`Response status: ${response.status}`);
-    
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`API Error (${response.status}):`, errorText);
-      throw new Error(errorText || `HTTP error! Status: ${response.status}`);
+      
+      // Try to parse error as JSON if possible
+      let errorData = {};
+      try {
+        errorData = JSON.parse(errorText);
+      } catch (e) {
+        // If not JSON, use as plain text
+      }
+      
+      throw {
+        status: response.status,
+        message: errorData?.message || errorText || `HTTP error! Status: ${response.status}`,
+        code: errorData?.error?.code,
+        details: errorData?.error?.details
+      };
     }
-    
+
     const data = await response.json() as T;
     console.log('API Response:', data);
     return data;
@@ -131,27 +152,36 @@ const fetchApi = async <T>(
   }
 };
 
-// API endpoints implementation
+// Test API connection function
+export const testApiConnection = async (): Promise<boolean> => {
+  try {
+    const response = await fetch(API_BASE_URL, {
+      method: 'HEAD',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    return response.ok;
+  } catch (error) {
+    console.error("API connection test failed:", error);
+    return false;
+  }
+};
+
+// API endpoints implementation with fixed field names to match n8n workflow
 export const api = {
-  // Job creation endpoint
+  // Job creation endpoint - FIXED to match n8n workflow expectations
   createJob: (jobData: JobCreateRequest): Promise<JobResponse> => {
     console.log('Creating job with data:', jobData);
     return fetchApi<JobResponse>('', 'POST', {
       type: 'job-create',
       data: {
         title: jobData.flowName,
-        description: jobData.jobDescription,
-        location: jobData.workMode,
-        department: "Engineering",
-        requiredSkills: [],
-        preferredSkills: [],
-        minimumExperience: "Not Specified",
-        educationRequirements: "Not Specified",
+        jobDescription: jobData.jobDescription, // FIXED: Changed from description to jobDescription
+        workMode: jobData.workMode // FIXED: This matches what n8n expects
       }
     });
   },
-  
-  // Resume upload endpoint
+
+  // Resume upload endpoint with improved error handling
   uploadResume: (data: ResumeUploadRequest): Promise<ResumeUploadResponse> => {
     console.log('Uploading resume for job:', data.jobId);
     return fetchApi<ResumeUploadResponse>('', 'POST', {
@@ -159,7 +189,7 @@ export const api = {
       data
     });
   },
-  
+
   // Resume scoring endpoint
   scoreResume: (data: ResumeScoreRequest): Promise<ResumeScoreResponse> => {
     console.log('Scoring resume:', data.resumeId, 'for job:', data.jobId);
@@ -168,7 +198,7 @@ export const api = {
       data
     });
   },
-  
+
   // HR chat endpoint
   sendChatMessage: (data: ChatMessageRequest): Promise<ChatMessageResponse> => {
     console.log('Sending chat message in session:', data.sessionId);
