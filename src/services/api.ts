@@ -1,7 +1,7 @@
 
 import { toast } from "@/hooks/use-toast";
 
-// Base API URL
+// Base API URL - Updated to match the correct endpoint format
 const API_BASE_URL = 'https://primary-production-005c.up.railway.app/workflow/fkOR9Lq3foJ1vWxy/webhook';
 
 // Interface for API error
@@ -19,7 +19,7 @@ const handleApiError = (error: any): ApiError => {
     // that falls out of the range of 2xx
     return {
       status: error.response.status,
-      message: error.response.data.message || 'An error occurred with the API response'
+      message: error.response.data?.message || 'An error occurred with the API response'
     };
   } else if (error.request) {
     // The request was made but no response was received
@@ -43,7 +43,8 @@ const fetchApi = async <T>(
   body?: any
 ): Promise<T> => {
   try {
-    const url = `${API_BASE_URL}/${endpoint}`;
+    // Using a modified URL construction - don't append endpoint if it's empty
+    const url = endpoint ? `${API_BASE_URL}/${endpoint}` : API_BASE_URL;
     
     const options: RequestInit = {
       method,
@@ -53,15 +54,21 @@ const fetchApi = async <T>(
       body: body ? JSON.stringify(body) : undefined
     };
 
+    console.log(`Fetching ${method} ${url}`, body ? 'with payload' : 'without payload');
+    
     const response = await fetch(url, options);
     
     if (!response.ok) {
       const errorText = await response.text();
+      console.error(`API Error (${response.status}):`, errorText);
       throw new Error(errorText || `HTTP error! Status: ${response.status}`);
     }
     
-    return await response.json() as T;
+    const data = await response.json() as T;
+    console.log('API Response:', data);
+    return data;
   } catch (error) {
+    console.error('API Call Failed:', error);
     const apiError = handleApiError(error);
     toast({
       title: "API Error",
@@ -74,24 +81,38 @@ const fetchApi = async <T>(
 
 // API functions for different endpoints
 export const api = {
-  // Job Management
+  // Job Management - Using empty string for main webhook endpoint
   createJob: (jobData: any) => {
-    return fetchApi('job-create', 'POST', jobData);
+    console.log('Creating job with data:', jobData);
+    return fetchApi('', 'POST', {
+      type: 'job-create',
+      data: jobData
+    });
   },
   
   // Resume Upload
   uploadResume: (data: { resumeText: string, jobId: string }) => {
-    return fetchApi('resume-upload', 'POST', data);
+    console.log('Uploading resume for job:', data.jobId);
+    return fetchApi('', 'POST', {
+      type: 'resume-upload',
+      data
+    });
   },
   
   // Resume Scoring
   scoreResume: (data: { resumeId: string, jobId: string }) => {
-    return fetchApi('resume-score', 'POST', data);
+    return fetchApi('', 'POST', {
+      type: 'resume-score',
+      data
+    });
   },
   
   // HR Chat
   sendChatMessage: (data: { message: string, sessionId: string }) => {
-    return fetchApi('hr-chat', 'POST', data);
+    return fetchApi('', 'POST', {
+      type: 'hr-chat',
+      data
+    });
   }
 };
 

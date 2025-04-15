@@ -60,6 +60,24 @@ export const useCreateJobForm = (
   };
 
   const handleSubmit = async () => {
+    if (!formData.flowName.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a job flow name",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.jobDescription.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a job description",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (formData.resumes.length === 0) {
       toast({
         title: "Error",
@@ -70,6 +88,7 @@ export const useCreateJobForm = (
     }
 
     setIsLoading(true);
+    console.log('Starting job creation process...');
 
     try {
       const jobData = {
@@ -83,30 +102,51 @@ export const useCreateJobForm = (
         educationRequirements: "Not Specified",
       };
 
+      console.log('Submitting job data:', jobData);
       const jobResponse = await api.createJob(jobData) as JobResponse;
+      console.log('Job created successfully:', jobResponse);
+      
+      if (!jobResponse || !jobResponse.id) {
+        throw new Error('Invalid job response - missing job ID');
+      }
+      
       const jobId = jobResponse.id;
+      console.log('Processing resumes for job ID:', jobId);
 
-      const resumePromises = formData.resumes.map(async (file) => {
+      const resumePromises = formData.resumes.map(async (file, index) => {
         return new Promise<void>((resolve, reject) => {
+          console.log(`Processing resume ${index + 1}/${formData.resumes.length}: ${file.name}`);
           const reader = new FileReader();
+          
           reader.onload = async (e) => {
             try {
               const resumeText = e.target?.result as string;
+              console.log(`Uploading resume ${index + 1} content (${resumeText.length} chars)`);
+              
               await api.uploadResume({
                 resumeText,
                 jobId,
               });
+              
+              console.log(`Resume ${index + 1} uploaded successfully`);
               resolve();
             } catch (error) {
+              console.error(`Error uploading resume ${index + 1}:`, error);
               reject(error);
             }
           };
-          reader.onerror = (error) => reject(error);
+          
+          reader.onerror = (error) => {
+            console.error(`Error reading resume ${index + 1}:`, error);
+            reject(error);
+          };
+          
           reader.readAsText(file);
         });
       });
 
       await Promise.all(resumePromises);
+      console.log('All resumes processed successfully');
 
       toast({
         title: "Success",
