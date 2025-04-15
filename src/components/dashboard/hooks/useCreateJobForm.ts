@@ -103,15 +103,14 @@ export const useCreateJobForm = (
       };
 
       console.log('Submitting job data:', jobData);
-      const jobResponse = await api.createJob(jobData) as JobResponse;
-      console.log('Job created successfully:', jobResponse);
+      const jobResponse = await api.createJob(jobData);
       
       if (!jobResponse || !jobResponse.id) {
         throw new Error('Invalid job response - missing job ID');
       }
       
       const jobId = jobResponse.id;
-      console.log('Processing resumes for job ID:', jobId);
+      console.log('Job created successfully with ID:', jobId);
 
       // Step 2: Upload each resume
       const resumePromises = formData.resumes.map(async (file, index) => {
@@ -127,7 +126,7 @@ export const useCreateJobForm = (
               const resumeResponse = await api.uploadResume({
                 resumeText,
                 jobId,
-              }) as ResumeUploadResponse;
+              });
               
               console.log(`Resume ${index + 1} uploaded successfully with ID: ${resumeResponse.id}`);
               resolve(resumeResponse.id);
@@ -158,11 +157,11 @@ export const useCreateJobForm = (
       resetForm();
       onSuccess(jobId);
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating job flow:", error);
       toast({
         title: "Error",
-        description: "Failed to create job flow. Please try again.",
+        description: error.message || "Failed to create job flow. Please try again.",
         variant: "destructive",
       });
     } finally {

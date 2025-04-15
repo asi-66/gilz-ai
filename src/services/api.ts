@@ -1,6 +1,4 @@
 
-import { toast } from "@/hooks/use-toast";
-
 // Base API URL - Connection to n8n webhook
 const API_BASE_URL = 'https://primary-production-005c.up.railway.app/webhook/9a45b076-3a38-4fb7-9a9c-488bbca220ab';
 
@@ -93,8 +91,8 @@ const handleApiError = (error: any): ApiError => {
 
 // Generic fetch function with error handling
 const fetchApi = async <T>(
-  endpoint: string, 
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
+  endpoint: string = '', 
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'POST',
   body?: any
 ): Promise<T> => {
   try {
@@ -109,9 +107,13 @@ const fetchApi = async <T>(
       body: body ? JSON.stringify(body) : undefined
     };
 
-    console.log(`Fetching ${method} ${url}`, body ? 'with payload' : 'without payload');
+    console.log(`Fetching ${method} ${url}`, body ? 'with payload:' : 'without payload');
+    if (body) console.log(JSON.stringify(body, null, 2));
     
     const response = await fetch(url, options);
+    
+    // Log response status
+    console.log(`Response status: ${response.status}`);
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -125,11 +127,6 @@ const fetchApi = async <T>(
   } catch (error) {
     console.error('API Call Failed:', error);
     const apiError = handleApiError(error);
-    toast({
-      title: "API Error",
-      description: apiError.message,
-      variant: "destructive"
-    });
     throw apiError;
   }
 };
@@ -145,7 +142,7 @@ export const api = {
         title: jobData.flowName,
         description: jobData.jobDescription,
         location: jobData.workMode,
-        department: "Not Specified",
+        department: "Engineering",
         requiredSkills: [],
         preferredSkills: [],
         minimumExperience: "Not Specified",
