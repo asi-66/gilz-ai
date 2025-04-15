@@ -1,13 +1,68 @@
 
 import { toast } from "@/hooks/use-toast";
 
-// Base API URL - This will be updated by the user
-const API_BASE_URL = '';
+// Base API URL - Connection to n8n webhook
+const API_BASE_URL = 'https://primary-production-005c.up.railway.app/webhook/9a45b076-3a38-4fb7-9a9c-488bbca220ab';
 
 // Interface for API error
 interface ApiError {
   status: number;
   message: string;
+}
+
+// Interfaces for API requests
+interface JobCreateRequest {
+  flowName: string;
+  jobDescription: string;
+  workMode: string;
+}
+
+interface ResumeUploadRequest {
+  resumeText: string;
+  jobId: string;
+}
+
+interface ResumeScoreRequest {
+  resumeId: string;
+  jobId: string;
+}
+
+interface ChatMessageRequest {
+  message: string;
+  sessionId: string;
+  jobId?: string;
+  resumeId?: string;
+}
+
+// Interfaces for API responses
+interface JobResponse {
+  id: string;
+  title: string;
+  status: string;
+  createdAt: string;
+}
+
+interface ResumeUploadResponse {
+  id: string;
+  jobId: string;
+  status: string;
+}
+
+interface ResumeScoreResponse {
+  id: string;
+  scores: {
+    overall: number;
+    skills: number;
+    experience: number;
+    education: number;
+  };
+  recommendations: string[];
+}
+
+interface ChatMessageResponse {
+  id: string;
+  message: string;
+  timestamp: string;
 }
 
 // Utility function to handle API errors
@@ -79,37 +134,48 @@ const fetchApi = async <T>(
   }
 };
 
-// API endpoints (placeholder implementations to fix TypeScript errors)
+// API endpoints implementation
 export const api = {
   // Job creation endpoint
-  createJob: (jobData: any) => {
+  createJob: (jobData: JobCreateRequest): Promise<JobResponse> => {
     console.log('Creating job with data:', jobData);
-    return fetchApi<any>('', 'POST', {
+    return fetchApi<JobResponse>('', 'POST', {
       type: 'job-create',
-      data: jobData
+      data: {
+        title: jobData.flowName,
+        description: jobData.jobDescription,
+        location: jobData.workMode,
+        department: "Not Specified",
+        requiredSkills: [],
+        preferredSkills: [],
+        minimumExperience: "Not Specified",
+        educationRequirements: "Not Specified",
+      }
     });
   },
   
   // Resume upload endpoint
-  uploadResume: (data: { resumeText: string, jobId: string }) => {
+  uploadResume: (data: ResumeUploadRequest): Promise<ResumeUploadResponse> => {
     console.log('Uploading resume for job:', data.jobId);
-    return fetchApi<any>('', 'POST', {
+    return fetchApi<ResumeUploadResponse>('', 'POST', {
       type: 'resume-upload',
       data
     });
   },
   
   // Resume scoring endpoint
-  scoreResume: (data: { resumeId: string, jobId: string }) => {
-    return fetchApi<any>('', 'POST', {
+  scoreResume: (data: ResumeScoreRequest): Promise<ResumeScoreResponse> => {
+    console.log('Scoring resume:', data.resumeId, 'for job:', data.jobId);
+    return fetchApi<ResumeScoreResponse>('', 'POST', {
       type: 'resume-score',
       data
     });
   },
   
   // HR chat endpoint
-  sendChatMessage: (data: { message: string, sessionId: string }) => {
-    return fetchApi<any>('', 'POST', {
+  sendChatMessage: (data: ChatMessageRequest): Promise<ChatMessageResponse> => {
+    console.log('Sending chat message in session:', data.sessionId);
+    return fetchApi<ChatMessageResponse>('', 'POST', {
       type: 'hr-chat',
       data
     });

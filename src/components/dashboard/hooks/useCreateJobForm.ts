@@ -14,6 +14,10 @@ interface JobResponse {
   id: string;
 }
 
+interface ResumeUploadResponse {
+  id: string;
+}
+
 export const useCreateJobForm = (
   onSuccess: (jobId: string) => void,
   onClose: () => void
@@ -91,15 +95,11 @@ export const useCreateJobForm = (
     console.log('Starting job creation process...');
 
     try {
+      // Step 1: Create the job
       const jobData = {
-        title: formData.flowName,
-        description: formData.jobDescription,
-        location: formData.workMode,
-        department: "Not Specified",
-        requiredSkills: [],
-        preferredSkills: [],
-        minimumExperience: "Not Specified",
-        educationRequirements: "Not Specified",
+        flowName: formData.flowName,
+        jobDescription: formData.jobDescription,
+        workMode: formData.workMode,
       };
 
       console.log('Submitting job data:', jobData);
@@ -113,8 +113,9 @@ export const useCreateJobForm = (
       const jobId = jobResponse.id;
       console.log('Processing resumes for job ID:', jobId);
 
+      // Step 2: Upload each resume
       const resumePromises = formData.resumes.map(async (file, index) => {
-        return new Promise<void>((resolve, reject) => {
+        return new Promise<string>((resolve, reject) => {
           console.log(`Processing resume ${index + 1}/${formData.resumes.length}: ${file.name}`);
           const reader = new FileReader();
           
@@ -123,13 +124,13 @@ export const useCreateJobForm = (
               const resumeText = e.target?.result as string;
               console.log(`Uploading resume ${index + 1} content (${resumeText.length} chars)`);
               
-              await api.uploadResume({
+              const resumeResponse = await api.uploadResume({
                 resumeText,
                 jobId,
-              });
+              }) as ResumeUploadResponse;
               
-              console.log(`Resume ${index + 1} uploaded successfully`);
-              resolve();
+              console.log(`Resume ${index + 1} uploaded successfully with ID: ${resumeResponse.id}`);
+              resolve(resumeResponse.id);
             } catch (error) {
               console.error(`Error uploading resume ${index + 1}:`, error);
               reject(error);
@@ -145,8 +146,9 @@ export const useCreateJobForm = (
         });
       });
 
-      await Promise.all(resumePromises);
-      console.log('All resumes processed successfully');
+      // Wait for all resumes to be uploaded
+      const resumeIds = await Promise.all(resumePromises);
+      console.log('All resumes processed successfully. Resume IDs:', resumeIds);
 
       toast({
         title: "Success",

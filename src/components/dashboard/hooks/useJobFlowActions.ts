@@ -76,11 +76,19 @@ export const useJobFlowActions = (
   const startEvaluation = async () => {
     setIsLoading(true);
     try {
+      console.log(`Starting evaluation for job ID: ${jobId}`);
+      
+      // For demo purposes, we'll use a placeholder resumeId
+      // In a real app, you'd select an actual resume to evaluate
+      const resumeId = "sample-resume-id"; 
+      
       // Call the resume scoring API
-      await api.scoreResume({
-        resumeId: "sample-resume-id", // In a real app, you'd use the actual resume ID
-        jobId: jobId,
+      const scoreResult = await api.scoreResume({
+        resumeId,
+        jobId,
       });
+      
+      console.log('Resume scoring result:', scoreResult);
       
       setShowEvaluation(true);
       setActiveTab("evaluation");
@@ -90,9 +98,10 @@ export const useJobFlowActions = (
         description: "Evaluation started successfully",
       });
     } catch (error) {
+      console.error("Error starting evaluation:", error);
       toast({
         title: "Error",
-        description: "Failed to start evaluation",
+        description: "Failed to start evaluation. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -103,11 +112,22 @@ export const useJobFlowActions = (
   const startChat = async () => {
     setIsLoading(true);
     try {
+      console.log(`Starting chat session for job ID: ${jobId}`);
+      
+      // Create session ID based on job ID
+      const sessionId = `job-${jobId}`;
+      
+      // Initial message to start the chat
+      const initialMessage = "Hello, I'd like to discuss the job requirements";
+      
       // Call the HR chat API
-      await api.sendChatMessage({
-        message: "Hello, I'd like to discuss the job requirements",
-        sessionId: `job-${jobId}`,
+      const chatResponse = await api.sendChatMessage({
+        message: initialMessage,
+        sessionId,
+        jobId, // Including job context
       });
+      
+      console.log('Chat initialized with response:', chatResponse);
       
       setShowChat(true);
       setActiveTab("chat");
@@ -117,9 +137,10 @@ export const useJobFlowActions = (
         description: "Chat session started successfully",
       });
     } catch (error) {
+      console.error("Error starting chat session:", error);
       toast({
         title: "Error",
-        description: "Failed to start chat session",
+        description: "Failed to start chat session. Please try again.",
         variant: "destructive",
       });
     } finally {
