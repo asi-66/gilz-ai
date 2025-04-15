@@ -79,9 +79,41 @@ const fetchApi = async <T>(
   }
 };
 
-// Empty API object ready for new endpoints
+// API endpoints (placeholder implementations to fix TypeScript errors)
 export const api = {
-  // API endpoints will be added here by the user
+  // Job creation endpoint
+  createJob: (jobData: any) => {
+    console.log('Creating job with data:', jobData);
+    return fetchApi<any>('', 'POST', {
+      type: 'job-create',
+      data: jobData
+    });
+  },
+  
+  // Resume upload endpoint
+  uploadResume: (data: { resumeText: string, jobId: string }) => {
+    console.log('Uploading resume for job:', data.jobId);
+    return fetchApi<any>('', 'POST', {
+      type: 'resume-upload',
+      data
+    });
+  },
+  
+  // Resume scoring endpoint
+  scoreResume: (data: { resumeId: string, jobId: string }) => {
+    return fetchApi<any>('', 'POST', {
+      type: 'resume-score',
+      data
+    });
+  },
+  
+  // HR chat endpoint
+  sendChatMessage: (data: { message: string, sessionId: string }) => {
+    return fetchApi<any>('', 'POST', {
+      type: 'hr-chat',
+      data
+    });
+  }
 };
 
 export default api;
