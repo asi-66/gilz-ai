@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { api } from "@/services/api";
@@ -31,11 +30,17 @@ export const useJobFlowActions = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleEdit = () => {
@@ -56,7 +61,6 @@ export const useJobFlowActions = (
     try {
       // API call to update job flow would go here
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulating API call
-      
       toast({
         title: "Success",
         description: "Job flow updated successfully",
@@ -73,23 +77,19 @@ export const useJobFlowActions = (
     }
   };
 
-  const startEvaluation = async () => {
+  // FIXED: Removed hardcoded resumeId and now accepts actual resumeId parameter
+  const startEvaluation = async (resumeId: string) => {
     setIsLoading(true);
     try {
-      console.log(`Starting evaluation for job ID: ${jobId}`);
+      console.log(`Starting evaluation for job ID: ${jobId}, resume ID: ${resumeId}`);
       
-      // For demo purposes, we'll use a placeholder resumeId
-      // In a real app, you'd select an actual resume to evaluate
-      const resumeId = "sample-resume-id"; 
-      
-      // Call the resume scoring API
+      // Call the resume scoring API with the actual resumeId
       const scoreResult = await api.scoreResume({
         resumeId,
         jobId,
       });
       
       console.log('Resume scoring result:', scoreResult);
-      
       setShowEvaluation(true);
       setActiveTab("evaluation");
       
@@ -97,11 +97,16 @@ export const useJobFlowActions = (
         title: "Success",
         description: "Evaluation started successfully",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error starting evaluation:", error);
+      
+      // Improved error handling with more details
+      const errorMessage = error.message || "Unknown error";
+      const statusCode = error.status || "";
+      
       toast({
-        title: "Error",
-        description: "Failed to start evaluation. Please try again.",
+        title: `Error${statusCode ? ` (${statusCode})` : ""}`,
+        description: `Failed to start evaluation: ${errorMessage}`,
         variant: "destructive",
       });
     } finally {
@@ -128,7 +133,6 @@ export const useJobFlowActions = (
       });
       
       console.log('Chat initialized with response:', chatResponse);
-      
       setShowChat(true);
       setActiveTab("chat");
       
@@ -136,11 +140,16 @@ export const useJobFlowActions = (
         title: "Success",
         description: "Chat session started successfully",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error starting chat session:", error);
+      
+      // Improved error handling with more details
+      const errorMessage = error.message || "Unknown error";
+      const statusCode = error.status || "";
+      
       toast({
-        title: "Error",
-        description: "Failed to start chat session. Please try again.",
+        title: `Error${statusCode ? ` (${statusCode})` : ""}`,
+        description: `Failed to start chat session: ${errorMessage}`,
         variant: "destructive",
       });
     } finally {
