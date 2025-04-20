@@ -63,17 +63,17 @@ const JobFlowList: React.FC<JobFlowListProps> = ({ jobFlows, onDelete }) => {
 
   return (
     <Card className="border shadow-sm overflow-hidden">
-      <CardHeader className="bg-white dark:bg-gray-800 pb-3">
-        <CardTitle className="text-lg font-semibold text-gray-800 dark:text-white">
+      <CardHeader className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm pb-3">
+        <CardTitle className="text-lg font-semibold text-foreground">
           Job Flows
         </CardTitle>
-        <CardDescription className="text-sm text-gray-600 dark:text-gray-300">
+        <CardDescription className="text-sm text-muted-foreground">
           Your active and recent job flows
         </CardDescription>
       </CardHeader>
       <CardContent className="p-0">
         {jobFlows.length > 0 ? (
-          <ScrollArea className="h-[600px] w-full">
+          <ScrollArea className="h-[600px] w-full overflow-x-auto">
             <JobTable 
               jobFlows={jobFlows}
               onView={handleViewJobFlow}

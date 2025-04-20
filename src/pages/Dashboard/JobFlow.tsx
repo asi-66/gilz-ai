@@ -8,6 +8,7 @@ import { Plus, Loader2, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useJobFlows } from "@/components/dashboard/hooks/useJobFlows";
 import { toast } from "@/hooks/use-toast";
+import { AuroraBackground } from "@/components/ui/aurora-background";
 
 const JobFlow = () => {
   const [createJobModalOpen, setCreateJobModalOpen] = useState(false);

@@ -60,41 +60,39 @@ const DashboardLayout = memo(({ children }: DashboardLayoutProps) => {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <AuroraBackground>
-        <div className="min-h-screen w-full py-4 px-4 flex overflow-hidden">
-          {/* Sidebar component */}
-          <SidebarNav 
-            isActiveRoute={isActiveRoute}
-            onCreateJobClick={() => handleSetCreateJobModalOpen(true)}
-            onLogoutClick={handleLogout}
+      <div className="min-h-screen w-full py-4 px-4 flex overflow-hidden">
+        {/* Sidebar component */}
+        <SidebarNav 
+          isActiveRoute={isActiveRoute}
+          onCreateJobClick={() => handleSetCreateJobModalOpen(true)}
+          onLogoutClick={handleLogout}
+        />
+
+        {/* Main content area */}
+        <div className="flex-1 flex flex-col min-h-screen rounded-2xl overflow-hidden glass-card ml-4 mr-4">
+          {/* Header */}
+          <DashboardHeader 
+            mobileMenuOpen={mobileMenuOpen}
+            setMobileMenuOpen={handleSetMobileMenuOpen}
           />
 
-          {/* Main content area */}
-          <div className="flex-1 flex flex-col min-h-screen rounded-2xl overflow-hidden glass-card ml-4 mr-4">
-            {/* Header */}
-            <DashboardHeader 
-              mobileMenuOpen={mobileMenuOpen}
-              setMobileMenuOpen={handleSetMobileMenuOpen}
-            />
+          {/* Mobile Navigation Menu */}
+          <MobileMenu
+            open={mobileMenuOpen}
+            onOpenChange={handleSetMobileMenuOpen}
+            items={navigationItems}
+            isActiveRoute={isActiveRoute}
+            onLogout={handleLogout}
+          />
 
-            {/* Mobile Navigation Menu */}
-            <MobileMenu
-              open={mobileMenuOpen}
-              onOpenChange={handleSetMobileMenuOpen}
-              items={navigationItems}
-              isActiveRoute={isActiveRoute}
-              onLogout={handleLogout}
-            />
-
-            {/* Page content */}
-            <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
-              <div className="max-w-[1400px] mx-auto w-full">
-                {children}
-              </div>
-            </main>
-          </div>
+          {/* Page content */}
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
+            <div className="max-w-[1400px] mx-auto w-full">
+              {children}
+            </div>
+          </main>
         </div>
-      </AuroraBackground>
+      </div>
       
       {/* Create Job Modal */}
       <CreateJobModal 

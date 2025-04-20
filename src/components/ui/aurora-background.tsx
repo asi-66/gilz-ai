@@ -21,10 +21,10 @@ export const AuroraBackground = ({
   }, []);
 
   return (
-    <main>
+    <main className="min-h-screen w-full">
       <div
         className={cn(
-          "relative flex flex-col h-[100vh] items-center justify-center bg-zinc-50 dark:bg-zinc-900 text-slate-950 transition-bg",
+          "fixed inset-0 w-full h-full flex flex-col items-center justify-center bg-zinc-50 dark:bg-zinc-900 text-slate-950 transition-bg overflow-hidden",
           className
         )}
         {...props}
@@ -52,7 +52,9 @@ export const AuroraBackground = ({
             )}
           ></div>
         </div>
-        {children}
+        <div className="relative w-full h-full min-h-screen">
+          {children}
+        </div>
       </div>
     </main>
   );
