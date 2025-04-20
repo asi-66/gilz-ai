@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import JobFlowList from "@/components/dashboard/JobFlowList";
 import { CreateJobModal } from "@/components/dashboard/modals";
@@ -14,20 +14,20 @@ const JobFlow = () => {
   const navigate = useNavigate();
   const { jobFlows, isLoading, refreshJobFlows } = useJobFlows();
 
-  const handleRefresh = useCallback(() => {
-    toast({
-      title: "Refreshing",
-      description: "Fetching latest job flows...",
-    });
-    refreshJobFlows();
-  }, [refreshJobFlows]);
-
   // Initial data fetch
   useEffect(() => {
     refreshJobFlows();
   }, [refreshJobFlows]);
 
-  const handleCreateJobSuccess = useCallback((jobId: string) => {
+  const handleRefresh = () => {
+    toast({
+      title: "Refreshing",
+      description: "Fetching latest job flows...",
+    });
+    refreshJobFlows();
+  };
+
+  const handleCreateJobSuccess = (jobId: string) => {
     toast({
       title: "Success",
       description: "Job flow created successfully. Refreshing data...",
@@ -35,11 +35,11 @@ const JobFlow = () => {
     
     refreshJobFlows();
     navigate(`/dashboard/job-flow/${jobId}`);
-  }, [navigate, refreshJobFlows]);
+  };
 
-  const handleDeleteJob = useCallback(() => {
+  const handleDeleteJob = () => {
     refreshJobFlows();
-  }, [refreshJobFlows]);
+  };
 
   return (
     <DashboardLayout>
