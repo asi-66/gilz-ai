@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import JobFlowList from "@/components/dashboard/JobFlowList";
 import { CreateJobModal } from "@/components/dashboard/modals";
@@ -14,10 +14,17 @@ const JobFlow = () => {
   const navigate = useNavigate();
   const { jobFlows, isLoading, refreshJobFlows } = useJobFlows();
 
-  // Initial data fetch
-  useEffect(() => {
+  // Initial data fetch - using useCallback to prevent dependencies changing
+  const initialFetch = useCallback(() => {
+    console.log("Initial fetch for job flows");
     refreshJobFlows();
   }, [refreshJobFlows]);
+
+  // Only fetch on initial mount
+  useEffect(() => {
+    initialFetch();
+    // Empty dependency array to only run once on mount
+  }, [initialFetch]);
 
   const handleRefresh = () => {
     toast({

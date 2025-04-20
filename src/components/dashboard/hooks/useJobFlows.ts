@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -13,11 +13,22 @@ export interface JobFlow {
 }
 
 export const useJobFlows = () => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [jobFlows, setJobFlows] = useState<JobFlow[]>([]);
+  const [lastFetchTime, setLastFetchTime] = useState<number>(0);
 
-  const fetchJobFlows = async () => {
+  const fetchJobFlows = useCallback(async () => {
+    const now = Date.now();
+    
+    // Prevent repeated fetching in short time intervals (debounce-like behavior)
+    if (now - lastFetchTime < 2000 && jobFlows.length > 0) {
+      console.log("Skipping fetch, already fetched recently");
+      return;
+    }
+    
+    // Only set loading to true if we're actually fetching
     setIsLoading(true);
+    
     try {
       console.log("Fetching job flows from Supabase...");
       
@@ -31,6 +42,7 @@ export const useJobFlows = () => {
       }
       
       console.log("Supabase job flows retrieved:", data);
+      setLastFetchTime(now);
       
       if (data && data.length > 0) {
         // Map the Supabase data to our JobFlow interface
@@ -58,15 +70,11 @@ export const useJobFlows = () => {
         description: "Failed to fetch job flows. Please try again.",
         variant: "destructive",
       });
-      setJobFlows([]);
+      // Don't clear existing data on error to prevent UI flashing
     } finally {
       setIsLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchJobFlows();
-  }, []);
+  }, [jobFlows.length, lastFetchTime]);
 
   return {
     jobFlows,
