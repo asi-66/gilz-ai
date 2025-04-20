@@ -42,44 +42,49 @@ const JobFlowSettingsTab: React.FC<SettingsTabContentProps> = ({
   return (
     <Card className="bg-white/10 dark:bg-black/10 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-sm">
       <CardHeader>
-        <CardTitle>Flow Settings</CardTitle>
+        <CardTitle>Job Details</CardTitle>
         <CardDescription>
-          Update your job flow information
+          View and update job information
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-6">
+          {/* Title - First */}
           <div className="space-y-2">
-            <Label htmlFor="title">Flow Name</Label>
+            <Label htmlFor="title" className="text-base font-medium">Job Title</Label>
             <Input
               id="title"
               name="title"
               value={formData.title}
               onChange={handleChange}
               disabled={!isEditing}
+              className="text-lg font-medium"
             />
           </div>
           
+          {/* Description - Second */}
           <div className="space-y-2">
-            <Label htmlFor="description">Job Description</Label>
+            <Label htmlFor="description" className="text-base font-medium">Job Description</Label>
             <Textarea
               id="description"
               name="description"
-              rows={6}
+              rows={8}
               value={formData.description}
               onChange={handleChange}
               disabled={!isEditing}
+              className="resize-none"
             />
           </div>
           
+          {/* Work Mode - Third */}
           <div className="space-y-2">
-            <Label htmlFor="location">Work Mode</Label>
+            <Label htmlFor="location" className="text-base font-medium">Work Mode</Label>
             <Select
               disabled={!isEditing}
               value={formData.location}
               onValueChange={(value) => handleSelectChange("location", value)}
             >
-              <SelectTrigger>
+              <SelectTrigger id="location" className="w-full">
                 <SelectValue placeholder="Select work mode" />
               </SelectTrigger>
               <SelectContent>
@@ -90,7 +95,7 @@ const JobFlowSettingsTab: React.FC<SettingsTabContentProps> = ({
             </Select>
           </div>
           
-          <div className="flex justify-end space-x-2 pt-4">
+          <div className="flex justify-end space-x-2 pt-4 border-t border-border/20">
             {isEditing ? (
               <>
                 <Button variant="outline" onClick={handleCancel} disabled={isLoading}>

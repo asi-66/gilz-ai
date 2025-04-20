@@ -1,11 +1,12 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import ChatInterface from "./ChatInterface";
 import EvaluationInterface from "./EvaluationInterface";
 import JobFlowSettingsTab from "./JobFlowSettingsTab";
@@ -28,9 +29,47 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
   const [activeTab, setActiveTab] = useState("settings");
   const [showEvaluation, setShowEvaluation] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const [fetchedJobData, setFetchedJobData] = useState(jobData);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Fetch correct job data from Supabase
+  useEffect(() => {
+    const fetchJobDetails = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('job_descriptions')
+          .select('*')
+          .eq('id', jobId)
+          .single();
+        
+        if (error) throw error;
+        
+        if (data) {
+          setFetchedJobData({
+            title: data.title || 'Untitled Job',
+            description: data.description || 'No description provided',
+            location: data.location || 'Remote',
+            status: data.is_active ? "active" : "completed",
+            candidateCount: 0, // This would need to be calculated from parsed_resumes
+            createdAt: new Date(data.created_at).toLocaleDateString(),
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching job details:', error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch job details",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchJobDetails();
+  }, [jobId]);
   
   const { 
-    isLoading, 
     isEditing, 
     formData,
     hasResumes,
@@ -47,12 +86,12 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
     handleUploadDialogClose,
     startEvaluation,
     startChat
-  } = useJobFlowActions(jobId, jobData, setShowEvaluation, setShowChat, setActiveTab);
+  } = useJobFlowActions(jobId, fetchedJobData, setShowEvaluation, setShowChat, setActiveTab);
 
   return (
     <div className="space-y-6">
       <JobFlowHeader 
-        jobData={jobData}
+        jobData={fetchedJobData}
         showEvaluation={showEvaluation}
         showChat={showChat}
         isLoading={isLoading}
