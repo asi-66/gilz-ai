@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import JobFlowList from "@/components/dashboard/JobFlowList";
 import { CreateJobModal } from "@/components/dashboard/modals";
@@ -12,6 +12,11 @@ const JobFlow = () => {
   const [createJobModalOpen, setCreateJobModalOpen] = useState(false);
   const navigate = useNavigate();
   const { jobFlows, isLoading, refreshJobFlows } = useJobFlows();
+
+  // Refresh job flows when the component mounts
+  useEffect(() => {
+    refreshJobFlows();
+  }, []);
 
   const handleCreateJobSuccess = (jobId: string) => {
     refreshJobFlows();
