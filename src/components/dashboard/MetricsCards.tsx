@@ -1,6 +1,6 @@
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Briefcase, FileText, Users, CalendarCheck, ArrowUp, ArrowDown } from "lucide-react";
+import { Briefcase, FileText, Users, CalendarCheck } from "lucide-react";
 import { DashboardMetrics } from "@/types/chart.types";
 
 interface MetricsData extends DashboardMetrics {
@@ -16,17 +16,13 @@ const MetricsCards = ({ data }: { data: MetricsData }) => {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-[#6B7280]">Active Jobs</p>
-              <h3 className="text-2xl font-bold text-[#1F2937] mt-1">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Active Jobs</p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
                 {isLoading ? "..." : totalActiveJobs}
               </h3>
-              <div className="flex items-center mt-1 text-[#10B981]">
-                <ArrowUp className="h-4 w-4 mr-1" />
-                <span className="text-xs">-</span>
-              </div>
             </div>
-            <div className="rounded-full p-3 bg-[#7efb98]/20">
-              <Briefcase className="h-6 w-6 text-[#1F2937]" />
+            <div className="rounded-full p-3 bg-gray-100 dark:bg-gray-800">
+              <Briefcase className="h-6 w-6 text-gray-600 dark:text-gray-400" />
             </div>
           </div>
         </CardContent>
@@ -36,17 +32,13 @@ const MetricsCards = ({ data }: { data: MetricsData }) => {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-[#6B7280]">Total Candidates</p>
-              <h3 className="text-2xl font-bold text-[#1F2937] mt-1">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Candidates</p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
                 {isLoading ? "..." : totalCandidates}
               </h3>
-              <div className="flex items-center mt-1 text-[#10B981]">
-                <ArrowUp className="h-4 w-4 mr-1" />
-                <span className="text-xs">-</span>
-              </div>
             </div>
-            <div className="rounded-full p-3 bg-[#7efb98]/20">
-              <Users className="h-6 w-6 text-[#1F2937]" />
+            <div className="rounded-full p-3 bg-gray-100 dark:bg-gray-800">
+              <Users className="h-6 w-6 text-gray-600 dark:text-gray-400" />
             </div>
           </div>
         </CardContent>
@@ -56,17 +48,13 @@ const MetricsCards = ({ data }: { data: MetricsData }) => {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-[#6B7280]">Resumes Processed</p>
-              <h3 className="text-2xl font-bold text-[#1F2937] mt-1">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Resumes Processed</p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
                 {isLoading ? "..." : resumesProcessed}
               </h3>
-              <div className="flex items-center mt-1 text-[#10B981]">
-                <ArrowUp className="h-4 w-4 mr-1" />
-                <span className="text-xs">-</span>
-              </div>
             </div>
-            <div className="rounded-full p-3 bg-[#7efb98]/20">
-              <FileText className="h-6 w-6 text-[#1F2937]" />
+            <div className="rounded-full p-3 bg-gray-100 dark:bg-gray-800">
+              <FileText className="h-6 w-6 text-gray-600 dark:text-gray-400" />
             </div>
           </div>
         </CardContent>
@@ -76,17 +64,13 @@ const MetricsCards = ({ data }: { data: MetricsData }) => {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-[#6B7280]">Interviews Scheduled</p>
-              <h3 className="text-2xl font-bold text-[#1F2937] mt-1">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Interviews Scheduled</p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
                 {isLoading ? "..." : interviewsScheduled}
               </h3>
-              <div className="flex items-center mt-1 text-[#10B981]">
-                <ArrowUp className="h-4 w-4 mr-1" />
-                <span className="text-xs">-</span>
-              </div>
             </div>
-            <div className="rounded-full p-3 bg-[#7efb98]/20">
-              <CalendarCheck className="h-6 w-6 text-[#1F2937]" />
+            <div className="rounded-full p-3 bg-gray-100 dark:bg-gray-800">
+              <CalendarCheck className="h-6 w-6 text-gray-600 dark:text-gray-400" />
             </div>
           </div>
         </CardContent>
