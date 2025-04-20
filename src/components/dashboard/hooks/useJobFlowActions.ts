@@ -121,7 +121,6 @@ export const useJobFlowActions = (
     }
   };
 
-  // Helper function to extract meaningful error messages
   const getErrorMessage = (error: any): string => {
     if (typeof error === 'string') return error;
     
