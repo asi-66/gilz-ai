@@ -9,8 +9,8 @@ export const EmptyState: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-      <p className="text-gray-600 dark:text-gray-300 mb-4">No job flows created yet</p>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+      <p className="text-foreground mb-4">No job flows created yet</p>
+      <p className="text-sm text-muted-foreground mb-6">
         Create your first job flow to start screening resumes
       </p>
       <Button 

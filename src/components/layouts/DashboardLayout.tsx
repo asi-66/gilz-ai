@@ -61,7 +61,7 @@ const DashboardLayout = memo(({ children }: DashboardLayoutProps) => {
   return (
     <SidebarProvider defaultOpen={true}>
       <AuroraBackground>
-        <div className="min-h-screen w-full py-4 px-4 flex">
+        <div className="min-h-screen w-full py-4 px-4 flex overflow-hidden">
           {/* Sidebar component */}
           <SidebarNav 
             isActiveRoute={isActiveRoute}
@@ -88,7 +88,9 @@ const DashboardLayout = memo(({ children }: DashboardLayoutProps) => {
 
             {/* Page content */}
             <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
-              {children}
+              <div className="max-w-[1400px] mx-auto w-full">
+                {children}
+              </div>
             </main>
           </div>
         </div>
