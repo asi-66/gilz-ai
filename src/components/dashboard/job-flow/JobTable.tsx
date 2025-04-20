@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -27,64 +26,63 @@ export const JobTable: React.FC<JobTableProps> = ({ jobFlows, onView, onDelete }
   };
 
   return (
-    <div className="w-full overflow-auto scrollbar-thin">
-      <div className="min-w-[800px]">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-b border-border bg-muted/50">
-              <TableHead className="font-medium text-foreground">Job Title</TableHead>
-              <TableHead className="font-medium text-foreground">Status</TableHead>
-              <TableHead className="font-medium text-foreground">Location</TableHead>
-              <TableHead className="font-medium text-foreground">Created</TableHead>
-              <TableHead className="font-medium text-foreground">Candidates</TableHead>
-              <TableHead className="text-right font-medium text-foreground">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {jobFlows.map((flow) => (
-              <TableRow key={flow.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                <TableCell className="font-medium text-foreground">{flow.title}</TableCell>
-                <TableCell>
-                  <Badge className={getStatusBadgeVariant(flow.status)}>
-                    {flow.status.charAt(0).toUpperCase() + flow.status.slice(1)}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-foreground">{flow.location}</TableCell>
-                <TableCell className="text-foreground">{flow.createdAt}</TableCell>
-                <TableCell>
-                  {flow.candidateCount > 0 ? (
-                    <span className="font-medium text-foreground">{flow.candidateCount}</span>
-                  ) : (
-                    <span className="text-muted-foreground">None</span>
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end space-x-2">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => onView(flow.id)}
-                      className="hover:bg-primary/10 text-foreground hover:text-primary"
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      View
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onDelete(flow.id)}
-                      className="hover:bg-destructive/10 text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4 mr-1" />
-                      Delete
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
+    <Table>
+      <TableHeader>
+        <TableRow className="border-b border-border/50 bg-background/50">
+          <TableHead className="font-medium text-foreground w-[200px]">Job Title</TableHead>
+          <TableHead className="font-medium text-foreground w-[120px]">Status</TableHead>
+          <TableHead className="font-medium text-foreground w-[150px]">Location</TableHead>
+          <TableHead className="font-medium text-foreground w-[150px]">Created</TableHead>
+          <TableHead className="font-medium text-foreground w-[120px]">Candidates</TableHead>
+          <TableHead className="text-right font-medium text-foreground w-[180px]">Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {jobFlows.map((flow) => (
+          <TableRow 
+            key={flow.id} 
+            className="border-b border-border/50 hover:bg-muted/30 transition-colors"
+          >
+            <TableCell className="font-medium text-foreground">{flow.title}</TableCell>
+            <TableCell>
+              <Badge className={getStatusBadgeVariant(flow.status)}>
+                {flow.status.charAt(0).toUpperCase() + flow.status.slice(1)}
+              </Badge>
+            </TableCell>
+            <TableCell className="text-foreground">{flow.location}</TableCell>
+            <TableCell className="text-foreground">{flow.createdAt}</TableCell>
+            <TableCell className="text-foreground">
+              {flow.candidateCount > 0 ? (
+                <span className="font-medium">{flow.candidateCount}</span>
+              ) : (
+                <span className="text-muted-foreground">None</span>
+              )}
+            </TableCell>
+            <TableCell className="text-right">
+              <div className="flex items-center justify-end space-x-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => onView(flow.id)}
+                  className="hover:bg-primary/10 text-foreground hover:text-primary"
+                >
+                  <Eye className="h-4 w-4 mr-1" />
+                  View
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onDelete(flow.id)}
+                  className="hover:bg-destructive/10 text-destructive"
+                >
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  Delete
+                </Button>
+              </div>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 };
