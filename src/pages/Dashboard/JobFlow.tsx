@@ -27,19 +27,19 @@ const JobFlow = () => {
     refreshJobFlows();
   }, [refreshJobFlows]);
 
-  const handleCreateJobSuccess = async (jobId: string) => {
+  const handleCreateJobSuccess = useCallback((jobId: string) => {
     toast({
       title: "Success",
       description: "Job flow created successfully. Refreshing data...",
     });
     
-    await refreshJobFlows();
-    navigate(`/dashboard/job-flow/${jobId}`);
-  };
-
-  const handleDeleteJob = () => {
     refreshJobFlows();
-  };
+    navigate(`/dashboard/job-flow/${jobId}`);
+  }, [navigate, refreshJobFlows]);
+
+  const handleDeleteJob = useCallback(() => {
+    refreshJobFlows();
+  }, [refreshJobFlows]);
 
   return (
     <DashboardLayout>
