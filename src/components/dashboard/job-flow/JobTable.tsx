@@ -27,8 +27,8 @@ export const JobTable: React.FC<JobTableProps> = ({ jobFlows, onView, onDelete }
   };
 
   return (
-    <div className="relative min-w-full">
-      <Table>
+    <div className="w-full overflow-auto">
+      <Table className="min-w-[800px]">
         <TableHeader>
           <TableRow className="border-b border-border/50 bg-background/50">
             <TableHead className="font-medium text-foreground w-[200px]">Job Title</TableHead>
@@ -60,13 +60,13 @@ export const JobTable: React.FC<JobTableProps> = ({ jobFlows, onView, onDelete }
                   <span className="text-muted-foreground">None</span>
                 )}
               </TableCell>
-              <TableCell className="text-right sticky right-0 bg-background/80 backdrop-blur-sm">
+              <TableCell className="text-right sticky right-0 bg-background/80 backdrop-blur-sm shadow-[-8px_0_16px_rgba(0,0,0,0.05)]">
                 <div className="flex items-center justify-end space-x-2">
                   <Button 
                     variant="ghost" 
                     size="sm"
                     onClick={() => onView(flow.id)}
-                    className="hover:bg-primary/10 text-foreground hover:text-primary"
+                    className="hover:bg-primary/10 text-foreground hover:text-primary whitespace-nowrap"
                   >
                     <Eye className="h-4 w-4 mr-1" />
                     View
@@ -75,7 +75,7 @@ export const JobTable: React.FC<JobTableProps> = ({ jobFlows, onView, onDelete }
                     variant="ghost"
                     size="sm"
                     onClick={() => onDelete(flow.id)}
-                    className="hover:bg-destructive/10 text-destructive"
+                    className="hover:bg-destructive/10 text-destructive whitespace-nowrap"
                   >
                     <Trash2 className="h-4 w-4 mr-1" />
                     Delete
