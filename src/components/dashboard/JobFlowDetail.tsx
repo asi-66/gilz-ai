@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import JobFlowHeader from "./JobFlowHeader";
 import JobFlowUploadDialog from "./JobFlowUploadDialog";
 import JobFlowTabs from "./JobFlowTabs";
+import JobFlowSettingsTab from "./JobFlowSettingsTab";
 import { useJobFlowActions } from "./hooks/useJobFlowActions";
 
 interface JobFlowDetailProps {
