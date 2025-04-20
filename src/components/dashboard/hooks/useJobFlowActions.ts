@@ -1,6 +1,9 @@
+
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { useResumeUpload } from "./useResumeUpload";
+import { supabase } from "@/integrations/supabase/client";
+import { useWebhook } from "./useWebhook";
 
 export const useJobFlowActions = (
   jobId: string, 
@@ -11,7 +14,6 @@ export const useJobFlowActions = (
 ) => {
   const [isEditing, setIsEditing] = useState(false);
   const [hasResumes, setHasResumes] = useState(false);
-  const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [formData, setFormData] = useState({
     title: jobData.title,
     description: jobData.description,
@@ -26,10 +28,10 @@ export const useJobFlowActions = (
     });
   };
 
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleSelectChange = (name: string, value: string) => {
     setFormData({
       ...formData,
-      status: e.target.value as "active" | "completed" | "pending",
+      [name]: value,
     });
   };
 
@@ -87,15 +89,7 @@ export const useJobFlowActions = (
     setActiveTab("chat");
   };
 
-  const [webhookUrl, setWebhookUrl] = useState(() => 
-    localStorage.getItem('resumeWebhookUrl') || ''
-  );
-
-  const handleWebhookUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const url = e.target.value;
-    setWebhookUrl(url);
-    localStorage.setItem('resumeWebhookUrl', url);
-  };
+  const { webhookUrl, handleWebhookUrlChange } = useWebhook();
 
   const { 
     isLoading,
@@ -110,7 +104,8 @@ export const useJobFlowActions = (
 
   const handleUploadResumes = async () => {
     try {
-      await originalHandleUploadResumes(webhookUrl);
+      // We no longer need to pass the webhookUrl here as it's handled by the useWebhook hook
+      await originalHandleUploadResumes();
     } catch (error) {
       console.error("Upload failed:", error);
     }
