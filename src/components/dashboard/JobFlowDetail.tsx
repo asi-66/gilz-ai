@@ -8,6 +8,7 @@ import JobFlowUploadDialog from "./JobFlowUploadDialog";
 import JobFlowTabs from "./JobFlowTabs";
 import JobFlowSettingsTab from "./JobFlowSettingsTab";
 import { useJobFlowActions } from "./hooks/useJobFlowActions";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface JobFlowDetailProps {
   jobId: string;

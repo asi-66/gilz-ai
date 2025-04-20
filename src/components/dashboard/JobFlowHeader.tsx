@@ -48,7 +48,7 @@ const JobFlowHeader: React.FC<JobFlowHeaderProps> = ({
           </span>
         </div>
       </div>
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <Button 
           className="bg-[#7efb98] text-[#1F2937] hover:bg-[#7efb98]/90"
           onClick={onUploadResumes}
