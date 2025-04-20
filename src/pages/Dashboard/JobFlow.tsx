@@ -4,17 +4,17 @@ import DashboardLayout from "@/components/layouts/DashboardLayout";
 import JobFlowList from "@/components/dashboard/JobFlowList";
 import { CreateJobModal } from "@/components/dashboard/modals";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useJobFlows } from "@/components/dashboard/hooks/useJobFlows";
 
 const JobFlow = () => {
   const [createJobModalOpen, setCreateJobModalOpen] = useState(false);
   const navigate = useNavigate();
-
-  // Empty job flows array for production version
-  const jobFlows = [];
+  const { jobFlows, isLoading, refreshJobFlows } = useJobFlows();
 
   const handleCreateJobSuccess = (jobId: string) => {
+    refreshJobFlows();
     navigate(`/dashboard/job-flow/${jobId}`);
   };
 
@@ -37,7 +37,13 @@ const JobFlow = () => {
           </Button>
         </div>
 
-        <JobFlowList jobFlows={jobFlows} />
+        {isLoading ? (
+          <div className="flex justify-center p-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <JobFlowList jobFlows={jobFlows} />
+        )}
       </div>
 
       <CreateJobModal 

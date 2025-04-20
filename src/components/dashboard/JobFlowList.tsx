@@ -3,7 +3,7 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, MoreHorizontal, Plus } from "lucide-react";
+import { Eye, MoreHorizontal, Plus, Loader2 } from "lucide-react";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 interface JobFlow {
   id: string;
@@ -56,36 +57,36 @@ const JobFlowList: React.FC<JobFlowListProps> = ({ jobFlows }) => {
       <CardContent className="p-0">
         {jobFlows.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border bg-muted/50">
-                  <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-200">Job Title</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-200">Status</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-200">Location</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-200">Created</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-200">Candidates</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-700 dark:text-gray-200">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table>
+              <TableHeader>
+                <TableRow className="border-b border-border bg-muted/50">
+                  <TableHead className="font-medium text-gray-800 dark:text-gray-200">Job Title</TableHead>
+                  <TableHead className="font-medium text-gray-800 dark:text-gray-200">Status</TableHead>
+                  <TableHead className="font-medium text-gray-800 dark:text-gray-200">Location</TableHead>
+                  <TableHead className="font-medium text-gray-800 dark:text-gray-200">Created</TableHead>
+                  <TableHead className="font-medium text-gray-800 dark:text-gray-200">Candidates</TableHead>
+                  <TableHead className="text-right font-medium text-gray-800 dark:text-gray-200">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {jobFlows.map((flow) => (
-                  <tr key={flow.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                    <td className="py-3 px-4 font-medium text-gray-800 dark:text-gray-200">{flow.title}</td>
-                    <td className="py-3 px-4">
+                  <TableRow key={flow.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                    <TableCell className="font-medium text-gray-800 dark:text-gray-200">{flow.title}</TableCell>
+                    <TableCell>
                       <Badge variant={getStatusBadgeVariant(flow.status)}>
                         {flow.status.charAt(0).toUpperCase() + flow.status.slice(1)}
                       </Badge>
-                    </td>
-                    <td className="py-3 px-4 text-gray-700 dark:text-gray-300">{flow.location}</td>
-                    <td className="py-3 px-4 text-gray-700 dark:text-gray-300">{flow.createdAt}</td>
-                    <td className="py-3 px-4 text-gray-700 dark:text-gray-300">
+                    </TableCell>
+                    <TableCell className="text-gray-700 dark:text-gray-300">{flow.location}</TableCell>
+                    <TableCell className="text-gray-700 dark:text-gray-300">{flow.createdAt}</TableCell>
+                    <TableCell className="text-gray-700 dark:text-gray-300">
                       {flow.candidateCount > 0 ? (
                         <span className="font-medium">{flow.candidateCount}</span>
                       ) : (
                         <span className="text-muted-foreground dark:text-gray-400">None</span>
                       )}
-                    </td>
-                    <td className="py-3 px-4 text-right">
+                    </TableCell>
+                    <TableCell className="text-right">
                       <div className="flex items-center justify-end space-x-2">
                         <Button 
                           variant="ghost" 
@@ -111,11 +112,11 @@ const JobFlowList: React.FC<JobFlowListProps> = ({ jobFlows }) => {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-12 px-4 text-center">

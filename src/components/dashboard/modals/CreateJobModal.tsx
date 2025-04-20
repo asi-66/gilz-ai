@@ -2,6 +2,7 @@
 import React from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import JobFlowForm from "../JobFormSteps/JobFlowForm";
+import { toast } from "@/hooks/use-toast";
 
 interface CreateJobModalProps {
   isOpen: boolean;
@@ -14,6 +15,14 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({
   onClose,
   onSuccess,
 }) => {
+  const handleSuccess = (jobId: string) => {
+    toast({
+      title: "Success",
+      description: "New Job Flow Created",
+    });
+    onSuccess(jobId);
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px] bg-background/80 backdrop-blur-lg border border-border/50 shadow-lg">
@@ -22,7 +31,7 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({
           <DialogDescription>Create a new job flow by entering the job details</DialogDescription>
         </DialogHeader>
 
-        <JobFlowForm onSuccess={onSuccess} onClose={onClose} />
+        <JobFlowForm onSuccess={handleSuccess} onClose={onClose} />
       </DialogContent>
     </Dialog>
   );
