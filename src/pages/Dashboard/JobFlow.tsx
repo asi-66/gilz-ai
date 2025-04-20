@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import JobFlowList from "@/components/dashboard/JobFlowList";
 import { CreateJobModal } from "@/components/dashboard/modals";
@@ -14,6 +14,16 @@ const JobFlow = () => {
   const navigate = useNavigate();
   const { jobFlows, isLoading, refreshJobFlows } = useJobFlows();
 
+  // Use useCallback to memoize the refresh function
+  const handleRefresh = useCallback(() => {
+    toast({
+      title: "Refreshing",
+      description: "Fetching latest job flows...",
+    });
+    refreshJobFlows();
+  }, [refreshJobFlows]);
+
+  // Initial data fetch
   useEffect(() => {
     refreshJobFlows();
   }, [refreshJobFlows]);
@@ -26,14 +36,6 @@ const JobFlow = () => {
     
     await refreshJobFlows();
     navigate(`/dashboard/job-flow/${jobId}`);
-  };
-
-  const handleRefresh = () => {
-    toast({
-      title: "Refreshing",
-      description: "Fetching latest job flows...",
-    });
-    refreshJobFlows();
   };
 
   const handleDeleteJob = () => {
