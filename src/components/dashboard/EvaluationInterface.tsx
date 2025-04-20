@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FileText, Download, ArrowUpDown, Star } from "lucide-react";
+import { FileText, Download, ArrowUpDown, Star, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +18,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Candidate {
   id: string;
@@ -31,12 +41,15 @@ interface Candidate {
 
 interface EvaluationInterfaceProps {
   jobId: string;
+  onDeleteResume?: (resumeId: string) => void;
 }
 
-const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId }) => {
+const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId, onDeleteResume }) => {
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [sortField, setSortField] = useState<"score" | "name" | "experience">("score");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [resumeToDelete, setResumeToDelete] = useState<string | null>(null);
 
   // Empty candidates array for production version
   const candidates: Candidate[] = [];
@@ -72,6 +85,20 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId }) => {
 
   const handleCloseDialog = () => {
     setSelectedCandidate(null);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent, resumeId: string) => {
+    e.stopPropagation();
+    setResumeToDelete(resumeId);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = () => {
+    if (resumeToDelete && onDeleteResume) {
+      onDeleteResume(resumeToDelete);
+      setShowDeleteDialog(false);
+      setResumeToDelete(null);
+    }
   };
 
   const getScoreColor = (score: number) => {
@@ -147,6 +174,16 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId }) => {
                         <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
                           <Download className="h-4 w-4" />
                         </Button>
+                        {onDeleteResume && (
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={(e) => handleDeleteClick(e, candidate.id)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -226,6 +263,24 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId }) => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this resume? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setResumeToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-500 hover:bg-red-600">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

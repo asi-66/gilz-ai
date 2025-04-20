@@ -87,13 +87,35 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
 
         // Parse resume and store metadata in parsed_resumes table
         const resumeText = await file.text();
-        const resumeResponse = await api.uploadResume({
+        
+        // Store the storage path in parsed_resumes table
+        const { data: resumeData, error: resumeError } = await supabase
+          .from('parsed_resumes')
+          .insert([{
+            job_id: jobId,
+            full_name: 'Pending Extraction',
+            email: 'pending@example.com',
+            skills: [],
+            work_experience: [],
+            education: [],
+            certifications: [],
+            processing_status: 'pending',
+            storage_path: filePath
+          }])
+          .select('id')
+          .single();
+        
+        if (resumeError) {
+          throw resumeError;
+        }
+        
+        // Call API to process the resume
+        await api.uploadResume({
           resumeText,
           jobId,
-          storagePath: filePath
         });
         
-        return resumeResponse.resumeId;
+        return resumeData.id;
       });
 
       const resumeIds = await Promise.all(resumePromises);
@@ -123,21 +145,25 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
 
   const handleDeleteResume = async (resumeId: string) => {
     try {
-      // First, get the storage path from the parsed_resumes table
+      // We need to check if the storage_path column exists
+      // Get the resume data first
       const { data: resumeData, error: fetchError } = await supabase
         .from('parsed_resumes')
-        .select('storage_path')
+        .select('*')
         .eq('id', resumeId)
         .single();
 
       if (fetchError) throw fetchError;
 
-      // Delete from Supabase storage
-      const { error: storageError } = await supabase.storage
-        .from('resumes')
-        .remove([resumeData.storage_path]);
+      // Only attempt to delete from storage if storage_path exists
+      if (resumeData && 'storage_path' in resumeData && resumeData.storage_path) {
+        // Delete from Supabase storage
+        const { error: storageError } = await supabase.storage
+          .from('resumes')
+          .remove([resumeData.storage_path]);
 
-      if (storageError) throw storageError;
+        if (storageError) throw storageError;
+      }
 
       // Delete from parsed_resumes table
       const { error: deleteError } = await supabase
@@ -152,8 +178,15 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
         description: "The resume has been successfully removed.",
       });
 
-      // Refresh the resumes list or update UI state
-      setHasResumes(false);  // You might want to implement a more sophisticated check
+      // Implement a check to see if there are still resumes for this job
+      const { count, error: countError } = await supabase
+        .from('parsed_resumes')
+        .select('id', { count: 'exact', head: true })
+        .eq('job_id', jobId);
+        
+      if (!countError && count === 0) {
+        setHasResumes(false);
+      }
 
     } catch (error: any) {
       console.error("Resume deletion error:", error);
