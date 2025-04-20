@@ -16,7 +16,7 @@ const JobFlow = () => {
 
   useEffect(() => {
     refreshJobFlows();
-  }, []);
+  }, [refreshJobFlows]);
 
   const handleCreateJobSuccess = async (jobId: string) => {
     toast({
