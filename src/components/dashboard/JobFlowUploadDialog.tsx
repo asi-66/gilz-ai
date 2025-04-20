@@ -8,21 +8,17 @@ import { Label } from "@/components/ui/label";
 interface JobFlowUploadDialogProps {
   isLoading: boolean;
   resumes: File[];
-  webhookUrl: string;
   onClose: () => void;
   onUpload: () => void;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onWebhookUrlChange: (url: string) => void;
 }
 
 const JobFlowUploadDialog: React.FC<JobFlowUploadDialogProps> = ({
   isLoading,
   resumes,
-  webhookUrl,
   onClose,
   onUpload,
   onFileChange,
-  onWebhookUrlChange,
 }) => {
   return (
     <Card className="border border-black/10 dark:border-white/10 bg-white/90 dark:bg-gray-900/90">
@@ -30,23 +26,6 @@ const JobFlowUploadDialog: React.FC<JobFlowUploadDialogProps> = ({
         <CardTitle className="text-lg text-gray-900 dark:text-white">Upload Resumes</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="webhook" className="text-gray-900 dark:text-white">
-            Webhook URL (Optional)
-          </Label>
-          <Input
-            id="webhook"
-            type="url"
-            placeholder="Enter your webhook URL"
-            value={webhookUrl}
-            onChange={(e) => onWebhookUrlChange(e.target.value)}
-            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-          />
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Enter a webhook URL to receive notifications when resumes are uploaded
-          </p>
-        </div>
-
         <div className="space-y-2">
           <Label htmlFor="resumes" className="text-gray-900 dark:text-white">
             Select Resume Files (PDF, TXT, DOC, DOCX)

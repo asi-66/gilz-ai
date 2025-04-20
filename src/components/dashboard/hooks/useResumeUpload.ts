@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -5,19 +6,10 @@ import { api } from "@/services/api";
 import { useRetry } from "@/hooks/use-retry";
 import { v4 as uuidv4 } from 'uuid';
 
-interface WebhookPayload {
-  jobId: string;
-  resumeId: string;
-  fileName: string;
-  uploadTime: string;
-  fileSize: number;
-}
-
 export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) => void) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [resumes, setResumes] = useState<File[]>([]);
-  const [webhookUrl, setWebhookUrl] = useState<string>(localStorage.getItem('resumeWebhookUrl') || '');
 
   const { execute: executeWithRetry } = useRetry(
     async (fn: () => Promise<any>) => fn(),
@@ -66,30 +58,6 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
     setResumes(files);
   };
 
-  const handleWebhookUrlChange = (url: string) => {
-    setWebhookUrl(url);
-    localStorage.setItem('resumeWebhookUrl', url);
-  };
-
-  const triggerWebhook = async (payload: WebhookPayload) => {
-    if (!webhookUrl) return;
-
-    try {
-      console.log("Triggering webhook with payload:", payload);
-      await fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        mode: 'no-cors',
-        body: JSON.stringify(payload),
-      });
-      console.log("Webhook triggered successfully");
-    } catch (error) {
-      console.error("Error triggering webhook:", error);
-    }
-  };
-
   const handleUploadResumes = async () => {
     if (resumes.length === 0) {
       toast({
@@ -108,6 +76,7 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
         const fileName = `${uuidv4()}${fileExt}`;
         const filePath = `${jobId}/${fileName}`;
 
+        // Upload file to Supabase storage
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('resumes')
           .upload(filePath, file);
@@ -116,22 +85,13 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
           throw new Error(uploadError.message || 'Upload failed');
         }
 
+        // Parse resume and store metadata in parsed_resumes table
         const resumeText = await file.text();
+        
         const resumeResponse = await api.uploadResume({
           resumeText,
-          jobId,
-          storagePath: filePath
+          jobId
         });
-
-        if (webhookUrl) {
-          await triggerWebhook({
-            jobId,
-            resumeId: resumeResponse.resumeId,
-            fileName: file.name,
-            uploadTime: new Date().toISOString(),
-            fileSize: file.size,
-          });
-        }
 
         return resumeResponse.resumeId;
       });
@@ -163,6 +123,8 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
 
   const handleDeleteResume = async (resumeId: string) => {
     try {
+      // We need to check if the storage_path column exists
+      // Get the resume data first
       const { data: resumeData, error: fetchError } = await supabase
         .from('parsed_resumes')
         .select('*')
@@ -171,7 +133,9 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
 
       if (fetchError) throw fetchError;
 
+      // Only attempt to delete from storage if storage_path exists
       if (resumeData && 'storage_path' in resumeData && resumeData.storage_path) {
+        // Delete from Supabase storage
         const { error: storageError } = await supabase.storage
           .from('resumes')
           .remove([resumeData.storage_path]);
@@ -179,6 +143,7 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
         if (storageError) throw storageError;
       }
 
+      // Delete from parsed_resumes table
       const { error: deleteError } = await supabase
         .from('parsed_resumes')
         .delete()
@@ -191,6 +156,7 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
         description: "The resume has been successfully removed.",
       });
 
+      // Implement a check to see if there are still resumes for this job
       const { count, error: countError } = await supabase
         .from('parsed_resumes')
         .select('id', { count: 'exact', head: true })
@@ -215,11 +181,9 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
     isLoading,
     showUploadDialog,
     resumes,
-    webhookUrl,
     handleFileChange,
     handleUploadResumes,
     handleDeleteResume,
-    handleWebhookUrlChange,
     handleUploadDialogOpen: () => setShowUploadDialog(true),
     handleUploadDialogClose: () => {
       setShowUploadDialog(false);
