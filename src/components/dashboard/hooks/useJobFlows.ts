@@ -34,10 +34,10 @@ export const useJobFlows = () => {
         })));
       } else if (response.success && response.jobId) {
         // Single job response, create a new job flow
-        const newJob = {
+        const newJob: JobFlow = {
           id: response.jobId,
           title: "New Job Flow", // Default title since it's not in response
-          status: "active",
+          status: "active" as const, // Use a literal type to match the JobFlow interface
           location: "Remote",
           createdAt: new Date(response.timestamp || Date.now()).toLocaleDateString(),
           candidateCount: 0
