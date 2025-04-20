@@ -33,9 +33,9 @@ const JobFlowHeader: React.FC<JobFlowHeaderProps> = ({
   onStartChat
 }) => {
   return (
-    <div className="flex flex-wrap justify-between items-center gap-4">
+    <div className="flex flex-wrap justify-between items-center gap-4 bg-white/10 dark:bg-black/10 backdrop-blur-md p-4 rounded-lg">
       <div>
-        <h1 className="text-2xl font-medium">{jobData.title}</h1>
+        <h1 className="text-2xl font-medium text-gray-900 dark:text-white">{jobData.title}</h1>
         <div className="flex items-center gap-2 mt-1">
           <Badge variant={
             jobData.status === "active" ? "default" : 
@@ -43,7 +43,7 @@ const JobFlowHeader: React.FC<JobFlowHeaderProps> = ({
           }>
             {jobData.status.charAt(0).toUpperCase() + jobData.status.slice(1)}
           </Badge>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-gray-700 dark:text-gray-300">
             {jobData.candidateCount} candidates • Created on {jobData.createdAt}
           </span>
         </div>
@@ -74,13 +74,10 @@ const JobFlowHeader: React.FC<JobFlowHeaderProps> = ({
         <Button 
           variant="outline" 
           onClick={onStartChat} 
-          disabled={isLoading || !hasResumes}
+          disabled={!hasResumes}
+          className="bg-white/20 dark:bg-black/20 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700"
         >
-          {isLoading && activeTab === "chat" ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <MessageSquare className="mr-2 h-4 w-4" />
-          )}
+          <MessageSquare className="mr-2 h-4 w-4" />
           Start Chat
         </Button>
       </div>

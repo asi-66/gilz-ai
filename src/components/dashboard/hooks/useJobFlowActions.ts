@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { api } from "@/services/api";
@@ -312,12 +311,12 @@ export const useJobFlowActions = (
     }
   };
 
-  // Return all the state variables and handler functions
   return {
     isLoading,
     isEditing,
     formData,
     hasResumes,
+    setHasResumes,
     showUploadDialog,
     resumes,
     handleChange,

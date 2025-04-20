@@ -45,14 +45,27 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
         if (error) throw error;
         
         if (data) {
+          // Count associated resumes
+          const { count: resumeCount, error: countError } = await supabase
+            .from('parsed_resumes')
+            .select('id', { count: 'exact', head: true })
+            .eq('job_id', jobId);
+          
+          if (countError) console.error('Error counting resumes:', countError);
+          
           setFetchedJobData({
             title: data.title || 'Untitled Job',
             description: data.description || 'No description provided',
             location: data.location || 'Remote',
             status: data.is_active ? "active" : "completed",
-            candidateCount: 0, // This would need to be calculated from parsed_resumes
+            candidateCount: resumeCount || 0,
             createdAt: new Date(data.created_at).toLocaleDateString(),
           });
+          
+          // Check if there are any resumes to enable evaluation and chat
+          if (resumeCount && resumeCount > 0) {
+            setHasResumesState(true);
+          }
         }
       } catch (error) {
         console.error('Error fetching job details:', error);
@@ -69,10 +82,16 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
     fetchJobDetails();
   }, [jobId]);
   
+  // This is to update the hasResumes state based on resumeCount
+  const setHasResumesState = (hasResumes: boolean) => {
+    setHasResumesInternal(hasResumes);
+  };
+  
   const { 
     isEditing, 
     formData,
-    hasResumes,
+    hasResumes: hasResumesInternal,
+    setHasResumes: setHasResumesInternal,
     showUploadDialog,
     resumes,
     handleChange, 
@@ -96,20 +115,20 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
         showChat={showChat}
         isLoading={isLoading}
         activeTab={activeTab}
-        hasResumes={hasResumes}
+        hasResumes={hasResumesInternal}
         onUploadResumes={handleUploadDialogOpen}
         onStartEvaluation={startEvaluation}
         onStartChat={startChat}
       />
 
       {showUploadDialog && (
-        <Card className="border border-border/50">
-          <CardHeader>
-            <CardTitle className="text-lg">Upload Resumes</CardTitle>
+        <Card className="border border-black/10 dark:border-white/10 bg-white/90 dark:bg-gray-900/90">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg text-gray-900 dark:text-white">Upload Resumes</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="resumes">Select Resume Files (PDF, TXT, DOC, DOCX)</Label>
+              <Label htmlFor="resumes" className="text-gray-900 dark:text-white">Select Resume Files (PDF, TXT, DOC, DOCX)</Label>
               <Input
                 id="resumes"
                 type="file"
@@ -117,15 +136,16 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
                 multiple
                 onChange={handleFileChange}
                 disabled={isLoading}
+                className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               />
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 You can upload up to 5 resumes. Maximum file size: 5MB per file.
               </p>
               
               {resumes.length > 0 && (
                 <div className="mt-2">
-                  <p className="text-sm font-medium">Selected files:</p>
-                  <ul className="text-sm text-muted-foreground">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">Selected files:</p>
+                  <ul className="text-sm text-gray-600 dark:text-gray-400">
                     {resumes.map((file, index) => (
                       <li key={index}>{file.name}</li>
                     ))}
@@ -139,12 +159,14 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
                 variant="outline" 
                 onClick={handleUploadDialogClose}
                 disabled={isLoading}
+                className="bg-white/20 dark:bg-black/20 text-gray-900 dark:text-white"
               >
                 Cancel
               </Button>
               <Button 
                 onClick={handleUploadResumes}
                 disabled={resumes.length === 0 || isLoading}
+                className="bg-[#7efb98] text-[#1F2937] hover:bg-[#7efb98]/90"
               >
                 {isLoading ? "Uploading..." : "Upload"}
               </Button>
@@ -155,10 +177,10 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
 
       {showEvaluation || showChat ? (
         <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
-            {showEvaluation && <TabsTrigger value="evaluation">Evaluation</TabsTrigger>}
-            {showChat && <TabsTrigger value="chat">Chat</TabsTrigger>}
+          <TabsList className="bg-white/20 dark:bg-black/20">
+            <TabsTrigger value="settings" className="text-gray-900 dark:text-white">Settings</TabsTrigger>
+            {showEvaluation && <TabsTrigger value="evaluation" className="text-gray-900 dark:text-white">Evaluation</TabsTrigger>}
+            {showChat && <TabsTrigger value="chat" className="text-gray-900 dark:text-white">Chat</TabsTrigger>}
           </TabsList>
           
           <TabsContent value="settings" className="mt-4">

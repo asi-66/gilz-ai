@@ -40,8 +40,8 @@ const JobFlowSettingsTab: React.FC<SettingsTabContentProps> = ({
   handleSave,
 }) => {
   return (
-    <Card className="bg-white/10 dark:bg-black/10 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-sm">
-      <CardHeader>
+    <Card className="bg-white/80 dark:bg-black/80 backdrop-blur-md border border-black/10 dark:border-white/10 shadow-sm">
+      <CardHeader className="pb-2">
         <CardTitle>Job Details</CardTitle>
         <CardDescription>
           View and update job information
@@ -58,7 +58,8 @@ const JobFlowSettingsTab: React.FC<SettingsTabContentProps> = ({
               value={formData.title}
               onChange={handleChange}
               disabled={!isEditing}
-              className="text-lg font-medium"
+              className="text-lg font-medium bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+              placeholder="Enter job title"
             />
           </div>
           
@@ -72,7 +73,8 @@ const JobFlowSettingsTab: React.FC<SettingsTabContentProps> = ({
               value={formData.description}
               onChange={handleChange}
               disabled={!isEditing}
-              className="resize-none"
+              className="resize-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+              placeholder="Enter job description"
             />
           </div>
           
@@ -84,10 +86,10 @@ const JobFlowSettingsTab: React.FC<SettingsTabContentProps> = ({
               value={formData.location}
               onValueChange={(value) => handleSelectChange("location", value)}
             >
-              <SelectTrigger id="location" className="w-full">
+              <SelectTrigger id="location" className="w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
                 <SelectValue placeholder="Select work mode" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
                 <SelectItem value="Remote">Remote</SelectItem>
                 <SelectItem value="In-office">In-office</SelectItem>
                 <SelectItem value="Hybrid">Hybrid</SelectItem>

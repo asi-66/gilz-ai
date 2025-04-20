@@ -17,7 +17,7 @@ const JobFlowDetailPage = () => {
     title: "",
     description: "",
     location: "Remote",
-    status: "active" as const,
+    status: "active" as "active" | "completed" | "pending",
     candidateCount: 0,
     createdAt: new Date().toLocaleDateString(),
   });
