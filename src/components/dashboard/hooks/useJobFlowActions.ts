@@ -1,9 +1,7 @@
-
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { useResumeUpload } from "./useResumeUpload";
 import { supabase } from "@/integrations/supabase/client";
-import { useWebhook } from "./useWebhook";
 
 export const useJobFlowActions = (
   jobId: string, 
@@ -51,7 +49,6 @@ export const useJobFlowActions = (
 
   const handleSave = async () => {
     try {
-      // Update job description in Supabase
       const { error } = await supabase
         .from('job_descriptions')
         .update({
@@ -89,27 +86,16 @@ export const useJobFlowActions = (
     setActiveTab("chat");
   };
 
-  const { webhookUrl, handleWebhookUrlChange } = useWebhook();
-
   const { 
     isLoading,
     showUploadDialog,
     resumes,
     handleFileChange,
-    handleUploadResumes: originalHandleUploadResumes,
+    handleUploadResumes,
     handleDeleteResume,
     handleUploadDialogOpen,
     handleUploadDialogClose,
   } = useResumeUpload(jobId, setHasResumes);
-
-  const handleUploadResumes = async () => {
-    try {
-      // We no longer need to pass the webhookUrl here as it's handled by the useWebhook hook
-      await originalHandleUploadResumes();
-    } catch (error) {
-      console.error("Upload failed:", error);
-    }
-  };
 
   return {
     isEditing,
@@ -130,8 +116,6 @@ export const useJobFlowActions = (
     startEvaluation,
     startChat,
     handleDeleteResume,
-    webhookUrl,
-    handleWebhookUrlChange,
     isLoading
   };
 };

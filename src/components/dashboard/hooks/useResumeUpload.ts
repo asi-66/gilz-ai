@@ -6,13 +6,13 @@ import { api } from "@/services/api";
 import { useRetry } from "@/hooks/use-retry";
 import { v4 as uuidv4 } from 'uuid';
 import { validateFiles } from "./utils/fileValidation";
-import { useWebhook } from "./useWebhook";
+
+const N8N_WEBHOOK_URL = "https://primary-production-005c.up.railway.app/webhook/9a45b076-3a38-4fb7-9a9c-488bbca220ab";
 
 export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) => void) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [resumes, setResumes] = useState<File[]>([]);
-  const { webhookUrl, handleWebhookUrlChange, sendWebhookNotification } = useWebhook();
 
   const { execute: executeWithRetry } = useRetry(
     async (fn: () => Promise<any>) => fn(),
@@ -24,6 +24,29 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
     const { isValid, validFiles } = validateFiles(files);
     if (isValid) {
       setResumes(validFiles);
+    }
+  };
+
+  const sendWebhookNotification = async (fileNames: string[]) => {
+    try {
+      const webhookPayload = {
+        type: "resume-upload",
+        data: { fileNames }
+      };
+
+      const response = await fetch(N8N_WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(webhookPayload)
+      });
+
+      if (!response.ok) {
+        throw new Error('Webhook notification failed');
+      }
+    } catch (error) {
+      console.error('Error sending webhook notification:', error);
     }
   };
 
@@ -64,9 +87,8 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
 
       await Promise.all(resumePromises);
       
-      if (webhookUrl) {
-        await sendWebhookNotification(uploadedFileNames);
-      }
+      // Send notification to N8N webhook
+      await sendWebhookNotification(uploadedFileNames);
 
       toast({
         title: "Success",
@@ -140,8 +162,6 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
     isLoading,
     showUploadDialog,
     resumes,
-    webhookUrl,
-    handleWebhookUrlChange,
     handleFileChange,
     handleUploadResumes,
     handleDeleteResume,
