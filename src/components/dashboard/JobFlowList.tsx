@@ -110,7 +110,7 @@ const JobFlowList: React.FC<JobFlowListProps> = ({ jobFlows, onDelete }) => {
       <CardContent className="p-0">
         {jobFlows.length > 0 ? (
           <ScrollArea className="h-[600px] w-full">
-            <div className="overflow-x-auto">
+            <div className="w-full min-w-[800px] overflow-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="border-b border-border bg-muted/50">
