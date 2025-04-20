@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import JobFlowList from "@/components/dashboard/JobFlowList";
@@ -14,7 +13,6 @@ const JobFlow = () => {
   const navigate = useNavigate();
   const { jobFlows, isLoading, refreshJobFlows } = useJobFlows();
 
-  // Refresh job flows when the component mounts
   useEffect(() => {
     refreshJobFlows();
   }, []);
@@ -25,10 +23,7 @@ const JobFlow = () => {
       description: "Job flow created successfully. Refreshing data...",
     });
     
-    // Refresh the job flows list to include the new job
     await refreshJobFlows();
-    
-    // Navigate to the new job flow
     navigate(`/dashboard/job-flow/${jobId}`);
   };
 
@@ -37,6 +32,10 @@ const JobFlow = () => {
       title: "Refreshing",
       description: "Fetching latest job flows...",
     });
+    refreshJobFlows();
+  };
+
+  const handleDeleteJob = (jobId: string) => {
     refreshJobFlows();
   };
 
@@ -78,7 +77,7 @@ const JobFlow = () => {
         ) : (
           <>
             {jobFlows && jobFlows.length > 0 ? (
-              <JobFlowList jobFlows={jobFlows} />
+              <JobFlowList jobFlows={jobFlows} onDelete={handleDeleteJob} />
             ) : (
               <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 text-center">
                 <p className="text-gray-600 dark:text-gray-300 mb-4">No job flows found in the database</p>
