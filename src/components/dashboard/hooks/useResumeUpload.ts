@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,10 +5,18 @@ import { api } from "@/services/api";
 import { useRetry } from "@/hooks/use-retry";
 import { v4 as uuidv4 } from 'uuid';
 
+interface WebhookPayload {
+  type: "resume-upload";
+  data: {
+    fileNames: string[];
+  }
+}
+
 export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) => void) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [resumes, setResumes] = useState<File[]>([]);
+  const [webhookUrl, setWebhookUrl] = useState(() => localStorage.getItem('resumeWebhookUrl') || '');
 
   const { execute: executeWithRetry } = useRetry(
     async (fn: () => Promise<any>) => fn(),
@@ -58,6 +65,12 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
     setResumes(files);
   };
 
+  const handleWebhookUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const url = e.target.value;
+    setWebhookUrl(url);
+    localStorage.setItem('resumeWebhookUrl', url);
+  };
+
   const handleUploadResumes = async () => {
     if (resumes.length === 0) {
       toast({
@@ -69,13 +82,14 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
     }
 
     setIsLoading(true);
+    const uploadedFileNames: string[] = [];
 
     try {
       const resumePromises = resumes.map(async (file) => {
         const fileExt = file.name.substring(file.name.lastIndexOf('.'));
         const fileName = `${uuidv4()}${fileExt}`;
         const filePath = `${jobId}/${fileName}`;
-
+        
         // Upload file to Supabase storage
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('resumes')
@@ -85,23 +99,59 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
           throw new Error(uploadError.message || 'Upload failed');
         }
 
-        // Parse resume and store metadata in parsed_resumes table
-        const resumeText = await file.text();
+        uploadedFileNames.push(file.name);
         
+        // Parse resume and store metadata
+        const resumeText = await file.text();
         const resumeResponse = await api.uploadResume({
           resumeText,
-          jobId
+          jobId,
+          storagePath: filePath
         });
 
         return resumeResponse.resumeId;
       });
 
       const resumeIds = await Promise.all(resumePromises);
+      
+      // After all files are uploaded, trigger webhook if URL is provided
+      if (webhookUrl) {
+        const webhookPayload: WebhookPayload = {
+          type: "resume-upload",
+          data: {
+            fileNames: uploadedFileNames
+          }
+        };
+
+        try {
+          const webhookResponse = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(webhookPayload)
+          });
+
+          if (!webhookResponse.ok) {
+            throw new Error('Webhook notification failed');
+          }
+
+          console.log('Webhook notification sent successfully');
+        } catch (webhookError) {
+          console.error('Webhook error:', webhookError);
+          toast({
+            title: "Webhook Notification Failed",
+            description: "Files were uploaded but webhook notification failed",
+            variant: "destructive",
+          });
+        }
+      }
+
       console.log('All resumes processed successfully. Resume IDs:', resumeIds);
       
       toast({
-        title: "Upload Successful",
-        description: `${resumes.length} resume(s) uploaded successfully`,
+        title: "Success",
+        description: "Resumes uploaded successfully. Processing...",
       });
       
       setHasResumes(true);
@@ -110,7 +160,6 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
       
     } catch (error: any) {
       console.error("Resume upload error:", error);
-      
       toast({
         title: "Upload Failed",
         description: error.message || "Failed to upload resumes. Please try again.",
@@ -181,9 +230,11 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
     isLoading,
     showUploadDialog,
     resumes,
+    webhookUrl,
     handleFileChange,
     handleUploadResumes,
     handleDeleteResume,
+    handleWebhookUrlChange,
     handleUploadDialogOpen: () => setShowUploadDialog(true),
     handleUploadDialogClose: () => {
       setShowUploadDialog(false);

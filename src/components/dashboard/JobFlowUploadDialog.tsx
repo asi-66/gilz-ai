@@ -8,17 +8,21 @@ import { Label } from "@/components/ui/label";
 interface JobFlowUploadDialogProps {
   isLoading: boolean;
   resumes: File[];
+  webhookUrl: string;
   onClose: () => void;
   onUpload: () => void;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onWebhookUrlChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const JobFlowUploadDialog: React.FC<JobFlowUploadDialogProps> = ({
   isLoading,
   resumes,
+  webhookUrl,
   onClose,
   onUpload,
   onFileChange,
+  onWebhookUrlChange,
 }) => {
   return (
     <Card className="border border-black/10 dark:border-white/10 bg-white/90 dark:bg-gray-900/90">
@@ -53,6 +57,23 @@ const JobFlowUploadDialog: React.FC<JobFlowUploadDialogProps> = ({
               </ul>
             </div>
           )}
+
+          <div className="mt-4">
+            <Label htmlFor="webhook" className="text-gray-900 dark:text-white">
+              Webhook URL (Optional)
+            </Label>
+            <Input
+              id="webhook"
+              type="url"
+              value={webhookUrl}
+              onChange={onWebhookUrlChange}
+              placeholder="https://your-webhook-url.com"
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            />
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              URL to receive upload notifications
+            </p>
+          </div>
         </div>
         
         <div className="flex justify-end gap-2">
