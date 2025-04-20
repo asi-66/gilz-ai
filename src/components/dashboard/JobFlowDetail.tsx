@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
@@ -46,7 +45,8 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
     handleUploadDialogOpen,
     handleUploadDialogClose,
     startEvaluation,
-    startChat
+    startChat,
+    handleDeleteResume
   } = useJobFlowActions(jobId, fetchedJobData, setShowEvaluation, setShowChat, setActiveTab);
 
   useEffect(() => {
@@ -135,6 +135,7 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
             handleEdit={handleEdit}
             handleCancel={handleCancel}
             handleSave={handleSave}
+            handleDeleteResume={handleDeleteResume}
           />
         ) : (
           <JobFlowSettingsTab 

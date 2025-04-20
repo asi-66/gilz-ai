@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import JobFlowSettingsTab from "./JobFlowSettingsTab";
@@ -22,6 +21,7 @@ interface JobFlowTabsProps {
   handleEdit: () => void;
   handleCancel: () => void;
   handleSave: () => void;
+  handleDeleteResume?: (resumeId: string) => void;
 }
 
 const JobFlowTabs: React.FC<JobFlowTabsProps> = ({
@@ -37,6 +37,7 @@ const JobFlowTabs: React.FC<JobFlowTabsProps> = ({
   handleEdit,
   handleCancel,
   handleSave,
+  handleDeleteResume
 }) => {
   return (
     <Tabs defaultValue={activeTab} value={activeTab}>
@@ -61,7 +62,10 @@ const JobFlowTabs: React.FC<JobFlowTabsProps> = ({
       
       {showEvaluation && (
         <TabsContent value="evaluation" className="mt-4">
-          <EvaluationInterface jobId={jobId} />
+          <EvaluationInterface 
+            jobId={jobId} 
+            onDeleteResume={handleDeleteResume} 
+          />
         </TabsContent>
       )}
       

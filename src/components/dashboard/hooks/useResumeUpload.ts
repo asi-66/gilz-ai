@@ -1,8 +1,10 @@
 
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { api } from "@/services/api";
 import { useRetry } from "@/hooks/use-retry";
+import { v4 as uuidv4 } from 'uuid';
 
 export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) => void) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -69,37 +71,29 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
     setIsLoading(true);
 
     try {
-      const resumePromises = resumes.map(async (file, index) => {
-        return new Promise<string>((resolve, reject) => {
-          console.log(`Processing resume ${index + 1}/${resumes.length}: ${file.name}`);
-          
-          const reader = new FileReader();
-          
-          reader.onload = async (e) => {
-            try {
-              await executeWithRetry(async () => {
-                const resumeText = e.target?.result as string;
-                const resumeResponse = await api.uploadResume({
-                  resumeText,
-                  jobId,
-                });
-                
-                console.log(`Resume ${index + 1} uploaded successfully with ID: ${resumeResponse.resumeId}`);
-                resolve(resumeResponse.resumeId);
-              });
-            } catch (error: any) {
-              console.error(`Error uploading resume ${index + 1}:`, error);
-              reject(new Error(`Failed to upload ${file.name}: ${error.message || 'Unknown error'}`));
-            }
-          };
-          
-          reader.onerror = (error) => {
-            console.error(`Error reading resume ${index + 1}:`, error);
-            reject(new Error(`Failed to read ${file.name}`));
-          };
-          
-          reader.readAsText(file, 'UTF-8');
+      const resumePromises = resumes.map(async (file) => {
+        const fileExt = file.name.substring(file.name.lastIndexOf('.'));
+        const fileName = `${uuidv4()}${fileExt}`;
+        const filePath = `${jobId}/${fileName}`;
+
+        // Upload file to Supabase storage
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('resumes')
+          .upload(filePath, file);
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        // Parse resume and store metadata in parsed_resumes table
+        const resumeText = await file.text();
+        const resumeResponse = await api.uploadResume({
+          resumeText,
+          jobId,
+          storagePath: filePath
         });
+        
+        return resumeResponse.resumeId;
       });
 
       const resumeIds = await Promise.all(resumePromises);
@@ -127,12 +121,58 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
     }
   };
 
+  const handleDeleteResume = async (resumeId: string) => {
+    try {
+      // First, get the storage path from the parsed_resumes table
+      const { data: resumeData, error: fetchError } = await supabase
+        .from('parsed_resumes')
+        .select('storage_path')
+        .eq('id', resumeId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // Delete from Supabase storage
+      const { error: storageError } = await supabase.storage
+        .from('resumes')
+        .remove([resumeData.storage_path]);
+
+      if (storageError) throw storageError;
+
+      // Delete from parsed_resumes table
+      const { error: deleteError } = await supabase
+        .from('parsed_resumes')
+        .delete()
+        .eq('id', resumeId);
+
+      if (deleteError) throw deleteError;
+
+      toast({
+        title: "Resume Deleted",
+        description: "The resume has been successfully removed.",
+      });
+
+      // Refresh the resumes list or update UI state
+      setHasResumes(false);  // You might want to implement a more sophisticated check
+
+    } catch (error: any) {
+      console.error("Resume deletion error:", error);
+      
+      toast({
+        title: "Deletion Failed",
+        description: error.message || "Failed to delete resume. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return {
     isLoading,
     showUploadDialog,
     resumes,
     handleFileChange,
     handleUploadResumes,
+    handleDeleteResume,
     handleUploadDialogOpen: () => setShowUploadDialog(true),
     handleUploadDialogClose: () => {
       setShowUploadDialog(false);
