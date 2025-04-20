@@ -68,6 +68,7 @@ export type Database = {
           phone: string | null
           processing_status: string
           skills: Json
+          storage_path: string | null
           work_experience: Json
         }
         Insert: {
@@ -83,6 +84,7 @@ export type Database = {
           phone?: string | null
           processing_status: string
           skills?: Json
+          storage_path?: string | null
           work_experience?: Json
         }
         Update: {
@@ -98,6 +100,7 @@ export type Database = {
           phone?: string | null
           processing_status?: string
           skills?: Json
+          storage_path?: string | null
           work_experience?: Json
         }
         Relationships: [

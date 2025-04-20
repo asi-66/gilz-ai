@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -82,40 +81,19 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
           .upload(filePath, file);
 
         if (uploadError) {
-          throw uploadError;
+          throw new Error(uploadError.message || 'Upload failed');
         }
 
         // Parse resume and store metadata in parsed_resumes table
         const resumeText = await file.text();
         
-        // Store the storage path in parsed_resumes table
-        const { data: resumeData, error: resumeError } = await supabase
-          .from('parsed_resumes')
-          .insert([{
-            job_id: jobId,
-            full_name: 'Pending Extraction',
-            email: 'pending@example.com',
-            skills: [],
-            work_experience: [],
-            education: [],
-            certifications: [],
-            processing_status: 'pending',
-            storage_path: filePath
-          }])
-          .select('id')
-          .single();
-        
-        if (resumeError) {
-          throw resumeError;
-        }
-        
-        // Call API to process the resume
-        await api.uploadResume({
+        const resumeResponse = await api.uploadResume({
           resumeText,
           jobId,
+          storagePath: filePath
         });
-        
-        return resumeData.id;
+
+        return resumeResponse.resumeId;
       });
 
       const resumeIds = await Promise.all(resumePromises);
