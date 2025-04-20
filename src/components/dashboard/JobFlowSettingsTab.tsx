@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface SettingsTabContentProps {
+interface JobFlowSettingsTabProps {
   formData: {
     title: string;
     description: string;
@@ -29,7 +29,7 @@ interface SettingsTabContentProps {
   handleSave: () => void;
 }
 
-const JobFlowSettingsTab: React.FC<SettingsTabContentProps> = ({
+const JobFlowSettingsTab: React.FC<JobFlowSettingsTabProps> = ({
   formData,
   isEditing,
   isLoading,
@@ -49,7 +49,6 @@ const JobFlowSettingsTab: React.FC<SettingsTabContentProps> = ({
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          {/* Title - First */}
           <div className="space-y-2">
             <Label htmlFor="title" className="text-base font-medium">Job Title</Label>
             <Input
@@ -63,7 +62,6 @@ const JobFlowSettingsTab: React.FC<SettingsTabContentProps> = ({
             />
           </div>
           
-          {/* Description - Second */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-base font-medium">Job Description</Label>
             <Textarea
@@ -78,7 +76,6 @@ const JobFlowSettingsTab: React.FC<SettingsTabContentProps> = ({
             />
           </div>
           
-          {/* Work Mode - Third */}
           <div className="space-y-2">
             <Label htmlFor="location" className="text-base font-medium">Work Mode</Label>
             <Select
