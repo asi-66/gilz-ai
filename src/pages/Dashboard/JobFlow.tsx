@@ -4,9 +4,10 @@ import DashboardLayout from "@/components/layouts/DashboardLayout";
 import JobFlowList from "@/components/dashboard/JobFlowList";
 import { CreateJobModal } from "@/components/dashboard/modals";
 import { Button } from "@/components/ui/button";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useJobFlows } from "@/components/dashboard/hooks/useJobFlows";
+import { toast } from "@/hooks/use-toast";
 
 const JobFlow = () => {
   const [createJobModalOpen, setCreateJobModalOpen] = useState(false);
@@ -18,9 +19,25 @@ const JobFlow = () => {
     refreshJobFlows();
   }, []);
 
-  const handleCreateJobSuccess = (jobId: string) => {
-    refreshJobFlows();
+  const handleCreateJobSuccess = async (jobId: string) => {
+    toast({
+      title: "Success",
+      description: "Job flow created successfully. Refreshing data...",
+    });
+    
+    // Refresh the job flows list to include the new job
+    await refreshJobFlows();
+    
+    // Navigate to the new job flow
     navigate(`/dashboard/job-flow/${jobId}`);
+  };
+
+  const handleRefresh = () => {
+    toast({
+      title: "Refreshing",
+      description: "Fetching latest job flows...",
+    });
+    refreshJobFlows();
   };
 
   return (
@@ -33,13 +50,25 @@ const JobFlow = () => {
               Manage your resume screening job flows
             </p>
           </div>
-          <Button 
-            onClick={() => setCreateJobModalOpen(true)}
-            className="bg-[#7efb98] text-[#1F2937] hover:bg-[#7efb98]/90 font-medium shadow-sm"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Create Job Flow
-          </Button>
+          <div className="flex space-x-2">
+            <Button 
+              variant="outline"
+              size="icon"
+              onClick={handleRefresh}
+              disabled={isLoading}
+              className="hover:bg-muted/50"
+              title="Refresh job flows"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+            <Button 
+              onClick={() => setCreateJobModalOpen(true)}
+              className="bg-[#7efb98] text-[#1F2937] hover:bg-[#7efb98]/90 font-medium shadow-sm"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Create Job Flow
+            </Button>
+          </div>
         </div>
 
         {isLoading ? (
@@ -47,7 +76,23 @@ const JobFlow = () => {
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : (
-          <JobFlowList jobFlows={jobFlows} />
+          <>
+            {jobFlows && jobFlows.length > 0 ? (
+              <JobFlowList jobFlows={jobFlows} />
+            ) : (
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 text-center">
+                <p className="text-gray-600 dark:text-gray-300 mb-4">No job flows found in the database</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Create your first job flow to start screening resumes</p>
+                <Button 
+                  onClick={() => setCreateJobModalOpen(true)}
+                  className="bg-[#7efb98] text-[#1F2937] hover:bg-[#7efb98]/90"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Job Flow
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
 

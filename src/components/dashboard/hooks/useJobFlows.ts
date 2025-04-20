@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { api } from "@/services/api";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 export interface JobFlow {
@@ -19,35 +19,40 @@ export const useJobFlows = () => {
   const fetchJobFlows = async () => {
     setIsLoading(true);
     try {
-      console.log("Fetching job flows...");
-      const response = await api.getJobFlows();
-      console.log("Job flows response:", response);
+      console.log("Fetching job flows from Supabase...");
       
-      if (response.success && response.jobs) {
-        setJobFlows(response.jobs.map((job: any) => ({
-          id: job.jobId,
+      // Fetch job data from Supabase job_descriptions table
+      const { data, error } = await supabase
+        .from('job_descriptions')
+        .select('id, title, description, location, created_at, is_active');
+      
+      if (error) {
+        throw error;
+      }
+      
+      console.log("Supabase job flows retrieved:", data);
+      
+      if (data && data.length > 0) {
+        // Map the Supabase data to our JobFlow interface
+        const mappedJobs = data.map(job => ({
+          id: job.id,
           title: job.title,
-          status: job.status || "active",
-          location: job.workMode || "Remote",
-          createdAt: new Date(job.timestamp || Date.now()).toLocaleDateString(),
-          candidateCount: job.candidateCount || 0
-        })));
-      } else if (response.success && response.jobId) {
-        // Single job response, create a new job flow
-        const newJob: JobFlow = {
-          id: response.jobId,
-          title: "New Job Flow", // Default title since it's not in response
-          status: "active" as const, // Use a literal type to match the JobFlow interface
-          location: "Remote",
-          createdAt: new Date(response.timestamp || Date.now()).toLocaleDateString(),
+          // Map is_active to our status options
+          status: job.is_active ? "active" as const : "completed" as const,
+          location: job.location || "Remote",
+          createdAt: new Date(job.created_at || Date.now()).toLocaleDateString(),
+          // For candidate count, we would ideally count related records
+          // For now, set to 0 as we'll need to implement this later
           candidateCount: 0
-        };
-        setJobFlows(prev => [newJob, ...prev]);
+        }));
+        
+        setJobFlows(mappedJobs);
       } else {
+        console.log("No job flows found in Supabase");
         setJobFlows([]);
       }
     } catch (error: any) {
-      console.error("Error fetching job flows:", error);
+      console.error("Error fetching job flows from Supabase:", error);
       toast({
         title: "Error",
         description: "Failed to fetch job flows. Please try again.",
