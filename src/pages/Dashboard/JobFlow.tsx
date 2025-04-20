@@ -49,11 +49,11 @@ const JobFlow = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+      <div className="space-y-6 min-h-screen w-full">
+        <div className="flex justify-between items-center bg-background/50 backdrop-blur-sm p-4 rounded-lg border border-border shadow-sm">
           <div>
-            <h1 className="text-2xl font-medium text-gray-900 dark:text-gray-100">Job Flow Management</h1>
-            <p className="text-gray-600 dark:text-gray-400">
+            <h1 className="text-2xl font-medium text-foreground">Job Flow Management</h1>
+            <p className="text-muted-foreground">
               Manage your resume screening job flows
             </p>
           </div>
@@ -63,10 +63,10 @@ const JobFlow = () => {
               size="icon"
               onClick={handleRefresh}
               disabled={isLoading}
-              className="hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="hover:bg-accent"
               title="Refresh job flows"
             >
-              <RefreshCw className="h-4 w-4" />
+              <RefreshCw className="h-4 w-4 text-foreground" />
             </Button>
             <Button 
               onClick={() => setCreateJobModalOpen(true)}
@@ -83,7 +83,11 @@ const JobFlow = () => {
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : (
-          <JobFlowList jobFlows={jobFlows} onDelete={handleDeleteJob} />
+          <div className="relative rounded-lg border border-border bg-background/50 backdrop-blur-sm shadow">
+            <div className="overflow-hidden">
+              <JobFlowList jobFlows={jobFlows} onDelete={handleDeleteJob} />
+            </div>
+          </div>
         )}
       </div>
 
