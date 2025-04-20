@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import JobFlowList from "@/components/dashboard/JobFlowList";
@@ -35,7 +36,7 @@ const JobFlow = () => {
     refreshJobFlows();
   };
 
-  const handleDeleteJob = (jobId: string) => {
+  const handleDeleteJob = () => {
     refreshJobFlows();
   };
 
