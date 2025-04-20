@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, MessageSquare, Users } from "lucide-react";
+import { Loader2, MessageSquare, Search, Upload } from "lucide-react";
 
 interface JobFlowHeaderProps {
   jobData: {
@@ -15,7 +15,9 @@ interface JobFlowHeaderProps {
   showChat: boolean;
   isLoading: boolean;
   activeTab: string;
-  onStartEvaluation: () => void;
+  hasResumes: boolean;
+  onUploadResumes: () => void;
+  onStartEvaluation: (resumeId?: string) => void;
   onStartChat: () => void;
 }
 
@@ -25,6 +27,8 @@ const JobFlowHeader: React.FC<JobFlowHeaderProps> = ({
   showChat,
   isLoading,
   activeTab,
+  hasResumes,
+  onUploadResumes,
   onStartEvaluation,
   onStartChat
 }) => {
@@ -45,35 +49,40 @@ const JobFlowHeader: React.FC<JobFlowHeaderProps> = ({
         </div>
       </div>
       <div className="flex gap-2">
-        {!showEvaluation && (
-          <Button 
-            variant="default" 
-            onClick={onStartEvaluation} 
-            disabled={isLoading}
-          >
-            {isLoading && activeTab === "evaluation" ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Users className="mr-2 h-4 w-4" />
-            )}
-            Start Evaluation
-          </Button>
-        )}
+        <Button 
+          className="bg-[#7efb98] text-[#1F2937] hover:bg-[#7efb98]/90"
+          onClick={onUploadResumes}
+          disabled={isLoading}
+        >
+          <Upload className="mr-2 h-4 w-4" />
+          Upload Resumes
+        </Button>
         
-        {!showChat && (
-          <Button 
-            variant="outline" 
-            onClick={onStartChat} 
-            disabled={isLoading}
-          >
-            {isLoading && activeTab === "chat" ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <MessageSquare className="mr-2 h-4 w-4" />
-            )}
-            Start Chat
-          </Button>
-        )}
+        <Button 
+          variant="default" 
+          onClick={() => onStartEvaluation()} 
+          disabled={isLoading || !hasResumes}
+        >
+          {isLoading && activeTab === "evaluation" ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Search className="mr-2 h-4 w-4" />
+          )}
+          Start Screening
+        </Button>
+        
+        <Button 
+          variant="outline" 
+          onClick={onStartChat} 
+          disabled={isLoading || !hasResumes}
+        >
+          {isLoading && activeTab === "chat" ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <MessageSquare className="mr-2 h-4 w-4" />
+          )}
+          Start Chat
+        </Button>
       </div>
     </div>
   );

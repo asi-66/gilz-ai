@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +19,6 @@ export const JobFlowForm: React.FC<JobFlowFormProps> = ({ onSuccess, onClose }) 
     isLoading, 
     handleChange, 
     handleSelectChange, 
-    handleFileChange, 
     handleSubmit 
   } = useCreateJobForm(onSuccess, onClose);
 
@@ -30,13 +30,13 @@ export const JobFlowForm: React.FC<JobFlowFormProps> = ({ onSuccess, onClose }) 
       <CardContent>
         <form className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="flowName">Job Flow Name</Label>
+            <Label htmlFor="flowName">Job Title</Label>
             <Input
               id="flowName"
               name="flowName"
               value={formData.flowName}
               onChange={handleChange}
-              placeholder="Enter job flow name"
+              placeholder="Enter job title"
               required
             />
           </div>
@@ -69,23 +69,6 @@ export const JobFlowForm: React.FC<JobFlowFormProps> = ({ onSuccess, onClose }) 
                 <SelectItem value="On-site">On-site</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="resumes">Upload Resumes (PDF, TXT, DOC, DOCX)</Label>
-            <Input
-              id="resumes"
-              name="resumes"
-              type="file"
-              onChange={handleFileChange}
-              accept=".pdf,.txt,.doc,.docx"
-              multiple
-              required
-              className="cursor-pointer"
-            />
-            <p className="text-sm text-gray-500">
-              You can upload up to 5 resumes. Maximum file size: 5MB per file.
-            </p>
           </div>
         </form>
       </CardContent>

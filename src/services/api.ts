@@ -1,4 +1,5 @@
-// Modified API service to fix integration issues with n8n workflow
+
+// Modified API service to better handle webhook responses
 
 import { toast } from "@/hooks/use-toast";
 
@@ -96,7 +97,7 @@ const handleApiError = (error: any): ApiError => {
   }
 };
 
-// Generic fetch function with improved error handling
+// Generic fetch function with improved response handling
 const fetchApi = async <T>(
   endpoint: string = '',
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'POST',
@@ -122,21 +123,36 @@ const fetchApi = async <T>(
     // Log response status
     console.log(`Response status: ${response.status}`);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`API Error (${response.status}):`, errorText);
+    // If response is not JSON, handle accordingly
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      // Try to parse as text
+      const text = await response.text();
+      console.log('Non-JSON response:', text);
       
-      // Try to parse error as JSON if possible
-      let errorData = {};
-      try {
-        errorData = JSON.parse(errorText);
-      } catch (e) {
-        // If not JSON, use as plain text
+      if (!response.ok) {
+        throw {
+          status: response.status,
+          message: `HTTP error! Status: ${response.status}. Response: ${text}`
+        };
       }
+      
+      // If response is OK but not JSON, create a simple success response
+      return {
+        success: true,
+        message: text || 'Operation successful',
+        timestamp: new Date().toISOString()
+      } as unknown as T;
+    }
+
+    // For JSON responses
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error(`API Error (${response.status}):`, errorData);
       
       throw {
         status: response.status,
-        message: errorData?.message || errorText || `HTTP error! Status: ${response.status}`,
+        message: errorData?.message || `HTTP error! Status: ${response.status}`,
         code: errorData?.error?.code,
         details: errorData?.error?.details
       };
@@ -144,6 +160,16 @@ const fetchApi = async <T>(
 
     const data = await response.json() as T;
     console.log('API Response:', data);
+    
+    // Check if response contains success: false
+    if (data && typeof data === 'object' && 'success' in data && data.success === false) {
+      throw {
+        status: 200, // It was a "successful" request with an error in the body
+        message: (data as any).message || 'Operation failed',
+        details: (data as any).details
+      };
+    }
+    
     return data;
   } catch (error) {
     console.error('API Call Failed:', error);
@@ -175,8 +201,8 @@ export const api = {
       type: 'job-create',
       data: {
         title: jobData.flowName,
-        jobDescription: jobData.jobDescription, // FIXED: Changed from description to jobDescription
-        workMode: jobData.workMode // FIXED: This matches what n8n expects
+        jobDescription: jobData.jobDescription,
+        workMode: jobData.workMode
       }
     });
   },

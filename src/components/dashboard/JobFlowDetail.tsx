@@ -1,8 +1,11 @@
 
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { api } from "@/services/api";
 import ChatInterface from "./ChatInterface";
 import EvaluationInterface from "./EvaluationInterface";
 import JobFlowSettingsTab from "./JobFlowSettingsTab";
@@ -29,12 +32,19 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
   const { 
     isLoading, 
     isEditing, 
-    formData, 
+    formData,
+    hasResumes,
+    showUploadDialog,
+    resumes,
     handleChange, 
     handleSelectChange, 
     handleEdit, 
     handleCancel, 
     handleSave,
+    handleFileChange,
+    handleUploadResumes,
+    handleUploadDialogOpen,
+    handleUploadDialogClose,
     startEvaluation,
     startChat
   } = useJobFlowActions(jobId, jobData, setShowEvaluation, setShowChat, setActiveTab);
@@ -47,9 +57,62 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
         showChat={showChat}
         isLoading={isLoading}
         activeTab={activeTab}
+        hasResumes={hasResumes}
+        onUploadResumes={handleUploadDialogOpen}
         onStartEvaluation={startEvaluation}
         onStartChat={startChat}
       />
+
+      {showUploadDialog && (
+        <Card className="border border-border/50">
+          <CardHeader>
+            <CardTitle className="text-lg">Upload Resumes</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="resumes">Select Resume Files (PDF, TXT, DOC, DOCX)</Label>
+              <Input
+                id="resumes"
+                type="file"
+                accept=".pdf,.txt,.doc,.docx"
+                multiple
+                onChange={handleFileChange}
+                disabled={isLoading}
+              />
+              <p className="text-sm text-muted-foreground">
+                You can upload up to 5 resumes. Maximum file size: 5MB per file.
+              </p>
+              
+              {resumes.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-sm font-medium">Selected files:</p>
+                  <ul className="text-sm text-muted-foreground">
+                    {resumes.map((file, index) => (
+                      <li key={index}>{file.name}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex justify-end gap-2">
+              <Button 
+                variant="outline" 
+                onClick={handleUploadDialogClose}
+                disabled={isLoading}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleUploadResumes}
+                disabled={resumes.length === 0 || isLoading}
+              >
+                {isLoading ? "Uploading..." : "Upload"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {showEvaluation || showChat ? (
         <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab}>
