@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -89,8 +90,7 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
         
         const resumeResponse = await api.uploadResume({
           resumeText,
-          jobId,
-          storagePath: filePath
+          jobId
         });
 
         return resumeResponse.resumeId;

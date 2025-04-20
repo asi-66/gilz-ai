@@ -1,3 +1,4 @@
+
 import { toast } from "@/hooks/use-toast";
 
 interface ApiResponse<T> {
@@ -89,7 +90,7 @@ export const api = {
   },
 
   // Upload resume
-  uploadResume: async (payload: { resumeText: string; jobId: string }): Promise<ResumeUploadResponse> => {
+  uploadResume: async (payload: { resumeText: string; jobId: string; storagePath?: string }): Promise<ResumeUploadResponse> => {
     try {
       const response = await fetch('https://primary-production-005c.up.railway.app/webhook/9a45b076-3a38-4fb7-9a9c-488bbca220ab', {
         method: 'POST',
@@ -101,6 +102,7 @@ export const api = {
           data: {
             resumeText: payload.resumeText,
             jobId: payload.jobId,
+            storagePath: payload.storagePath
           },
         }),
       });
