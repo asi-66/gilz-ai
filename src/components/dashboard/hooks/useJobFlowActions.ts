@@ -1,150 +1,142 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
-import { api } from "@/services/api";
-import { useJobFlowForm } from "./useJobFlowForm";
 import { useResumeUpload } from "./useResumeUpload";
-import { useRetry } from "@/hooks/use-retry";
-
-interface JobData {
-  title: string;
-  description: string;
-  location: string;
-  status: "active" | "completed" | "pending";
-  candidateCount: number;
-  createdAt: string;
-}
 
 export const useJobFlowActions = (
-  jobId: string,
-  jobData: JobData,
-  setShowEvaluation: (value: boolean) => void,
-  setShowChat: (value: boolean) => void,
-  setActiveTab: (value: string) => void
+  jobId: string, 
+  jobData: any, 
+  setShowEvaluation: (show: boolean) => void,
+  setShowChat: (show: boolean) => void,
+  setActiveTab: (tab: string) => void
 ) => {
+  const [isEditing, setIsEditing] = useState(false);
   const [hasResumes, setHasResumes] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const formActions = useJobFlowForm({
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [formData, setFormData] = useState({
     title: jobData.title,
     description: jobData.description,
     location: jobData.location,
+    status: jobData.status,
   });
 
-  const uploadActions = useResumeUpload(jobId, setHasResumes);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-  const { execute: executeWithRetry } = useRetry(
-    async (fn: () => Promise<any>) => fn(),
-    { maxRetries: 3, initialDelay: 1000 }
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFormData({
+      ...formData,
+      status: e.target.value as "active" | "completed" | "pending",
+    });
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setFormData({
+      title: jobData.title,
+      description: jobData.description,
+      location: jobData.location,
+      status: jobData.status,
+    });
+  };
+
+  const handleSave = async () => {
+    try {
+      // Update job description in Supabase
+      const { error } = await supabase
+        .from('job_descriptions')
+        .update({
+          title: formData.title,
+          description: formData.description,
+          location: formData.location,
+          is_active: formData.status === "active",
+        })
+        .eq('id', jobId);
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Success",
+        description: "Job details updated successfully",
+      });
+      setIsEditing(false);
+    } catch (error: any) {
+      console.error("Error updating job details:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update job details",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const startEvaluation = () => {
+    setShowEvaluation(true);
+    setActiveTab("evaluation");
+  };
+
+  const startChat = () => {
+    setShowChat(true);
+    setActiveTab("chat");
+  };
+
+  const [webhookUrl, setWebhookUrl] = useState(() => 
+    localStorage.getItem('resumeWebhookUrl') || ''
   );
 
-  const startEvaluation = async (resumeId?: string) => {
-    if (!hasResumes) {
-      toast({
-        title: "Cannot Start Evaluation",
-        description: "Please upload resumes before starting the evaluation process",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      await executeWithRetry(async () => {
-        console.log(`Starting evaluation for job ID: ${jobId}, resume ID: ${resumeId || 'all'}`);
-        
-        const scoreResult = await api.scoreResume({
-          resumeId: resumeId || 'all',
-          jobId,
-        });
-        
-        console.log('Resume scoring result:', scoreResult);
-        setShowEvaluation(true);
-        setActiveTab("evaluation");
-        
-        toast({
-          title: "Evaluation Started",
-          description: "The evaluation process has begun successfully",
-        });
-      });
-    } catch (error: any) {
-      console.error("Evaluation error:", error);
-      
-      const errorMessage = getErrorMessage(error);
-      toast({
-        title: "Evaluation Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    }
+  const handleWebhookUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const url = e.target.value;
+    setWebhookUrl(url);
+    localStorage.setItem('resumeWebhookUrl', url);
   };
 
-  const startChat = async () => {
-    if (!hasResumes) {
-      toast({
-        title: "Cannot Start Chat",
-        description: "Please upload resumes before starting a chat session",
-        variant: "destructive",
-      });
-      return;
-    }
+  const { 
+    isLoading,
+    showUploadDialog,
+    resumes,
+    handleFileChange,
+    handleUploadResumes: originalHandleUploadResumes,
+    handleDeleteResume,
+    handleUploadDialogOpen,
+    handleUploadDialogClose,
+  } = useResumeUpload(jobId, setHasResumes);
 
+  const handleUploadResumes = async () => {
     try {
-      await executeWithRetry(async () => {
-        console.log(`Starting chat session for job ID: ${jobId}`);
-        
-        const sessionId = `job-${jobId}`;
-        const initialMessage = "Hello, I'd like to discuss the job requirements";
-        
-        const chatResponse = await api.sendChatMessage({
-          message: initialMessage,
-          sessionId,
-          jobId,
-        });
-        
-        console.log('Chat initialized with response:', chatResponse);
-        setShowChat(true);
-        setActiveTab("chat");
-        
-        toast({
-          title: "Chat Session Started",
-          description: "You can now start discussing job requirements",
-        });
-      });
-    } catch (error: any) {
-      console.error("Chat initialization error:", error);
-      
-      const errorMessage = getErrorMessage(error);
-      toast({
-        title: "Chat Session Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      await originalHandleUploadResumes(webhookUrl);
+    } catch (error) {
+      console.error("Upload failed:", error);
     }
-  };
-
-  const getErrorMessage = (error: any): string => {
-    if (typeof error === 'string') return error;
-    
-    if (error.message) {
-      return error.message;
-    }
-
-    if (error.error_description) {
-      return error.error_description;
-    }
-
-    if (error.status) {
-      return `Server error (${error.status}): Please try again later`;
-    }
-
-    return "An unexpected error occurred. Please try again.";
   };
 
   return {
-    ...formActions,
-    ...uploadActions,
+    isEditing,
+    formData,
     hasResumes,
     setHasResumes,
+    showUploadDialog,
+    resumes,
+    handleChange,
+    handleSelectChange,
+    handleEdit,
+    handleCancel,
+    handleSave,
+    handleFileChange,
+    handleUploadResumes,
+    handleUploadDialogOpen,
+    handleUploadDialogClose,
     startEvaluation,
-    startChat
+    startChat,
+    handleDeleteResume,
+    webhookUrl,
+    handleWebhookUrlChange,
+    isLoading
   };
 };

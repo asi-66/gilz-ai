@@ -16,7 +16,6 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
   const [isLoading, setIsLoading] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [resumes, setResumes] = useState<File[]>([]);
-  const [webhookUrl, setWebhookUrl] = useState(() => localStorage.getItem('resumeWebhookUrl') || '');
 
   const { execute: executeWithRetry } = useRetry(
     async (fn: () => Promise<any>) => fn(),
@@ -65,13 +64,7 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
     setResumes(files);
   };
 
-  const handleWebhookUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const url = e.target.value;
-    setWebhookUrl(url);
-    localStorage.setItem('resumeWebhookUrl', url);
-  };
-
-  const handleUploadResumes = async () => {
+  const handleUploadResumes = async (webhookUrl?: string) => {
     if (resumes.length === 0) {
       toast({
         title: "No Files Selected",
@@ -114,16 +107,16 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
 
       const resumeIds = await Promise.all(resumePromises);
       
-      // After all files are uploaded, trigger webhook if URL is provided
+      // Trigger webhook if URL is provided
       if (webhookUrl) {
-        const webhookPayload: WebhookPayload = {
-          type: "resume-upload",
-          data: {
-            fileNames: uploadedFileNames
-          }
-        };
-
         try {
+          const webhookPayload: WebhookPayload = {
+            type: "resume-upload",
+            data: {
+              fileNames: uploadedFileNames
+            }
+          };
+
           const webhookResponse = await fetch(webhookUrl, {
             method: 'POST',
             headers: {
@@ -136,12 +129,14 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
             throw new Error('Webhook notification failed');
           }
 
-          console.log('Webhook notification sent successfully');
-        } catch (webhookError) {
-          console.error('Webhook error:', webhookError);
           toast({
-            title: "Webhook Notification Failed",
-            description: "Files were uploaded but webhook notification failed",
+            title: "Webhook Sent",
+            description: "Webhook notification sent successfully",
+          });
+        } catch (webhookError) {
+          toast({
+            title: "Webhook Error",
+            description: "Failed to send webhook notification",
             variant: "destructive",
           });
         }
@@ -230,11 +225,9 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
     isLoading,
     showUploadDialog,
     resumes,
-    webhookUrl,
     handleFileChange,
     handleUploadResumes,
     handleDeleteResume,
-    handleWebhookUrlChange,
     handleUploadDialogOpen: () => setShowUploadDialog(true),
     handleUploadDialogClose: () => {
       setShowUploadDialog(false);
