@@ -73,15 +73,15 @@ const JobFlowList: React.FC<JobFlowListProps> = ({ jobFlows, onDelete }) => {
       </CardHeader>
       <CardContent className="p-0">
         {jobFlows.length > 0 ? (
-          <ScrollArea className="h-[600px] w-full">
-            <div className="min-w-[800px]">
+          <div className="overflow-auto max-w-full">
+            <ScrollArea className="h-[600px]">
               <JobTable 
                 jobFlows={jobFlows}
                 onView={handleViewJobFlow}
                 onDelete={handleDeleteClick}
               />
-            </div>
-          </ScrollArea>
+            </ScrollArea>
+          </div>
         ) : (
           <EmptyState />
         )}
