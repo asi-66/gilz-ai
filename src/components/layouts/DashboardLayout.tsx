@@ -85,7 +85,7 @@ const DashboardLayout = memo(({ children }: DashboardLayoutProps) => {
             onLogout={handleLogout}
           />
 
-          {/* Page content - made scrollable with overflow-auto */}
+          {/* Page content with improved scrolling */}
           <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
             <div className="max-w-[1400px] mx-auto w-full">
               {children}

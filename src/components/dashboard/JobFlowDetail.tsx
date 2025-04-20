@@ -97,57 +97,59 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
   }, [jobId, setHasResumes]);
 
   return (
-    <div className="space-y-6">
-      <JobFlowHeader 
-        jobData={fetchedJobData}
-        showEvaluation={showEvaluation}
-        showChat={showChat}
-        isLoading={isLoading}
-        activeTab={activeTab}
-        hasResumes={hasResumes}
-        onUploadResumes={handleUploadDialogOpen}
-        onStartEvaluation={startEvaluation}
-        onStartChat={startChat}
-      />
-
-      {showUploadDialog && (
-        <JobFlowUploadDialog
-          isLoading={isLoading}
-          resumes={resumes}
-          onClose={handleUploadDialogClose}
-          onUpload={handleUploadResumes}
-          onFileChange={handleFileChange}
-        />
-      )}
-
-      {showEvaluation || showChat ? (
-        <JobFlowTabs
-          jobId={jobId}
-          activeTab={activeTab}
+    <ScrollArea className="h-[calc(100vh-200px)]">
+      <div className="space-y-6 pb-8">
+        <JobFlowHeader 
+          jobData={fetchedJobData}
           showEvaluation={showEvaluation}
           showChat={showChat}
-          formData={formData}
-          isEditing={isEditing}
           isLoading={isLoading}
-          handleChange={handleChange}
-          handleSelectChange={handleSelectChange}
-          handleEdit={handleEdit}
-          handleCancel={handleCancel}
-          handleSave={handleSave}
+          activeTab={activeTab}
+          hasResumes={hasResumes}
+          onUploadResumes={handleUploadDialogOpen}
+          onStartEvaluation={startEvaluation}
+          onStartChat={startChat}
         />
-      ) : (
-        <JobFlowSettingsTab 
-          formData={formData}
-          isEditing={isEditing}
-          isLoading={isLoading}
-          handleChange={handleChange}
-          handleSelectChange={handleSelectChange}
-          handleEdit={handleEdit}
-          handleCancel={handleCancel}
-          handleSave={handleSave}
-        />
-      )}
-    </div>
+
+        {showUploadDialog && (
+          <JobFlowUploadDialog
+            isLoading={isLoading}
+            resumes={resumes}
+            onClose={handleUploadDialogClose}
+            onUpload={handleUploadResumes}
+            onFileChange={handleFileChange}
+          />
+        )}
+
+        {showEvaluation || showChat ? (
+          <JobFlowTabs
+            jobId={jobId}
+            activeTab={activeTab}
+            showEvaluation={showEvaluation}
+            showChat={showChat}
+            formData={formData}
+            isEditing={isEditing}
+            isLoading={isLoading}
+            handleChange={handleChange}
+            handleSelectChange={handleSelectChange}
+            handleEdit={handleEdit}
+            handleCancel={handleCancel}
+            handleSave={handleSave}
+          />
+        ) : (
+          <JobFlowSettingsTab 
+            formData={formData}
+            isEditing={isEditing}
+            isLoading={isLoading}
+            handleChange={handleChange}
+            handleSelectChange={handleSelectChange}
+            handleEdit={handleEdit}
+            handleCancel={handleCancel}
+            handleSave={handleSave}
+          />
+        )}
+      </div>
+    </ScrollArea>
   );
 };
 
