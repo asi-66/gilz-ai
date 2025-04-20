@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import JobFlowList from "@/components/dashboard/JobFlowList";
 import { CreateJobModal } from "@/components/dashboard/modals";
@@ -14,7 +14,6 @@ const JobFlow = () => {
   const navigate = useNavigate();
   const { jobFlows, isLoading, refreshJobFlows } = useJobFlows();
 
-  // Use useCallback to memoize the refresh function
   const handleRefresh = useCallback(() => {
     toast({
       title: "Refreshing",
