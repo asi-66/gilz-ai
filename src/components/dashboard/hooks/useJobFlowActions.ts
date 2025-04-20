@@ -1,9 +1,9 @@
-
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { toast } from "@/hooks/use-toast";
 import { api } from "@/services/api";
 import { useJobFlowForm } from "./useJobFlowForm";
 import { useResumeUpload } from "./useResumeUpload";
+import { useRetry } from "@/hooks/use-retry";
 
 interface JobData {
   title: string;
@@ -32,94 +32,112 @@ export const useJobFlowActions = (
 
   const uploadActions = useResumeUpload(jobId, setHasResumes);
 
+  const { execute: executeWithRetry } = useRetry(
+    async (fn: () => Promise<any>) => fn(),
+    { maxRetries: 3, initialDelay: 1000 }
+  );
+
   const startEvaluation = async (resumeId?: string) => {
     if (!hasResumes) {
       toast({
-        title: "Error",
-        description: "Please upload resumes before starting evaluation",
+        title: "Cannot Start Evaluation",
+        description: "Please upload resumes before starting the evaluation process",
         variant: "destructive",
       });
       return;
     }
 
-    setIsLoading(true);
     try {
-      console.log(`Starting evaluation for job ID: ${jobId}, resume ID: ${resumeId || 'all'}`);
-      
-      const scoreResult = await api.scoreResume({
-        resumeId: resumeId || 'all',
-        jobId,
-      });
-      
-      console.log('Resume scoring result:', scoreResult);
-      setShowEvaluation(true);
-      setActiveTab("evaluation");
-      
-      toast({
-        title: "Success",
-        description: "Evaluation started successfully",
+      await executeWithRetry(async () => {
+        console.log(`Starting evaluation for job ID: ${jobId}, resume ID: ${resumeId || 'all'}`);
+        
+        const scoreResult = await api.scoreResume({
+          resumeId: resumeId || 'all',
+          jobId,
+        });
+        
+        console.log('Resume scoring result:', scoreResult);
+        setShowEvaluation(true);
+        setActiveTab("evaluation");
+        
+        toast({
+          title: "Evaluation Started",
+          description: "The evaluation process has begun successfully",
+        });
       });
     } catch (error: any) {
-      console.error("Error starting evaluation:", error);
+      console.error("Evaluation error:", error);
       
-      const errorMessage = error.message || "Unknown error";
-      const statusCode = error.status || "";
-      
+      const errorMessage = getErrorMessage(error);
       toast({
-        title: `Error${statusCode ? ` (${statusCode})` : ""}`,
-        description: `Failed to start evaluation: ${errorMessage}`,
+        title: "Evaluation Failed",
+        description: errorMessage,
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const startChat = async () => {
     if (!hasResumes) {
       toast({
-        title: "Error",
-        description: "Please upload resumes before starting chat",
+        title: "Cannot Start Chat",
+        description: "Please upload resumes before starting a chat session",
         variant: "destructive",
       });
       return;
     }
 
-    setIsLoading(true);
     try {
-      console.log(`Starting chat session for job ID: ${jobId}`);
-      
-      const sessionId = `job-${jobId}`;
-      const initialMessage = "Hello, I'd like to discuss the job requirements";
-      
-      const chatResponse = await api.sendChatMessage({
-        message: initialMessage,
-        sessionId,
-        jobId,
-      });
-      
-      console.log('Chat initialized with response:', chatResponse);
-      setShowChat(true);
-      setActiveTab("chat");
-      
-      toast({
-        title: "Success",
-        description: "Chat session started successfully",
+      await executeWithRetry(async () => {
+        console.log(`Starting chat session for job ID: ${jobId}`);
+        
+        const sessionId = `job-${jobId}`;
+        const initialMessage = "Hello, I'd like to discuss the job requirements";
+        
+        const chatResponse = await api.sendChatMessage({
+          message: initialMessage,
+          sessionId,
+          jobId,
+        });
+        
+        console.log('Chat initialized with response:', chatResponse);
+        setShowChat(true);
+        setActiveTab("chat");
+        
+        toast({
+          title: "Chat Session Started",
+          description: "You can now start discussing job requirements",
+        });
       });
     } catch (error: any) {
-      console.error("Error starting chat session:", error);
+      console.error("Chat initialization error:", error);
       
-      const errorMessage = error.message || "Unknown error";
-      const statusCode = error.status || "";
-      
+      const errorMessage = getErrorMessage(error);
       toast({
-        title: `Error${statusCode ? ` (${statusCode})` : ""}`,
-        description: `Failed to start chat session: ${errorMessage}`,
+        title: "Chat Session Failed",
+        description: errorMessage,
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
+  };
+
+  // Helper function to extract meaningful error messages
+  const getErrorMessage = (error: any): string => {
+    if (typeof error === 'string') return error;
+    
+    if (error.message) {
+      return error.message;
+    }
+
+    if (error.error_description) {
+      return error.error_description;
+    }
+
+    if (error.status) {
+      return `Server error (${error.status}): Please try again later`;
+    }
+
+    return "An unexpected error occurred. Please try again.";
   };
 
   return {

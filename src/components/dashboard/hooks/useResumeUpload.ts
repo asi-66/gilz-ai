@@ -2,19 +2,25 @@
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { api } from "@/services/api";
+import { useRetry } from "@/hooks/use-retry";
 
 export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) => void) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [resumes, setResumes] = useState<File[]>([]);
 
+  const { execute: executeWithRetry } = useRetry(
+    async (fn: () => Promise<any>) => fn(),
+    { maxRetries: 2, initialDelay: 1000 }
+  );
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     
     if (files.length > 5) {
       toast({
-        title: "Error",
-        description: "You can only upload up to 5 resumes",
+        title: "Too Many Files",
+        description: "Maximum 5 resumes can be uploaded at once",
         variant: "destructive",
       });
       return;
@@ -28,7 +34,7 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
       if (!isValidType) {
         toast({
           title: "Invalid File Type",
-          description: `${file.name} is not a supported file type. Please use PDF, TXT, DOC, or DOCX.`,
+          description: `${file.name} is not supported. Please use PDF, TXT, DOC, or DOCX files.`,
           variant: "destructive",
         });
         return true;
@@ -37,7 +43,7 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
       if (file.size > 5 * 1024 * 1024) {
         toast({
           title: "File Too Large",
-          description: `${file.name} exceeds the 5MB size limit.`,
+          description: `${file.name} exceeds the 5MB limit.`,
           variant: "destructive",
         });
         return true;
@@ -53,7 +59,7 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
   const handleUploadResumes = async () => {
     if (resumes.length === 0) {
       toast({
-        title: "Error",
+        title: "No Files Selected",
         description: "Please select at least one resume to upload",
         variant: "destructive",
       });
@@ -71,23 +77,25 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
           
           reader.onload = async (e) => {
             try {
-              const resumeText = e.target?.result as string;
-              const resumeResponse = await api.uploadResume({
-                resumeText,
-                jobId,
+              await executeWithRetry(async () => {
+                const resumeText = e.target?.result as string;
+                const resumeResponse = await api.uploadResume({
+                  resumeText,
+                  jobId,
+                });
+                
+                console.log(`Resume ${index + 1} uploaded successfully with ID: ${resumeResponse.resumeId}`);
+                resolve(resumeResponse.resumeId);
               });
-              
-              console.log(`Resume ${index + 1} uploaded successfully with ID: ${resumeResponse.resumeId}`);
-              resolve(resumeResponse.resumeId);
-            } catch (error) {
+            } catch (error: any) {
               console.error(`Error uploading resume ${index + 1}:`, error);
-              reject(error);
+              reject(new Error(`Failed to upload ${file.name}: ${error.message || 'Unknown error'}`));
             }
           };
           
           reader.onerror = (error) => {
             console.error(`Error reading resume ${index + 1}:`, error);
-            reject(error);
+            reject(new Error(`Failed to read ${file.name}`));
           };
           
           reader.readAsText(file, 'UTF-8');
@@ -98,7 +106,7 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
       console.log('All resumes processed successfully. Resume IDs:', resumeIds);
       
       toast({
-        title: "Success",
+        title: "Upload Successful",
         description: `${resumes.length} resume(s) uploaded successfully`,
       });
       
@@ -107,14 +115,11 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
       setResumes([]);
       
     } catch (error: any) {
-      console.error("Error uploading resumes:", error);
-      
-      const errorMessage = error.message || "Unknown error";
-      const statusCode = error.status || "";
+      console.error("Resume upload error:", error);
       
       toast({
-        title: `Error${statusCode ? ` (${statusCode})` : ""}`,
-        description: `Failed to upload resumes: ${errorMessage}`,
+        title: "Upload Failed",
+        description: error.message || "Failed to upload resumes. Please try again.",
         variant: "destructive",
       });
     } finally {
