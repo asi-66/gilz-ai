@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
@@ -26,7 +27,7 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
   const [showEvaluation, setShowEvaluation] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [fetchedJobData, setFetchedJobData] = useState(jobData);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isDataLoading, setIsDataLoading] = useState(true);
 
   const {
     isEditing,
@@ -90,12 +91,15 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
           variant: "destructive",
         });
       } finally {
-        setIsLoading(false);
+        setIsDataLoading(false);
       }
     };
     
     fetchJobDetails();
   }, [jobId, setHasResumes]);
+
+  // Determine the effective loading state (either data loading or action loading)
+  const isPageLoading = isDataLoading || isLoading;
 
   return (
     <ScrollArea className="h-[calc(100vh-200px)]">
@@ -104,7 +108,7 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
           jobData={fetchedJobData}
           showEvaluation={showEvaluation}
           showChat={showChat}
-          isLoading={isLoading}
+          isLoading={isPageLoading}
           activeTab={activeTab}
           hasResumes={hasResumes}
           onUploadResumes={handleUploadDialogOpen}
