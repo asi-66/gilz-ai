@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,17 +40,26 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
         }
       };
 
+      // Use a shorter timeout for webhook notification
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
       const response = await fetch(N8N_WEBHOOK_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(webhookPayload)
+        body: JSON.stringify(webhookPayload),
+        signal: controller.signal
       });
-
+      
+      clearTimeout(timeoutId);
+      
+      console.log('Webhook notification response status:', response.status);
+      
       if (!response.ok) {
         console.error('Webhook notification failed with status:', response.status);
-        throw new Error('Webhook notification failed');
+        return false;
       }
       
       console.log('Webhook notification sent successfully');
@@ -75,6 +85,7 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
     const uploadedStoragePaths: string[] = [];
     let uploadSuccessCount = 0;
     let apiSuccessCount = 0;
+    let webhookSuccess = false;
 
     try {
       for (const file of resumes) {
@@ -110,6 +121,11 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
         throw new Error("All file uploads to storage failed");
       }
       
+      // Always send webhook notification as soon as files are uploaded to storage
+      webhookSuccess = await sendWebhookNotification(uploadedFileNames, uploadedStoragePaths);
+      console.log('Webhook notification result:', webhookSuccess ? 'Success' : 'Failed');
+      
+      // Then try to process with API
       const apiPromises = uploadedStoragePaths.map(async (filePath, index) => {
         try {
           const file = resumes.find(f => uploadedFileNames.includes(f.name));
@@ -127,6 +143,7 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
             return result;
           });
         } catch (apiError) {
+          console.error(`API processing failed for ${uploadedFileNames[index]}:`, apiError);
           return null;
         }
       });
@@ -136,22 +153,23 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
       
       console.log(`${apiSuccessCount} files processed by API successfully`);
       
-      const webhookSent = await sendWebhookNotification(uploadedFileNames, uploadedStoragePaths);
-      
+      // Show appropriate toast based on results
       if (apiSuccessCount === uploadSuccessCount) {
         toast({
-          title: "Success",
-          description: `${apiSuccessCount} resumes uploaded and processed successfully.`,
+          title: webhookSuccess ? "Success" : "Partial Success",
+          description: webhookSuccess 
+            ? `${apiSuccessCount} resumes uploaded and processed successfully.`
+            : `${apiSuccessCount} resumes processed, but webhook notification failed.`,
         });
       } else if (apiSuccessCount > 0) {
         toast({
           title: "Partial Success",
-          description: `${apiSuccessCount} of ${uploadSuccessCount} resumes were fully processed. All files are uploaded to storage.`,
+          description: `${apiSuccessCount} of ${uploadSuccessCount} resumes were fully processed. All files are uploaded to storage. ${webhookSuccess ? 'Webhook notification sent.' : 'Webhook notification failed.'}`,
         });
       } else if (uploadSuccessCount > 0) {
         toast({
           title: "Partial Success",
-          description: "Files uploaded to storage, but API processing failed. You may need to try screening again later.",
+          description: `Files uploaded to storage. ${webhookSuccess ? 'Webhook notification sent.' : 'Webhook notification failed.'} API processing failed.`,
         });
       }
       
@@ -164,11 +182,32 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
       
     } catch (error: any) {
       console.error("Resume upload error:", error);
-      toast({
-        title: "Upload Failed",
-        description: error.message || "Failed to upload resumes. Please try again.",
-        variant: "destructive",
-      });
+      
+      if (uploadSuccessCount > 0) {
+        // If we uploaded at least one file, consider it a partial success
+        toast({
+          title: "Partial Success",
+          description: `${uploadSuccessCount} files uploaded, but encountered an error: ${error.message || "Unknown error"}`,
+        });
+        
+        // Still try to send webhook notification even if there was an error
+        if (!webhookSuccess) {
+          sendWebhookNotification(uploadedFileNames, uploadedStoragePaths)
+            .then(success => {
+              console.log('Fallback webhook notification result:', success ? 'Success' : 'Failed');
+            });
+        }
+        
+        setHasResumes(true);
+        setShowUploadDialog(false);
+        setResumes([]);
+      } else {
+        toast({
+          title: "Upload Failed",
+          description: error.message || "Failed to upload resumes. Please try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }
