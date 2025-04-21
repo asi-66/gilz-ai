@@ -1,4 +1,3 @@
-
 import { toast } from "@/hooks/use-toast";
 
 interface ApiResponse<T> {
@@ -125,13 +124,9 @@ export const api = {
       return responseData;
     } catch (error: any) {
       if (error.name === 'AbortError') {
-        console.error('Resume upload request timed out');
-        // Even if the upload request times out, we'll consider it a partial success
-        // since the file is already in Supabase storage
         toast({
           title: "Partial Success",
           description: "File uploaded to storage but webhook processing timed out. You may need to restart screening.",
-          variant: "warning",
         });
         // Return a synthetic success response
         return { 
