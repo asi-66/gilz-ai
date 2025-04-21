@@ -20,6 +20,18 @@ interface ChatInterfaceProps {
   sessionId: string;
 }
 
+// Utility to simulate backend processing complete state
+function useChatReady(jobId: string) {
+  // Replace this simulation with real state in future when API is ready!
+  const [isReady, setIsReady] = useState(false);
+  useEffect(() => {
+    // Simulate async processing; replace with state check if available
+    const timer = setTimeout(() => setIsReady(true), 2000);
+    return () => clearTimeout(timer);
+  }, [jobId]);
+  return isReady;
+}
+
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ jobId, sessionId }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -31,7 +43,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ jobId, sessionId }) => {
   ]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isReady = useChatReady(jobId);
+
+  useEffect(() => {
+    // Show loading animation at beginning, then "unlock" when ready
+    if (isReady) {
+      setInitialLoading(false);
+    }
+  }, [isReady]);
 
   useEffect(() => {
     scrollToBottom();
@@ -62,24 +83,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ jobId, sessionId }) => {
     setIsLoading(true);
 
     try {
-      // Add a brief delay to simulate network latency
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Real implementation: POST to the /webhook/hr-chat endpoint
+      const response = await api.sendChatMessage({
+        message: inputMessage,
+        sessionId,
+        jobId,
+      });
 
-      // In a real implementation, you would call the API
-      // const response = await api.sendChatMessage({
-      //   message: inputMessage,
-      //   sessionId: sessionId,
-      // });
-
-      // For demonstration, create a mock response
-      const aiResponse: Message = {
+      // Use real AI response
+      const aiMessage: Message = {
         id: generateId(),
-        content: `Thank you for your message. I've analyzed the resumes for this job position and can provide insights on candidate qualifications, skills matching, and interview suggestions. Let me know what specific information you're looking for regarding this job flow.`,
+        content: response.response || "I'm here to help you with your hiring process.",
         sender: "ai",
         timestamp: new Date(),
       };
 
-      setMessages((prev) => [...prev, aiResponse]);
+      setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
       console.error("Error sending message:", error);
       toast({
@@ -93,7 +112,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ jobId, sessionId }) => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !isLoading) {
+    if (e.key === "Enter" && !isLoading && !initialLoading) {
       handleSendMessage();
     }
   };
@@ -145,6 +164,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ jobId, sessionId }) => {
             </div>
           ))}
           <div ref={messagesEndRef} />
+          {initialLoading && (
+            <div className="flex flex-col items-center justify-center pt-8">
+              <Loader2 className="h-8 w-8 animate-spin text-[#7efb98]" />
+              <p className="text-muted-foreground mt-2">Preparing AI chat session...</p>
+            </div>
+          )}
         </div>
         <div className="flex items-center space-x-2">
           <Input
@@ -153,11 +178,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ jobId, sessionId }) => {
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             className="flex-1"
-            disabled={isLoading}
+            disabled={isLoading || initialLoading}
           />
           <Button 
             onClick={handleSendMessage} 
-            disabled={isLoading || !inputMessage.trim()}
+            disabled={isLoading || initialLoading || !inputMessage.trim()}
           >
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />

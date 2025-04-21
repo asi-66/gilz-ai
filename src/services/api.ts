@@ -1,4 +1,3 @@
-
 import { toast } from "@/hooks/use-toast";
 
 interface ApiResponse<T> {
@@ -21,14 +20,11 @@ interface ChatResponse {
   response: string;
 }
 
-// Define the API service with method signatures
 export const api = {
-  // Job creation
   createJob: async (data: any) => {
     console.log('Creating job with data:', data);
-    
     try {
-      const response = await fetch('https://primary-production-005c.up.railway.app/webhook/9a45b076-3a38-4fb7-9a9c-488bbca220ab', {
+      const response = await fetch('https://primary-production-005c.up.railway.app/webhook/job-create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,29 +38,28 @@ export const api = {
           }
         }),
       });
-      
+
       console.log('Response status:', response.status);
-      
+
       if (!response.ok) {
         throw new Error(`Server responded with status: ${response.status}`);
       }
-      
+
       const responseData = await response.json();
       console.log('API Response:', responseData);
-      
+
       return responseData;
     } catch (error) {
       console.error('Error in createJob:', error);
       throw error;
     }
   },
-  
-  // Get all job flows
+
   getJobFlows: async () => {
     console.log('Fetching all job flows');
-    
+
     try {
-      const response = await fetch('https://primary-production-005c.up.railway.app/webhook/9a45b076-3a38-4fb7-9a9c-488bbca220ab', {
+      const response = await fetch('https://primary-production-005c.up.railway.app/webhook/job-list', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,14 +69,14 @@ export const api = {
           data: {}
         }),
       });
-      
+
       if (!response.ok) {
         throw new Error(`Server responded with status: ${response.status}`);
       }
-      
+
       const responseData = await response.json();
       console.log('Job flows retrieved:', responseData);
-      
+
       return responseData;
     } catch (error) {
       console.error('Error in getJobFlows:', error);
@@ -89,10 +84,9 @@ export const api = {
     }
   },
 
-  // Upload resume
-  uploadResume: async (payload: { resumeText: string; jobId: string; storagePath?: string }): Promise<ResumeUploadResponse> => {
+  uploadResume: async (payload: { resumeText: string; jobId: string; storagePath?: string }) => {
     try {
-      const response = await fetch('https://primary-production-005c.up.railway.app/webhook/9a45b076-3a38-4fb7-9a9c-488bbca220ab', {
+      const response = await fetch('https://primary-production-005c.up.railway.app/webhook/resume-upload', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -113,7 +107,7 @@ export const api = {
         throw new Error(errorData.message || `Failed to upload resume: ${response.status}`);
       }
 
-      const responseData: ResumeUploadResponse = await response.json();
+      const responseData = await response.json();
       console.log('Resume uploaded:', responseData);
       return responseData;
     } catch (error: any) {
@@ -127,10 +121,9 @@ export const api = {
     }
   },
 
-  // Score resume
-  scoreResume: async (payload: { resumeId: string; jobId: string }): Promise<ResumeScoreResponse> => {
+  scoreResume: async (payload: { resumeId: string; jobId: string }) => {
     try {
-      const response = await fetch('https://primary-production-005c.up.railway.app/webhook/9a45b076-3a38-4fb7-9a9c-488bbca220ab', {
+      const response = await fetch('https://primary-production-005c.up.railway.app/webhook/resume-score', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -150,7 +143,7 @@ export const api = {
         throw new Error(errorData.message || `Failed to score resume: ${response.status}`);
       }
 
-      const responseData: ResumeScoreResponse = await response.json();
+      const responseData = await response.json();
       console.log('Resume scored:', responseData);
       return responseData;
     } catch (error: any) {
@@ -164,10 +157,9 @@ export const api = {
     }
   },
 
-  // Send chat message
-  sendChatMessage: async (payload: { message: string; sessionId: string; jobId: string }): Promise<ChatResponse> => {
+  sendChatMessage: async (payload: { message: string; sessionId: string; jobId: string }) => {
     try {
-      const response = await fetch('https://primary-production-005c.up.railway.app/webhook/9a45b076-3a38-4fb7-9a9c-488bbca220ab', {
+      const response = await fetch('https://primary-production-005c.up.railway.app/webhook/hr-chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -188,7 +180,7 @@ export const api = {
         throw new Error(errorData.message || `Failed to send chat message: ${response.status}`);
       }
 
-      const responseData: ChatResponse = await response.json();
+      const responseData = await response.json();
       console.log('Chat message sent:', responseData);
       return responseData;
     } catch (error: any) {
