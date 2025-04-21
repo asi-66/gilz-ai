@@ -1,8 +1,7 @@
 
-import { api } from "@/services/api";
 import { toast } from "@/hooks/use-toast";
 import { useRetry } from "@/hooks/use-retry";
-
+import { uploadResume } from "@/services/uploadResume";
 const N8N_WEBHOOK_URL = "https://primary-production-005c.up.railway.app/webhook/9a45b076-3a38-4fb7-9a9c-488bbca220ab";
 
 export function useResumeApiProcessing(jobId: string) {
@@ -63,7 +62,7 @@ export function useResumeApiProcessing(jobId: string) {
         const resumeText = await file.text();
         const filePath = storagePaths[i];
         const result = await executeWithRetry(() =>
-          api.uploadResume({ resumeText, jobId, storagePath: filePath })
+          uploadResume({ resumeText, jobId, storagePath: filePath })
         );
         if (result) apiSuccessCount++;
         results.push(result);

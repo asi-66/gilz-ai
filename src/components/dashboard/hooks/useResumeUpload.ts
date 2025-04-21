@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { api } from "@/services/api";
 import { useRetry } from "@/hooks/use-retry";
 import { v4 as uuidv4 } from 'uuid';
 import { validateFiles } from "./utils/fileValidation";
 import { useStorageUpload } from "./useStorageUpload";
 import { useResumeApiProcessing } from "./useResumeApiProcessing";
+import { uploadResume } from "@/services/uploadResume";
 
 const N8N_WEBHOOK_URL = "https://primary-production-005c.up.railway.app/webhook/9a45b076-3a38-4fb7-9a9c-488bbca220ab";
 

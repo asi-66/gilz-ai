@@ -1,12 +1,11 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Send } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { api } from "@/services/api";
 import { toast } from "@/hooks/use-toast";
+import { sendChatMessage } from "@/services/sendChatMessage";
 
 interface Message {
   id: string;
@@ -84,7 +83,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ jobId, sessionId }) => {
 
     try {
       // Real implementation: POST to the /webhook/hr-chat endpoint
-      const response = await api.sendChatMessage({
+      const response = await sendChatMessage({
         message: inputMessage,
         sessionId,
         jobId,
