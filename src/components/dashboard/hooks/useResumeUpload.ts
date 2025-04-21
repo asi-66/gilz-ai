@@ -27,11 +27,17 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
     }
   };
 
-  const sendWebhookNotification = async (fileNames: string[]) => {
+  const sendWebhookNotification = async (fileNames: string[], storagePaths: string[]) => {
     try {
+      console.log('Sending webhook notification for files:', fileNames);
       const webhookPayload = {
         type: "resume-upload",
-        data: { fileNames }
+        data: { 
+          fileNames,
+          jobId,
+          storagePaths,
+          timestamp: new Date().toISOString()
+        }
       };
 
       const response = await fetch(N8N_WEBHOOK_URL, {
@@ -43,10 +49,16 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
       });
 
       if (!response.ok) {
+        console.error('Webhook notification failed with status:', response.status);
         throw new Error('Webhook notification failed');
       }
+      
+      console.log('Webhook notification sent successfully');
+      return true;
     } catch (error) {
       console.error('Error sending webhook notification:', error);
+      // Don't throw here, just return false to indicate failure
+      return false;
     }
   };
 
@@ -62,40 +74,105 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
 
     setIsLoading(true);
     const uploadedFileNames: string[] = [];
+    const uploadedStoragePaths: string[] = [];
+    let uploadSuccessCount = 0;
+    let apiSuccessCount = 0;
 
     try {
-      const resumePromises = resumes.map(async (file) => {
-        const fileExt = file.name.substring(file.name.lastIndexOf('.'));
-        const fileName = `${uuidv4()}${fileExt}`;
-        const filePath = `${jobId}/${fileName}`;
-        
-        const { error: uploadError } = await supabase.storage
-          .from('resumes')
-          .upload(filePath, file);
+      // First, upload all files to Supabase storage
+      for (const file of resumes) {
+        try {
+          const fileExt = file.name.substring(file.name.lastIndexOf('.'));
+          const fileName = `${uuidv4()}${fileExt}`;
+          const filePath = `${jobId}/${fileName}`;
+          
+          console.log(`Uploading file ${file.name} to Supabase storage at path ${filePath}`);
+          
+          const { error: uploadError } = await supabase.storage
+            .from('resumes')
+            .upload(filePath, file);
 
-        if (uploadError) throw uploadError;
+          if (uploadError) {
+            console.error(`Error uploading ${file.name} to storage:`, uploadError);
+            throw uploadError;
+          }
 
-        uploadedFileNames.push(file.name);
-        
-        const resumeText = await file.text();
-        return api.uploadResume({
-          resumeText,
-          jobId,
-          storagePath: filePath
+          console.log(`File ${file.name} uploaded successfully to storage`);
+          uploadedFileNames.push(file.name);
+          uploadedStoragePaths.push(filePath);
+          uploadSuccessCount++;
+          
+        } catch (fileError) {
+          console.error(`Error processing file ${file.name}:`, fileError);
+          // Continue with other files if one fails
+        }
+      }
+      
+      console.log(`${uploadSuccessCount} files uploaded to storage successfully`);
+      
+      // If no files were uploaded successfully, show error and return
+      if (uploadSuccessCount === 0) {
+        throw new Error("All file uploads to storage failed");
+      }
+      
+      // Now process each file with the API
+      const apiPromises = uploadedStoragePaths.map(async (filePath, index) => {
+        try {
+          const file = resumes.find(f => uploadedFileNames.includes(f.name));
+          if (!file) return null;
+          
+          const resumeText = await file.text();
+          console.log(`Processing file ${uploadedFileNames[index]} with API`);
+          
+          // Try to call the API up to 2 times if it fails
+          return await executeWithRetry(async () => {
+            const result = await api.uploadResume({
+              resumeText,
+              jobId,
+              storagePath: filePath
+            });
+            return result;
+          });
+        } catch (apiError) {
+          console.error(`API processing failed for ${uploadedFileNames[index]}:`, apiError);
+          return null;
+        }
+      });
+      
+      // Wait for all API calls to complete
+      const apiResults = await Promise.all(apiPromises);
+      apiSuccessCount = apiResults.filter(Boolean).length;
+      
+      console.log(`${apiSuccessCount} files processed by API successfully`);
+      
+      // Regardless of API success, try to send webhook notification since files are in storage
+      const webhookSent = await sendWebhookNotification(uploadedFileNames, uploadedStoragePaths);
+      
+      // Determine the appropriate message based on results
+      if (apiSuccessCount === uploadSuccessCount) {
+        toast({
+          title: "Success",
+          description: `${apiSuccessCount} resumes uploaded and processed successfully.`,
         });
-      });
-
-      await Promise.all(resumePromises);
+      } else if (apiSuccessCount > 0) {
+        toast({
+          title: "Partial Success",
+          description: `${apiSuccessCount} of ${uploadSuccessCount} resumes were fully processed. All files are uploaded to storage.`,
+          variant: "warning",
+        });
+      } else if (uploadSuccessCount > 0) {
+        toast({
+          title: "Partial Success",
+          description: "Files uploaded to storage, but API processing failed. You may need to try screening again later.",
+          variant: "warning",
+        });
+      }
       
-      // Send notification to N8N webhook
-      await sendWebhookNotification(uploadedFileNames);
-
-      toast({
-        title: "Success",
-        description: "Resumes uploaded successfully. Processing...",
-      });
+      // Even if API calls failed, files are in storage, so set hasResumes to true
+      if (uploadSuccessCount > 0) {
+        setHasResumes(true);
+      }
       
-      setHasResumes(true);
       setShowUploadDialog(false);
       setResumes([]);
       

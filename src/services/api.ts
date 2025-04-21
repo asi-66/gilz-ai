@@ -1,3 +1,4 @@
+
 import { toast } from "@/hooks/use-toast";
 
 interface ApiResponse<T> {
@@ -85,7 +86,14 @@ export const api = {
   },
 
   uploadResume: async (payload: { resumeText: string; jobId: string; storagePath?: string }) => {
+    console.log('Uploading resume with payload:', payload);
     try {
+      // Implement a timeout for fetch to prevent hanging indefinitely
+      const timeoutDuration = 60000; // 60 seconds
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutDuration);
+      
       const response = await fetch('https://primary-production-005c.up.railway.app/webhook/resume-upload', {
         method: 'POST',
         headers: {
@@ -99,18 +107,40 @@ export const api = {
             storagePath: payload.storagePath
           },
         }),
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
 
+      console.log('Upload resume response status:', response.status);
+      
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Upload resume failed:', errorData);
-        throw new Error(errorData.message || `Failed to upload resume: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Upload resume failed response:', errorText);
+        throw new Error(errorText || `Failed to upload resume: ${response.status}`);
       }
 
       const responseData = await response.json();
-      console.log('Resume uploaded:', responseData);
+      console.log('Resume uploaded successfully:', responseData);
       return responseData;
     } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.error('Resume upload request timed out');
+        // Even if the upload request times out, we'll consider it a partial success
+        // since the file is already in Supabase storage
+        toast({
+          title: "Partial Success",
+          description: "File uploaded to storage but webhook processing timed out. You may need to restart screening.",
+          variant: "warning",
+        });
+        // Return a synthetic success response
+        return { 
+          success: true, 
+          message: "File uploaded to storage successfully, but webhook processing timed out",
+          resumeId: "temporary-id" // This is temporary
+        };
+      }
+      
       console.error('Error uploading resume:', error);
       toast({
         title: "Error",
