@@ -14,9 +14,10 @@ export interface Resume {
 export const getResumes = async (jobId: string): Promise<Resume[]> => {
   console.log('Fetching resumes for job ID:', jobId);
   try {
-    const { data, error } = await supabase
+    // Make sure we're querying with the exact job ID format that's stored in the database
+    const { data, error, count } = await supabase
       .from('parsed_resumes')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('job_id', jobId);
     
     if (error) {
@@ -30,8 +31,19 @@ export const getResumes = async (jobId: string): Promise<Resume[]> => {
     }
 
     console.log('Retrieved resumes raw data:', data);
+    console.log('Total count from database:', count);
     
     if (!data || data.length === 0) {
+      // Log all rows from the parsed_resumes table to debug
+      const { data: allResumes, error: allError } = await supabase
+        .from('parsed_resumes')
+        .select('id, job_id, full_name, storage_path')
+        .limit(10);
+      
+      if (!allError && allResumes) {
+        console.log('Sample of available resumes in database:', allResumes);
+      }
+      
       console.log('No resumes found for this job ID');
       return [];
     }

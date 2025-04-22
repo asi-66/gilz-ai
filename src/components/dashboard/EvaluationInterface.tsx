@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCw } from "lucide-react";
@@ -31,6 +31,12 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId, onDele
     fetchResumes
   } = useEvaluationInterface(jobId);
 
+  // Log jobId and resumes for debugging
+  useEffect(() => {
+    console.log("EvaluationInterface mounted with jobId:", jobId);
+    console.log("Current resumes loaded:", sortedResumes.length);
+  }, [jobId, sortedResumes.length]);
+
   const handleDownload = async (e: React.MouseEvent, storagePath: string | null) => {
     e.stopPropagation();
     if (!storagePath) {
@@ -43,6 +49,7 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId, onDele
     }
 
     try {
+      console.log("Attempting to download file:", storagePath);
       const { data, error } = await supabase.storage
         .from('resumes')
         .download(storagePath);
@@ -57,6 +64,11 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId, onDele
       a.click();
       URL.revokeObjectURL(url);
       document.body.removeChild(a);
+      
+      toast({
+        title: "Download Successful",
+        description: "Resume downloaded successfully",
+      });
     } catch (error: any) {
       console.error("Error downloading file:", error);
       toast({
@@ -82,18 +94,30 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId, onDele
     }
   };
 
+  const handleManualRefresh = () => {
+    toast({
+      title: "Refreshing Resumes",
+      description: "Getting the latest resume data...",
+    });
+    fetchResumes();
+  };
+
   return (
     <div className="space-y-6">
       <Card className="bg-white/10 dark:bg-black/10 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <div>
             <CardTitle>Resume Evaluation Results</CardTitle>
-            <CardDescription>Review candidate evaluations and scores</CardDescription>
+            <CardDescription>
+              {sortedResumes.length > 0 
+                ? `Showing ${sortedResumes.length} candidate(s) for this job` 
+                : "Review candidate evaluations and scores"}
+            </CardDescription>
           </div>
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={fetchResumes}
+            onClick={handleManualRefresh}
             disabled={isLoading}
           >
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
@@ -118,12 +142,16 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId, onDele
             />
           ) : (
             <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-              <p className="text-gray-600 dark:text-gray-400 mb-4">No resumes uploaded yet</p>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">No resumes found for this job</p>
               <p className="text-sm text-gray-500 dark:text-gray-500 mb-6">
-                Upload resumes to start evaluating candidates
+                Try refreshing or uploading resumes to start evaluating candidates
               </p>
-              <Button className="bg-[#7efb98] text-[#1F2937] hover:bg-[#7efb98]/90">
-                Upload Resumes
+              <Button 
+                className="bg-[#7efb98] text-[#1F2937] hover:bg-[#7efb98]/90"
+                onClick={handleManualRefresh}
+              >
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh Resume List
               </Button>
             </div>
           )}

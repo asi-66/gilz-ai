@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Resume } from "@/services/getResumes";
 import { getResumes } from "@/services/getResumes";
 import { toast } from "@/hooks/use-toast";
@@ -12,12 +12,27 @@ export const useEvaluationInterface = (jobId: string) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [resumeToDelete, setResumeToDelete] = useState<string | null>(null);
   const [resumes, setResumes] = useState<Resume[]>([]);
+  const [fetchAttempts, setFetchAttempts] = useState(0);
 
-  const fetchResumes = async () => {
+  const fetchResumes = useCallback(async () => {
+    if (!jobId) {
+      console.error("Cannot fetch resumes: No job ID provided");
+      setIsLoading(false);
+      return;
+    }
+
+    console.log(`Attempting to fetch resumes (attempt ${fetchAttempts + 1})...`);
     setIsLoading(true);
+    
     try {
       const resumeData = await getResumes(jobId);
+      console.log(`Resume data fetched, count: ${resumeData.length}`);
       setResumes(resumeData);
+      
+      if (resumeData.length === 0 && fetchAttempts < 2) {
+        // If no resumes found and we haven't tried many times, schedule another attempt
+        setFetchAttempts(prev => prev + 1);
+      }
     } catch (error) {
       console.error("Error fetching resumes:", error);
       toast({
@@ -28,13 +43,24 @@ export const useEvaluationInterface = (jobId: string) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [jobId, fetchAttempts]);
 
   useEffect(() => {
     if (jobId) {
       fetchResumes();
     }
-  }, [jobId]);
+  }, [jobId, fetchResumes]);
+
+  // If no resumes found on first attempt, try again after a delay
+  useEffect(() => {
+    if (fetchAttempts > 0 && fetchAttempts < 3 && resumes.length === 0) {
+      const timer = setTimeout(() => {
+        fetchResumes();
+      }, 2000); // Wait 2 seconds before retrying
+      
+      return () => clearTimeout(timer);
+    }
+  }, [fetchAttempts, resumes.length, fetchResumes]);
 
   const toggleSort = (field: "matchScore" | "fullName" | "uploadDate") => {
     if (sortField === field) {
