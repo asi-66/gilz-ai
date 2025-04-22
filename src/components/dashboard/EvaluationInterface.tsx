@@ -1,14 +1,14 @@
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCw } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-import { getResumes, Resume } from "@/services/getResumes";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 import ResumeTable from "./resume/ResumeTable";
 import CandidateDialog from "./resume/CandidateDialog";
 import DeleteConfirmationDialog from "./resume/DeleteConfirmationDialog";
+import { useEvaluationInterface } from "./hooks/useEvaluationInterface";
 
 interface EvaluationInterfaceProps {
   jobId: string;
@@ -16,63 +16,20 @@ interface EvaluationInterfaceProps {
 }
 
 const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId, onDeleteResume }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedCandidate, setSelectedCandidate] = useState<Resume | null>(null);
-  const [sortField, setSortField] = useState<"matchScore" | "fullName" | "uploadDate">("matchScore");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [resumeToDelete, setResumeToDelete] = useState<string | null>(null);
-  const [resumes, setResumes] = useState<Resume[]>([]);
-
-  const fetchResumes = async () => {
-    setIsLoading(true);
-    try {
-      const resumeData = await getResumes(jobId);
-      setResumes(resumeData);
-    } catch (error) {
-      console.error("Error fetching resumes:", error);
-      toast({
-        title: "Error Loading Resumes",
-        description: "Could not load resumes. Please try refreshing.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (jobId) {
-      fetchResumes();
-    }
-  }, [jobId]);
-
-  const toggleSort = (field: "matchScore" | "fullName" | "uploadDate") => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("desc");
-    }
-  };
-
-  const sortedResumes = [...resumes].sort((a, b) => {
-    if (sortField === "matchScore") {
-      const scoreA = a.matchScore || 0;
-      const scoreB = b.matchScore || 0;
-      return sortDirection === "asc" ? scoreA - scoreB : scoreB - scoreA;
-    } else if (sortField === "fullName") {
-      const nameA = a.fullName || '';
-      const nameB = b.fullName || '';
-      return sortDirection === "asc"
-        ? nameA.localeCompare(nameB)
-        : nameB.localeCompare(nameA);
-    } else {
-      const dateA = new Date(a.uploadDate).getTime();
-      const dateB = new Date(b.uploadDate).getTime();
-      return sortDirection === "asc" ? dateA - dateB : dateB - dateA;
-    }
-  });
+  const {
+    isLoading,
+    selectedCandidate,
+    sortField,
+    sortDirection,
+    showDeleteDialog,
+    resumeToDelete,
+    sortedResumes,
+    setSelectedCandidate,
+    setShowDeleteDialog,
+    setResumeToDelete,
+    toggleSort,
+    fetchResumes
+  } = useEvaluationInterface(jobId);
 
   const handleDownload = async (e: React.MouseEvent, storagePath: string | null) => {
     e.stopPropagation();
@@ -149,7 +106,7 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId, onDele
               <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
               <span>Loading resumes...</span>
             </div>
-          ) : resumes.length > 0 ? (
+          ) : sortedResumes.length > 0 ? (
             <ResumeTable
               resumes={sortedResumes}
               sortField={sortField}
