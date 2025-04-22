@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FileText, Download, ArrowUpDown, Star, Trash2, Loader2 } from "lucide-react";
+import { FileText, Download, ArrowUpDown, Star, Trash2, Loader2, RefreshCw } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,17 +48,26 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId, onDele
   const fetchResumes = async () => {
     setIsLoading(true);
     try {
+      console.log('Fetching resumes for EvaluationInterface, job ID:', jobId);
       const resumeData = await getResumes(jobId);
+      console.log('Resume data received in EvaluationInterface:', resumeData);
       setResumes(resumeData);
     } catch (error) {
       console.error("Error fetching resumes:", error);
+      toast({
+        title: "Error Loading Resumes",
+        description: "Could not load resumes. Please try refreshing.",
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchResumes();
+    if (jobId) {
+      fetchResumes();
+    }
   }, [jobId]);
 
   const toggleSort = (field: "matchScore" | "fullName" | "uploadDate") => {
@@ -160,22 +168,41 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId, onDele
     return resume.fullName || resume.fileName || 'Unnamed Candidate';
   };
 
+  const handleRefresh = () => {
+    fetchResumes();
+    toast({
+      title: "Refreshing Resumes",
+      description: "Getting the latest resume data...",
+    });
+  };
+
   return (
     <div className="space-y-6">
       <Card className="bg-white/10 dark:bg-black/10 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-sm">
-        <CardHeader>
-          <CardTitle>
-            Resume Evaluation Results
-          </CardTitle>
-          <CardDescription>
-            Review candidate evaluations and scores
-          </CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <div>
+            <CardTitle>
+              Resume Evaluation Results
+            </CardTitle>
+            <CardDescription>
+              Review candidate evaluations and scores
+            </CardDescription>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleRefresh}
+            disabled={isLoading}
+          >
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            <span className="ml-2">Refresh</span>
+          </Button>
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="flex justify-center items-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <span className="ml-2">Loading resumes...</span>
+            <div className="flex flex-col justify-center items-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+              <span>Loading resumes...</span>
             </div>
           ) : resumes.length > 0 ? (
             <div className="overflow-x-auto">
