@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
-import { api } from "@/services/api";
+import { createJob } from "@/services";
 
 interface FormData {
   flowName: string;
@@ -71,13 +71,13 @@ export const useCreateJobForm = (
     try {
       // Create the job
       const jobData = {
-        flowName: formData.flowName,
+        title: formData.flowName,
         jobDescription: formData.jobDescription,
         workMode: formData.workMode,
       };
       
       console.log('Submitting job data:', jobData);
-      const jobResponse = await api.createJob(jobData);
+      const jobResponse = await createJob(jobData);
       
       if (!jobResponse || !jobResponse.jobId) {
         throw new Error('Invalid job response - missing job ID');
