@@ -1,35 +1,14 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FileText, Download, ArrowUpDown, Star, Trash2, Loader2, RefreshCw } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { Loader2, RefreshCw } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { getResumes, Resume } from "@/services/getResumes";
 import { supabase } from "@/integrations/supabase/client";
+import ResumeTable from "./resume/ResumeTable";
+import CandidateDialog from "./resume/CandidateDialog";
+import DeleteConfirmationDialog from "./resume/DeleteConfirmationDialog";
 
 interface EvaluationInterfaceProps {
   jobId: string;
@@ -48,9 +27,7 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId, onDele
   const fetchResumes = async () => {
     setIsLoading(true);
     try {
-      console.log('Fetching resumes for EvaluationInterface, job ID:', jobId);
       const resumeData = await getResumes(jobId);
-      console.log('Resume data received in EvaluationInterface:', resumeData);
       setResumes(resumeData);
     } catch (error) {
       console.error("Error fetching resumes:", error);
@@ -90,36 +67,12 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId, onDele
       return sortDirection === "asc"
         ? nameA.localeCompare(nameB)
         : nameB.localeCompare(nameA);
-    } else if (sortField === "uploadDate") {
+    } else {
       const dateA = new Date(a.uploadDate).getTime();
       const dateB = new Date(b.uploadDate).getTime();
       return sortDirection === "asc" ? dateA - dateB : dateB - dateA;
     }
-    return 0;
   });
-
-  const handleCandidateClick = (candidate: Resume) => {
-    setSelectedCandidate(candidate);
-  };
-
-  const handleCloseDialog = () => {
-    setSelectedCandidate(null);
-  };
-
-  const handleDeleteClick = (e: React.MouseEvent, resumeId: string) => {
-    e.stopPropagation();
-    setResumeToDelete(resumeId);
-    setShowDeleteDialog(true);
-  };
-
-  const confirmDelete = async () => {
-    if (resumeToDelete && onDeleteResume) {
-      await onDeleteResume(resumeToDelete);
-      setShowDeleteDialog(false);
-      setResumeToDelete(null);
-      fetchResumes(); // Refresh the list after deletion
-    }
-  };
 
   const handleDownload = async (e: React.MouseEvent, storagePath: string | null) => {
     e.stopPropagation();
@@ -139,7 +92,6 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId, onDele
       
       if (error) throw error;
       
-      // Create a download link and trigger download
       const url = URL.createObjectURL(data);
       const a = document.createElement('a');
       a.href = url;
@@ -158,22 +110,19 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId, onDele
     }
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 85) return "text-green-600 bg-green-100";
-    if (score >= 70) return "text-yellow-600 bg-yellow-100";
-    return "text-red-600 bg-red-100";
+  const handleDeleteClick = (e: React.MouseEvent, resumeId: string) => {
+    e.stopPropagation();
+    setResumeToDelete(resumeId);
+    setShowDeleteDialog(true);
   };
 
-  const getCandidateName = (resume: Resume) => {
-    return resume.fullName || resume.fileName || 'Unnamed Candidate';
-  };
-
-  const handleRefresh = () => {
-    fetchResumes();
-    toast({
-      title: "Refreshing Resumes",
-      description: "Getting the latest resume data...",
-    });
+  const confirmDelete = async () => {
+    if (resumeToDelete && onDeleteResume) {
+      await onDeleteResume(resumeToDelete);
+      setShowDeleteDialog(false);
+      setResumeToDelete(null);
+      fetchResumes();
+    }
   };
 
   return (
@@ -181,17 +130,13 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId, onDele
       <Card className="bg-white/10 dark:bg-black/10 backdrop-blur-md border border-black/5 dark:border-white/5 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <div>
-            <CardTitle>
-              Resume Evaluation Results
-            </CardTitle>
-            <CardDescription>
-              Review candidate evaluations and scores
-            </CardDescription>
+            <CardTitle>Resume Evaluation Results</CardTitle>
+            <CardDescription>Review candidate evaluations and scores</CardDescription>
           </div>
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={handleRefresh}
+            onClick={fetchResumes}
             disabled={isLoading}
           >
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
@@ -205,63 +150,22 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId, onDele
               <span>Loading resumes...</span>
             </div>
           ) : resumes.length > 0 ? (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Candidate</TableHead>
-                    <TableHead>
-                      <div className="flex items-center cursor-pointer" onClick={() => toggleSort("matchScore")}>
-                        Match Score
-                        <ArrowUpDown className="ml-2 h-3 w-3" />
-                      </div>
-                    </TableHead>
-                    <TableHead>Upload Date</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {sortedResumes.map((resume) => (
-                    <TableRow key={resume.id} className="cursor-pointer hover:bg-background/50" onClick={() => handleCandidateClick(resume)}>
-                      <TableCell>
-                        <div className="font-medium">{getCandidateName(resume)}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-medium ${getScoreColor(resume.matchScore || 0)}`}>
-                          {resume.matchScore || 0}%
-                        </div>
-                      </TableCell>
-                      <TableCell>{resume.uploadDate}</TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
-                          <FileText className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={(e) => handleDownload(e, resume.storagePath)}>
-                          <Download className="h-4 w-4" />
-                        </Button>
-                        {onDeleteResume && (
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={(e) => handleDeleteClick(e, resume.id)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+            <ResumeTable
+              resumes={sortedResumes}
+              sortField={sortField}
+              sortDirection={sortDirection}
+              onSort={toggleSort}
+              onCandidateClick={setSelectedCandidate}
+              onDownload={handleDownload}
+              onDelete={handleDeleteClick}
+            />
           ) : (
             <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
               <p className="text-gray-600 dark:text-gray-400 mb-4">No resumes uploaded yet</p>
-              <p className="text-sm text-gray-500 dark:text-gray-500 mb-6">Upload resumes to start evaluating candidates</p>
-              <Button 
-                className="bg-[#7efb98] text-[#1F2937] hover:bg-[#7efb98]/90"
-              >
+              <p className="text-sm text-gray-500 dark:text-gray-500 mb-6">
+                Upload resumes to start evaluating candidates
+              </p>
+              <Button className="bg-[#7efb98] text-[#1F2937] hover:bg-[#7efb98]/90">
                 Upload Resumes
               </Button>
             </div>
@@ -269,72 +173,21 @@ const EvaluationInterface: React.FC<EvaluationInterfaceProps> = ({ jobId, onDele
         </CardContent>
       </Card>
 
-      {/* Candidate Detail Dialog */}
-      <Dialog open={selectedCandidate !== null} onOpenChange={handleCloseDialog}>
-        <DialogContent className="sm:max-w-[600px] bg-background/80 backdrop-blur-lg border border-border/50 shadow-lg">
-          <DialogHeader>
-            <DialogTitle>Candidate Profile</DialogTitle>
-            <DialogDescription>
-              Resume details for {selectedCandidate ? getCandidateName(selectedCandidate) : ''}
-            </DialogDescription>
-          </DialogHeader>
-          
-          {selectedCandidate && (
-            <div className="space-y-4 py-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">{getCandidateName(selectedCandidate)}</h3>
-                <Badge variant="outline" className={`${getScoreColor(selectedCandidate.matchScore || 0)}`}>
-                  {selectedCandidate.matchScore || 0}% Match
-                </Badge>
-              </div>
-              
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium">Upload Information</h4>
-                <p className="text-sm">Uploaded on: {selectedCandidate.uploadDate}</p>
-                <p className="text-sm">File: {selectedCandidate.fileName || 'Unknown file'}</p>
-              </div>
-              
-              <div className="pt-4 flex justify-end space-x-2">
-                <Button variant="outline" onClick={(e) => selectedCandidate.storagePath && handleDownload(e, selectedCandidate.storagePath)}>
-                  <Download className="mr-2 h-4 w-4" />
-                  Download Resume
-                </Button>
-                {onDeleteResume && (
-                  <Button 
-                    variant="destructive"
-                    onClick={() => {
-                      setResumeToDelete(selectedCandidate.id);
-                      setShowDeleteDialog(true);
-                      handleCloseDialog();
-                    }}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete Resume
-                  </Button>
-                )}
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <CandidateDialog
+        candidate={selectedCandidate}
+        onClose={() => setSelectedCandidate(null)}
+        onDownload={handleDownload}
+        onDelete={(resumeId) => {
+          setResumeToDelete(resumeId);
+          setShowDeleteDialog(true);
+        }}
+      />
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this resume? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setResumeToDelete(null)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-red-500 hover:bg-red-600">
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmationDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 };
