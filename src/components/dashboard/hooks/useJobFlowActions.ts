@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { useResumeUpload } from "./useResumeUpload";
@@ -91,6 +92,7 @@ export const useJobFlowActions = (
     showUploadDialog,
     resumes,
     handleFileChange,
+    handleRemoveFile,
     handleUploadResumes,
     handleDeleteResume,
     handleUploadDialogOpen,
@@ -110,6 +112,7 @@ export const useJobFlowActions = (
     handleCancel,
     handleSave,
     handleFileChange,
+    handleRemoveFile,
     handleUploadResumes,
     handleUploadDialogOpen,
     handleUploadDialogClose,

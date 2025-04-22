@@ -38,7 +38,10 @@ export const getResumes = async (jobId: string): Promise<Resume[]> => {
       fileName: resume.storage_path ? resume.storage_path.split('/').pop() : null,
       uploadDate: new Date(resume.parsed_at).toLocaleDateString(),
       storagePath: resume.storage_path,
-      matchScore: resume.skills ? (resume.skills.length > 0 ? Math.floor(Math.random() * 30) + 70 : 0) : 0, // Placeholder for actual score
+      matchScore: resume.skills ? (
+        Array.isArray(resume.skills) && resume.skills.length > 0 ? 
+          Math.floor(Math.random() * 30) + 70 : 0
+      ) : 0, // Placeholder for actual score
     }));
   } catch (error: any) {
     console.error('Exception fetching resumes:', error);
