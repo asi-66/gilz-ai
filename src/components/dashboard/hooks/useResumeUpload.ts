@@ -1,19 +1,18 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { useRetry } from "@/hooks/use-retry";
-import { v4 as uuidv4 } from 'uuid';
 import { validateFiles } from "./utils/fileValidation";
 import { useStorageUpload } from "./useStorageUpload";
 import { useResumeApiProcessing } from "./useResumeApiProcessing";
-import { uploadResume } from "@/services/uploadResume";
-
-const N8N_WEBHOOK_URL = "https://primary-production-005c.up.railway.app/webhook/9a45b076-3a38-4fb7-9a9c-488bbca220ab";
+import { deleteResume } from "@/services/deleteResume";
+import { getResumes } from "@/services/getResumes";
 
 export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) => void) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [resumes, setResumes] = useState<File[]>([]);
+  const [hasUploadedResumes, setHasUploadedResumes] = useState(false);
 
   const { isUploading, uploadFilesToStorage } = useStorageUpload(jobId);
   const { sendWebhookNotification, processResumes } = useResumeApiProcessing(jobId);
@@ -23,12 +22,33 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
     { maxRetries: 2, initialDelay: 1000 }
   );
 
+  // Check if resumes exist on mount
+  useEffect(() => {
+    const checkForResumes = async () => {
+      try {
+        const resumeData = await getResumes(jobId);
+        setHasUploadedResumes(resumeData.length > 0);
+        setHasResumes(resumeData.length > 0);
+      } catch (error) {
+        console.error("Error checking for resumes:", error);
+      }
+    };
+    
+    checkForResumes();
+  }, [jobId, setHasResumes]);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     const { isValid, validFiles } = validateFiles(files);
     if (isValid) {
       setResumes(validFiles);
     }
+  };
+
+  const handleRemoveFile = (index: number) => {
+    const updatedFiles = [...resumes];
+    updatedFiles.splice(index, 1);
+    setResumes(updatedFiles);
   };
 
   const handleUploadResumes = async () => {
@@ -44,6 +64,7 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
     setIsLoading(true);
 
     try {
+      // Step 1: Upload files to storage
       const storageResult = await uploadFilesToStorage(resumes);
 
       if (!storageResult.success || storageResult.paths.length === 0) {
@@ -56,29 +77,34 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
         return;
       }
 
+      // Step 2: Send webhook notification
       const webhookSuccess = await sendWebhookNotification(storageResult.names, storageResult.paths);
-
+      
+      // Step 3: Process resumes with API
       const apiProcessing = await processResumes(resumes, storageResult.paths);
 
+      // Determine the appropriate success message based on results
       if (apiProcessing.apiSuccessCount === resumes.length && webhookSuccess) {
         toast({
           title: "Success",
-          description: `Uploaded and processed all resumes successfully.`,
+          description: `All ${resumes.length} resume(s) uploaded and processed successfully.`,
         });
       } else if (apiProcessing.apiSuccessCount > 0 || webhookSuccess) {
         toast({
           title: "Partial Success",
-          description: `${apiProcessing.apiSuccessCount} resume(s) processed. Webhook sent? ${webhookSuccess ? 'Yes' : 'No'}`,
+          description: `Uploaded ${storageResult.paths.length} file(s). Successfully processed ${apiProcessing.apiSuccessCount} resume(s).`,
         });
       } else {
         toast({
-          title: "Warning",
-          description: "File(s) uploaded to storage, but processing and/or webhook failed.",
-          variant: "destructive"
+          title: "Limited Success",
+          description: "Files uploaded to storage, but processing may need to be retried.",
+          variant: "default"
         });
       }
 
+      // Update state to reflect that we now have resumes
       setHasResumes(true);
+      setHasUploadedResumes(true);
       setShowUploadDialog(false);
       setResumes([]);
     } catch (error: any) {
@@ -94,41 +120,22 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
 
   const handleDeleteResume = async (resumeId: string) => {
     try {
-      const { data: resumeData, error: fetchError } = await supabase
-        .from('parsed_resumes')
-        .select('storage_path')
-        .eq('id', resumeId)
-        .single();
+      setIsLoading(true);
+      const success = await deleteResume(resumeId);
+      
+      if (success) {
+        toast({
+          title: "Resume Deleted",
+          description: "The resume has been successfully removed.",
+        });
 
-      if (fetchError) throw fetchError;
-
-      if (resumeData?.storage_path) {
-        const { error: storageError } = await supabase.storage
-          .from('resumes')
-          .remove([resumeData.storage_path]);
-
-        if (storageError) throw storageError;
+        // Check if we still have any resumes
+        const remainingResumes = await getResumes(jobId);
+        setHasUploadedResumes(remainingResumes.length > 0);
+        setHasResumes(remainingResumes.length > 0);
+      } else {
+        throw new Error("Failed to delete resume");
       }
-
-      const { error: deleteError } = await supabase
-        .from('parsed_resumes')
-        .delete()
-        .eq('id', resumeId);
-
-      if (deleteError) throw deleteError;
-
-      toast({
-        title: "Resume Deleted",
-        description: "The resume has been successfully removed.",
-      });
-
-      const { count } = await supabase
-        .from('parsed_resumes')
-        .select('id', { count: 'exact', head: true })
-        .eq('job_id', jobId);
-        
-      setHasResumes(!!count);
-
     } catch (error: any) {
       console.error("Resume deletion error:", error);
       toast({
@@ -136,6 +143,8 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
         description: error.message || "Failed to delete resume. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -143,7 +152,9 @@ export const useResumeUpload = (jobId: string, setHasResumes: (value: boolean) =
     isLoading,
     showUploadDialog,
     resumes,
+    hasUploadedResumes,
     handleFileChange,
+    handleRemoveFile,
     handleUploadResumes,
     handleDeleteResume,
     handleUploadDialogOpen: () => setShowUploadDialog(true),

@@ -42,6 +42,7 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
     handleCancel,
     handleSave,
     handleFileChange,
+    handleRemoveFile,
     handleUploadResumes,
     handleUploadDialogOpen,
     handleUploadDialogClose,
@@ -123,6 +124,7 @@ const JobFlowDetail: React.FC<JobFlowDetailProps> = ({ jobId, jobData }) => {
             onClose={handleUploadDialogClose}
             onUpload={handleUploadResumes}
             onFileChange={handleFileChange}
+            onRemoveFile={handleRemoveFile}
           />
         )}
 

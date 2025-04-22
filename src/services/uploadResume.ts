@@ -33,34 +33,43 @@ export const uploadResume = async (payload: { resumeText: string; jobId: string;
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Upload resume failed response:', errorText);
-      // Return a partially successful response instead of throwing
+      
+      // Return a structured response with detailed error info
       return { 
         success: true, 
-        message: "File uploaded to storage successfully, but API processing failed",
-        resumeId: "storage-only-" + Date.now() // Generate a temporary ID
+        message: "File uploaded to storage successfully, but API processing had issues",
+        resumeId: "storage-only-" + Date.now(), // Generate a temporary ID
+        status: response.status,
+        details: errorText
       };
     }
 
     const responseData = await response.json();
     console.log('Resume uploaded successfully:', responseData);
-    return responseData;
+    
+    // Return a structured success response
+    return {
+      ...responseData,
+      success: true,
+      message: "Resume uploaded and processed successfully"
+    };
   } catch (error: any) {
     if (error.name === 'AbortError') {
       console.log('Resume upload request timed out but file is in storage');
-      // Return a partially successful response instead of throwing
       return { 
         success: true, 
         message: "File uploaded to storage successfully, but webhook processing timed out",
-        resumeId: "storage-only-" + Date.now() // Generate a temporary ID
+        resumeId: "storage-only-" + Date.now(),
+        timeoutError: true
       };
     }
     
     console.error('Error uploading resume, but file may be in storage:', error);
-    // Return a partially successful response instead of throwing
     return { 
       success: true, 
       message: "File uploaded to storage successfully, but API processing failed",
-      resumeId: "storage-only-" + Date.now() // Generate a temporary ID 
+      resumeId: "storage-only-" + Date.now(),
+      error: error.message
     };
   }
 };

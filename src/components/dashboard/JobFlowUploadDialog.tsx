@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Trash2 } from "lucide-react";
 
 interface JobFlowUploadDialogProps {
   isLoading: boolean;
@@ -11,6 +12,7 @@ interface JobFlowUploadDialogProps {
   onClose: () => void;
   onUpload: () => void;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onRemoveFile?: (index: number) => void;
 }
 
 const JobFlowUploadDialog: React.FC<JobFlowUploadDialogProps> = ({
@@ -19,6 +21,7 @@ const JobFlowUploadDialog: React.FC<JobFlowUploadDialogProps> = ({
   onClose,
   onUpload,
   onFileChange,
+  onRemoveFile,
 }) => {
   return (
     <Card className="border border-black/10 dark:border-white/10 bg-white/90 dark:bg-gray-900/90">
@@ -44,11 +47,24 @@ const JobFlowUploadDialog: React.FC<JobFlowUploadDialogProps> = ({
           </p>
           
           {resumes.length > 0 && (
-            <div className="mt-2">
+            <div className="mt-4">
               <p className="text-sm font-medium text-gray-900 dark:text-white">Selected files:</p>
-              <ul className="text-sm text-gray-600 dark:text-gray-400">
+              <ul className="mt-2 space-y-1">
                 {resumes.map((file, index) => (
-                  <li key={index}>{file.name}</li>
+                  <li key={index} className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 p-2 rounded text-sm">
+                    <span className="truncate max-w-[85%] text-gray-900 dark:text-white">{file.name}</span>
+                    {onRemoveFile && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => onRemoveFile(index)}
+                        className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-100/30"
+                        disabled={isLoading}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </li>
                 ))}
               </ul>
             </div>
