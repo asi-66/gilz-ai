@@ -1,2 +1,3 @@
 
-export { default as CreateJobModal } from './CreateJobModal';
+// Empty index file - no modals needed for current functionality
+export {};
