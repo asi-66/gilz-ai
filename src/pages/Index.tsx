@@ -5,7 +5,6 @@ import { Navbar } from "@/components/landing/Navbar";
 import { HeroContent } from "@/components/landing/HeroContent";
 import { AuthFormContainer } from "@/components/landing/AuthFormContainer";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 
 // Predefined credentials for this internal tool
@@ -20,25 +19,16 @@ const Index = () => {
   const [password, setPassword] = React.useState("");
   const [rememberMe, setRememberMe] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  const isMobile = useIsMobile();
-  const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const isMobile = useIsMobile();
   
   // Check for saved auth in localStorage
   useEffect(() => {
     const savedAuth = localStorage.getItem("isAuthenticated");
     if (savedAuth === "true") {
       setIsAuthenticated(true);
-      navigate("/dashboard");
     }
-  }, [navigate]);
-  
-  // Redirect to dashboard if authenticated
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/dashboard");
-    }
-  }, [isAuthenticated, navigate]);
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,8 +49,6 @@ const Index = () => {
           title: "Success",
           description: "You have been logged in successfully.",
         });
-        
-        navigate("/dashboard");
       } else {
         // Invalid credentials
         throw new Error("Invalid credentials. Access denied.");
@@ -74,6 +62,15 @@ const Index = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    setIsAuthenticated(false);
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out.",
+    });
   };
 
   return (
@@ -92,21 +89,36 @@ const Index = () => {
             <HeroContent />
           </div>
           
-          {/* Right Column - Login Form Only */}
+          {/* Right Column - Login Form or Logged In State */}
           <div className="w-full md:w-1/2 flex justify-center">
-            <AuthFormContainer 
-              formType={formType}
-              email={email}
-              setEmail={setEmail}
-              password={password}
-              setPassword={setPassword}
-              rememberMe={rememberMe}
-              setRememberMe={setRememberMe}
-              handleLogin={handleLogin}
-              handleSignup={() => {}} // Empty function as signup is disabled
-              setFormType={setFormType}
-              loading={loading}
-            />
+            {!isAuthenticated ? (
+              <AuthFormContainer 
+                formType={formType}
+                email={email}
+                setEmail={setEmail}
+                password={password}
+                setPassword={setPassword}
+                rememberMe={rememberMe}
+                setRememberMe={setRememberMe}
+                handleLogin={handleLogin}
+                handleSignup={() => {}} // Empty function as signup is disabled
+                setFormType={setFormType}
+                loading={loading}
+              />
+            ) : (
+              <div className="w-full max-w-md">
+                <div className="bg-white/10 dark:bg-black/10 backdrop-blur-md border border-black/5 dark:border-white/5 rounded-xl p-8 shadow-sm text-center">
+                  <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Welcome!</h2>
+                  <p className="text-gray-600 dark:text-gray-300 mb-6">You are successfully logged in.</p>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
