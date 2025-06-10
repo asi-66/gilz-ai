@@ -2,7 +2,6 @@
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import { AuthProvider } from './hooks/use-auth.tsx'
 
 // Set dark mode as default
 document.documentElement.classList.remove('light');
@@ -12,7 +11,5 @@ const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error('Root element not found');
 
 createRoot(rootElement).render(
-  <AuthProvider>
-    <App />
-  </AuthProvider>
+  <App />
 );

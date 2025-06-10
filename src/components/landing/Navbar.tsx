@@ -4,7 +4,6 @@ import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuL
 import { Link } from "react-router-dom";
 import { MenuIcon, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { useAuth } from "@/hooks/use-auth";
 
 interface NavbarProps {
   showLoginForm: boolean;
@@ -18,7 +17,6 @@ export const Navbar = memo(({
   handleSignupClick 
 }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { session } = useAuth();
 
   const toggleMenu = useCallback(() => {
     setIsMenuOpen(prevState => !prevState);
